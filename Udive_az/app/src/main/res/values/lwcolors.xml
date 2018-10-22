@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#FFFFFF</color>
+    <color name="red">#e44646</color>
+    <color name="pink">#ff4888</color>
+    <color name="color_map_btn">#31333d</color>
+    <color name="line">#e1e2e3</color>
+    <color name="bg_gray">#f8f9fa</color>
+    <color name="blue">#3286ff</color>
+    <color name="line_map">#aac8f2</color>
+</resources>

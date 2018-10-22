@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:behavior_hideable="false">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:openDrawer="start">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <fragment
+                android:id="@+id/main_fragment_map"
+                android:name="cn.com.i_zj.udrive_az.login.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/main_tv_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                android:background="@drawable/round_corner_white_bg"
+                android:paddingBottom="5dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="5dp"
+                android:text="车辆将在9月5号上线 敬请期待"
+                android:textSize="@dimen/dbs_textsize_smaller"
+                android:visibility="gone"/>
+
+            <cn.com.i_zj.udrive_az.map.CompatToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:fitsSystemWindows="true"
+                android:minHeight="45dp"
+                android:padding="0dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/main_tv_personal_info"
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentLeft="true"
+                        android:scaleX="0.7"
+                        android:scaleY="0.7"
+                        android:src="@mipmap/toolbar_personal_icon"/>
+                </RelativeLayout>
+            </cn.com.i_zj.udrive_az.map.CompatToolbar>
+        </RelativeLayout>
+
+        <fragment
+            android:id="@+id/fragment"
+            android:name="cn.com.i_zj.udrive_az.lz.ui.drawerleft.DrawerLeftFragment"
+            android:layout_width="260dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"/>
+    </android.support.v4.widget.DrawerLayout>
+</android.support.constraint.ConstraintLayout>

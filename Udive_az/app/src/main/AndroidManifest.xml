@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.com.i_zj.udrive_az">
+
+    <!-- 照相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <!-- 允许程序打开网络套接字 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 允许程序设置内置sd卡的写权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 允许程序获取网络状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 允许程序访问WiFi网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 允许程序读写手机状态和身份 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 用于申请调用A-GPS模块 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!-- 用于申请获取蓝牙信息进行室内定位 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".login.LaunchActivity"
+            android:theme="@style/DBSActivity.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MapTheme" />
+        <activity
+            android:name=".login.ProtocolActivity"
+            android:label="@string/activity_protocol"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".login.WalletActivity"
+            android:label="@string/activity_wallet"
+            android:theme="@style/AppTheme.NoActionBar"  />
+        <activity
+            android:name=".login.BalanceActivity"
+            android:label="@string/activity_balance"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".lz.ui.deposit.DepositActivity"
+            android:label="@string/activity_deposit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".login.RechargeActivity"
+            android:label="@string/activity_recharge"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".lz.ui.share.ShareActivity"
+            android:label="@string/activity_share"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.accountinfo.AccountInfoActivity"
+            android:label="@string/activity_account_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.about.AboutActivity"
+            android:label="@string/activity_about"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.camera.CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.idregister.IDRegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.order.OrderActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.mycar.MyCarActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.payment.PaymentActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".map.ReserveActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- 高德定位 -->
+        <service android:name="com.amap.api.location.APSService" />
+        <!-- 高德key -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="5081139aff4c525bed870cf8cd86908a" />
+
+        <activity
+            android:name=".map.adapter.ChoosStartEndActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.amap.api.navi.AmapRouteActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".lz.ui.idpost.IDPostActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cn.com.i_zj.udrive_az"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/images" />
+        </provider>
+
+        <!-- ********************** 支付宝 ********************** -->
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <!-- ********************** 微信 ********************** -->
+        <activity
+            android:name="cn.com.i_zj.udrive_az.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="wx573f46942b7cffbf" />
+            </intent-filter>
+        </activity>
+
+        <!-- 微信分享 -->
+        <activity
+            android:name="cn.com.i_zj.udrive_az.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".lz.ui.wallet.MyWalletActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|stateUnchanged" />
+        <activity
+            android:name=".lz.ui.coupon.CouponListActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
+
+</manifest>

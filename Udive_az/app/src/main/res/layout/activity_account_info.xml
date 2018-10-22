@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:divider="@drawable/shape_lz_line_divider_gray"
+    android:orientation="vertical"
+    android:showDividers="middle">
+
+    <include layout="@layout/layout_lz_toolbar"/>
+
+    <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
+        android:id="@+id/ui_head"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/commen_label_item_height"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_lz_item_press"
+        app:user_image_src_2="@mipmap/default_avatar"
+        app:user_tv_left_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_left_text="@string/lz_account_head"
+        app:user_tv_mid_margin="10dp"
+        app:user_tv_right_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_right_text_color="@color/right_text_color"/>
+
+    <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
+        android:id="@+id/ui_phone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/commen_label_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:user_tv_left_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_left_text="@string/lz_account_phone"
+        app:user_tv_mid_margin="10dp"
+        app:user_tv_right_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_right_text="@string/lz_text_default"
+        app:user_tv_right_text_color="@color/right_text_color"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
+        android:id="@+id/ui_register"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/commen_label_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:user_tv_left_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_left_text="@string/lz_account_true_name"
+        app:user_tv_mid_margin="10dp"
+        app:user_tv_right_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_right_text="@string/lz_text_default"
+        app:user_tv_right_text_color="@color/right_text_color"/>
+
+    <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
+        android:id="@+id/ui_driver_license"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/commen_label_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:user_tv_left_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_left_text="@string/lz_account_driver_license"
+        app:user_tv_mid_margin="10dp"
+        app:user_tv_right_margin="@dimen/horizontal_commen_margin"
+        app:user_tv_right_text="@string/lz_text_default"
+        app:user_tv_right_text_color="@color/right_text_color"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/account_info_btn_exit"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="@dimen/horizontal_commen_margin"
+        android:layout_marginRight="@dimen/horizontal_commen_margin"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/round_corner_red_bg"
+        android:text="@string/exit_app"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/dbs_textsize_small"/>
+</LinearLayout>

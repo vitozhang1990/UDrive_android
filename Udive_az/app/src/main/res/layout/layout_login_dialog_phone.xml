@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/login_layout_phone"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#f2f2f2"
+        android:orientation="horizontal">
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/login_btn_close"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@mipmap/login_delete"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="快速登录"
+            android:textSize="@dimen/dbs_textsize_normal"/>
+    </RelativeLayout>
+
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/login_et_phone"
+        android:layout_width="220dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginTop="35dp"
+        android:background="@null"
+        android:gravity="center"
+        android:hint="请输入您的手机号"
+        android:maxLength="11"/>
+
+    <View
+        android:layout_width="220dp"
+        android:layout_height="4px"
+        android:layout_gravity="center_horizontal"
+        android:background="#383843"/>
+
+    <LinearLayout
+        android:layout_width="280dp"
+        android:layout_height="45dp"
+        android:paddingLeft="30dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/login_rbtn_licence"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:gravity="center_vertical"
+            android:text="我已阅读并同意"
+            android:textColor="@color/text_gray_color"
+            android:textSize="@dimen/dbs_textsize_smaller"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/login_tv_licence"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:gravity="center_vertical"
+            android:text="《你行你开用户协议》"
+            android:textColor="#383843"
+            android:textSize="@dimen/dbs_textsize_smaller"/>
+    </LinearLayout>
+
+</LinearLayout>

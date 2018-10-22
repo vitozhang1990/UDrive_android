@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="cn.com.i_zj.udrive_az.map.adapter.ChoosStartEndActivity">
+    <RelativeLayout
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back"
+            android:layout_centerVertical="true"
+            android:paddingLeft="14dp"
+            android:id="@+id/iv_back"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl6"
+        android:layout_below="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="102dp"
+        android:layout_marginBottom="@dimen/dp_5"
+        android:background="@drawable/bg_map_white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+            <RelativeLayout
+                android:id="@+id/rl4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv3"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="14dp"
+                    android:background="@drawable/bg_blue_circle" />
+
+                <TextView
+                    android:id="@+id/tv_qidian"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="@dimen/dp_14"
+                    android:layout_marginRight="25dp"
+                    android:layout_toRightOf="@+id/iv3"
+                    android:background="@drawable/bg_map_gray"
+                    android:gravity="center_vertical"
+                    android:text="益州国际停车场"
+                    android:textColor="@color/color_map_btn"
+                    android:textSize="@dimen/sp_16" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl4"
+                android:layout_marginTop="@dimen/dp_10">
+
+                <ImageView
+                    android:id="@+id/iv4"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="14dp"
+                    android:background="@drawable/bg_circle" />
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/tv_zhongdian"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="@dimen/dp_14"
+                    android:layout_marginRight="25dp"
+                    android:layout_toRightOf="@+id/iv4"
+                    android:background="@drawable/bg_map_gray"
+                    android:gravity="center_vertical"
+                    android:hint="输入目的地选择停车场"
+                    android:textColorHint="#999999"
+                    android:textColor="@color/color_map_btn"
+                    android:textSize="@dimen/sp_16" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_below="@+id/rl6"
+        android:orientation="horizontal"
+        >
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignEnd="@+id/tv_gongsi"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/iv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:id="@+id/tv_jia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/iv1"
+                    android:text="家"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_jia"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="设置家庭地址"
+                    android:textColor="#999999"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/line"
+            />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignEnd="@+id/tv_gongsi"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/iv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:id="@+id/tv_gongsi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/iv2"
+                    android:text="公司"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_gongsi"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="设置公司地址"
+                    android:textColor="#999999"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/v2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line"
+        android:layout_below="@+id/ll1"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_poi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v2"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+</RelativeLayout>
