@@ -1,8 +1,4 @@
-package cn.com.i_zj.udrive_az.login;
-
-/**
- * Created by wli on 2018/8/12.
- */
+package cn.com.i_zj.udrive_az.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -15,7 +11,12 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.login.CarResult;
 
+/**
+ * Created by wli on 2018/8/12.
+ * 汽车详情布局
+ */
 public class CarDetailLayout extends LinearLayout {
 
   @BindView(R.id.car_detail_tv_picture)

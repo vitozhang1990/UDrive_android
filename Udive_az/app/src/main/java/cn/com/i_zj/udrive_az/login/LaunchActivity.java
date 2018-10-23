@@ -6,9 +6,13 @@ import android.support.annotation.Nullable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 
+/**
+ * 启动页面
+ */
 public class LaunchActivity extends DBSBaseActivity {
 
   @Override

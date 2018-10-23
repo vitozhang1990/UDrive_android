@@ -79,6 +79,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * 身份证验证
+ */
 public class IDRegisterActivity extends BaseActivity implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = IDRegisterActivity.class.getSimpleName();

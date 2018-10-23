@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
+import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.model.SessionResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -18,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wli on 2018/8/12.
+ * SessionManager 管理
  */
 
 public class SessionManager {

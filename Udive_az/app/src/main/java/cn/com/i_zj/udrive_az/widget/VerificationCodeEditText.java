@@ -1,4 +1,4 @@
-package cn.com.i_zj.udrive_az.login;
+package cn.com.i_zj.udrive_az.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -19,6 +19,7 @@ import cn.com.i_zj.udrive_az.R;
 
 /**
  * Created by wli on 2018/8/11.
+ * 验证码 EditText
  */
 
 public class VerificationCodeEditText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {

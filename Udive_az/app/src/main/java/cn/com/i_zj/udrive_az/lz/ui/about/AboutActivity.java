@@ -10,8 +10,11 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 
+/**
+ * 关于
+ */
 public class AboutActivity extends DBSBaseActivity {
 
   @BindView(R.id.toolbar)

@@ -12,11 +12,12 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.AliPayEvent;
-import cn.com.i_zj.udrive_az.login.WeixinPayEvent;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
 
+/**
+ * 支付DialogFragment
+ */
 public class DepositDialogFragment extends BottomSheetDialogFragment {
 
     @Nullable

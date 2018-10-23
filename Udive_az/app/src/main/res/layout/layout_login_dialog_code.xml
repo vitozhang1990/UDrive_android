@@ -44,7 +44,7 @@
         android:layout_marginTop="20dp"
         android:text="验证码已发送至123123123"/>
 
-    <cn.com.i_zj.udrive_az.login.VerificationCodeEditText
+    <cn.com.i_zj.udrive_az.widget.VerificationCodeEditText
         android:id="@+id/login_et_code"
         android:layout_width="220dp"
         android:layout_height="40dp"

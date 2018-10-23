@@ -18,7 +18,6 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -28,13 +27,9 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.AliPayEvent;
-import cn.com.i_zj.udrive_az.login.DBSBaseActivity;
-import cn.com.i_zj.udrive_az.login.EventPaySuccessEvent;
-import cn.com.i_zj.udrive_az.login.PayDialogFragment;
-import cn.com.i_zj.udrive_az.login.RechargeActivity;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.SessionManager;
-import cn.com.i_zj.udrive_az.login.WeixinPayEvent;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -52,6 +47,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 押金
+ */
 public class DepositActivity extends DBSBaseActivity {
 
     private static final int SDK_PAY_FLAG = 1;

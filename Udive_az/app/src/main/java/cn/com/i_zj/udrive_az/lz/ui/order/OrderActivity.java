@@ -27,6 +27,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 我的订单
+ */
 public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter.OnItemClickListener,
         BaseQuickAdapter.OnItemChildClickListener, SwipeRefreshLayout.OnRefreshListener {
     private List<OrderResult.OrderItem> list;

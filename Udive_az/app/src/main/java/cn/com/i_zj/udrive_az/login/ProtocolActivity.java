@@ -5,8 +5,12 @@ import android.support.annotation.Nullable;
 import android.webkit.WebView;
 
 import butterknife.BindView;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 
+/**
+ * 用户协议
+ */
 public class ProtocolActivity extends DBSBaseActivity {
 
 

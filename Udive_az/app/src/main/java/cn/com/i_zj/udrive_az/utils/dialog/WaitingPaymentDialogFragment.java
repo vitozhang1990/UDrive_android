@@ -1,4 +1,4 @@
-package cn.com.i_zj.udrive_az.login;
+package cn.com.i_zj.udrive_az.utils.dialog;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -15,6 +15,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.view.CarDetailLayout;
+import cn.com.i_zj.udrive_az.view.CarPriceDetailLayout;
 
 /**
  * Created by wli on 2018/8/12.

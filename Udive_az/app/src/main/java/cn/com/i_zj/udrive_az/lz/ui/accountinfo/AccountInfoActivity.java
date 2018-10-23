@@ -12,13 +12,16 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
 import cn.com.i_zj.udrive_az.lz.view.UserInfoItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
+/**
+ * 账户信息
+ */
 public class AccountInfoActivity extends DBSBaseActivity {
 
     @BindView(R.id.toolbar)

@@ -93,6 +93,6 @@
             android:id="@+id/number_soft_tv_delete"
             style="@style/soft_input_btn_style"
             android:background="@android:color/transparent"
-            android:text="Delete"/>
+            android:text="删除"/>
     </LinearLayout>
 </LinearLayout>

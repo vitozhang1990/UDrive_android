@@ -1,4 +1,4 @@
-package cn.com.i_zj.udrive_az.login;
+package cn.com.i_zj.udrive_az;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
+import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
 public abstract class DBSBaseFragment extends Fragment {
 

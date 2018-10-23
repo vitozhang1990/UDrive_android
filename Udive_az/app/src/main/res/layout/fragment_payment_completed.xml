@@ -10,11 +10,11 @@
         android:layout_height="wrap_content"
         android:background="@drawable/round_corner_white_bg"
         android:orientation="vertical">
-        <cn.com.i_zj.udrive_az.login.CarDetailLayout
+        <cn.com.i_zj.udrive_az.view.CarDetailLayout
             android:id="@+id/payment_completed_layout_car_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <cn.com.i_zj.udrive_az.login.CarPriceDetailLayout
+        <cn.com.i_zj.udrive_az.view.CarPriceDetailLayout
             android:id="@+id/payment_completed_layout_car_price_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

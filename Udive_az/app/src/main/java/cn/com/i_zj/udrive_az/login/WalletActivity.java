@@ -8,20 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.google.gson.Gson;
-
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.coupon.CouponListActivity;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
-import cn.com.i_zj.udrive_az.model.AccountInfoResult;
-import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.Constants;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -29,6 +25,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wli on 2018/8/12.
+ * 我的钱包
  */
 
 public class WalletActivity extends DBSBaseActivity {

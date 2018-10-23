@@ -1,11 +1,10 @@
-package cn.com.i_zj.udrive_az.login;
+package cn.com.i_zj.udrive_az;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -18,6 +17,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.BaseActivity;
+import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
 /**
  * Created by wli on 2018/8/12.

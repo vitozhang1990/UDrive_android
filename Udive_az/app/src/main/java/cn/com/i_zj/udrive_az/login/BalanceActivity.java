@@ -10,10 +10,14 @@ import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
+/**
+ * 账户余额
+ */
 public class BalanceActivity extends DBSBaseActivity {
 
   @BindView(R.id.balacce_tv_balance)

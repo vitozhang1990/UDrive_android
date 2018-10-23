@@ -12,7 +12,12 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.AliPayEvent;
+import cn.com.i_zj.udrive_az.event.WeixinPayEvent;
 
+/**
+ *支付DialogFragment
+ */
 public class PayDialogFragment extends BottomSheetDialogFragment {
 
   @Nullable

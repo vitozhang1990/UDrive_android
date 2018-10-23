@@ -31,9 +31,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.DBSBaseActivity;
-import cn.com.i_zj.udrive_az.login.EventPaySuccessEvent;
-import cn.com.i_zj.udrive_az.login.RechargeActivity;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
@@ -50,6 +49,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 账单
+ */
 public class MyWalletActivity extends DBSBaseActivity {
     private static final int SDK_PAY_FLAG = 1;
     private static final int ALI = 1;

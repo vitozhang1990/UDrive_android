@@ -2,7 +2,6 @@ package cn.com.i_zj.udrive_az.lz.ui.coupon;
 
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +12,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
@@ -26,6 +24,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 优惠券列表
+ */
 public class CouponListActivity extends DBSBaseActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.swipeRefresh)

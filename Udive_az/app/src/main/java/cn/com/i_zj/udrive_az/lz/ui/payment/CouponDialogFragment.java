@@ -33,6 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wo on 2018/9/2.
+ * 优惠券DialogFragment
  */
 
 public class CouponDialogFragment extends BottomSheetDialogFragment implements BaseQuickAdapter.OnItemClickListener {

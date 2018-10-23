@@ -56,6 +56,9 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * 身份证信息
+ */
 public class IDPostActivity extends BaseActivity implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = IDPostActivity.class.getSimpleName();

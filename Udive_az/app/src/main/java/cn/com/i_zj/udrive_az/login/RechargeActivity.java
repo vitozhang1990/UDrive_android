@@ -21,12 +21,14 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.event.AliPayEvent;
+import cn.com.i_zj.udrive_az.event.WeixinPayEvent;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AliPayResult;
 import cn.com.i_zj.udrive_az.model.RechargeOrder;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,6 +36,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import cn.com.i_zj.udrive_az.R;
 
+/**
+ * 充值Activity
+ */
 public class RechargeActivity extends DBSBaseActivity {
 
   @BindView(R.id.charge_et_price)

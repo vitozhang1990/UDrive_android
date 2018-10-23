@@ -1,8 +1,7 @@
-package cn.com.i_zj.udrive_az.login;
+package cn.com.i_zj.udrive_az.widget;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,9 +12,11 @@ import org.greenrobot.eventbus.EventBus;
 
 import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.NumberClickEvent;
 
 /**
  * Created by wli on 2018/8/11.
+ * 数字键盘
  */
 
 public class NumberSoftInputLayout extends LinearLayout {

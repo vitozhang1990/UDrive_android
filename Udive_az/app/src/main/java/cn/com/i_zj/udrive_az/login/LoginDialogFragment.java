@@ -35,11 +35,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
+import cn.com.i_zj.udrive_az.event.NumberClickEvent;
 import cn.com.i_zj.udrive_az.model.NetworkResult;
 import cn.com.i_zj.udrive_az.model.SessionResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.DeviceUtils;
 import cn.com.i_zj.udrive_az.utils.RegexUtils;
+import cn.com.i_zj.udrive_az.widget.VerificationCodeEditText;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -47,6 +50,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wli on 2018/8/12.
+ * 用户登录DialogFragment
  */
 
 public class LoginDialogFragment extends BottomSheetDialogFragment {

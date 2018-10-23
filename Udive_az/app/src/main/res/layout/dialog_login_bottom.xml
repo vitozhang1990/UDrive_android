@@ -21,7 +21,7 @@
         android:scaleY="1.4"
         android:src="@mipmap/login_next"/>
 
-    <cn.com.i_zj.udrive_az.login.NumberSoftInputLayout
+    <cn.com.i_zj.udrive_az.widget.NumberSoftInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
