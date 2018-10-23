@@ -143,7 +143,7 @@ public class MainActivity extends DBSBaseActivity {
                     LogUtils.e("66");
                   if(result.getCode()==1){
                       LogUtils.e("77");
-                    if(!result.getData().equals("")&&result.getData()!=null){
+                    if(result.getData()!=null&&!"".equals(result.getData())){
                         if(result.getData().getStatus()==0){
                             LogUtils.e("88");
                           Intent intent=new Intent(MainActivity.this,ReserveActivity.class);

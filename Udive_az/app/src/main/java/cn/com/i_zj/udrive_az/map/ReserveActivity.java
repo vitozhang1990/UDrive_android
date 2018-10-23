@@ -237,7 +237,7 @@ public class ReserveActivity extends BaseActivity implements AMapLocationListene
             yuyeID=intent.getStringExtra("id");
             if(bunldBean!=null&&parkBean!=null){
                 tv_qidian.setText(bunldBean.getParkName());
-                tvCarnum.setText(bunldBean.getPlateNumber());
+                tvCarnum.setText(bunldBean.getPlateNumber()+"");
                 tvColor.setText(bunldBean.getCarColor());
                 LogUtils.e(bunldBean.getCarColor());
                 tvColor1.setText(bunldBean.getCarColor());
@@ -246,7 +246,7 @@ public class ReserveActivity extends BaseActivity implements AMapLocationListene
                 startLatitude=parkBean.getLatitude();
                 startLongitude=parkBean.getLongitude();
                 tv_qidian.setText(parkBean.getName());
-                tv_carnum2.setText(bunldBean.getPlateNumber());
+                tv_carnum2.setText(bunldBean.getPlateNumber()+"");
             }
 
         }else if(type.equals("2")){

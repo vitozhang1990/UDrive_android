@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareListener;
@@ -210,19 +211,19 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onResult(SHARE_MEDIA share_media) {
-                        Toast.makeText(getContext(), "成功", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("成功");
                         dissmisProgressDialog();
                     }
 
                     @Override
                     public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                        Toast.makeText(getContext(), "分享失败", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("分享失败");
                         dissmisProgressDialog();
                     }
 
                     @Override
                     public void onCancel(SHARE_MEDIA share_media) {
-                        Toast.makeText(getContext(), "分项取消", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("分项取消");
                         dissmisProgressDialog();
                     }
                 }).open();
@@ -253,7 +254,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                     @Override
                     public void onNext(AccountInfoResult value) {
                         if (null == value || null == value.data) {
-                            Toast.makeText(getContext(), R.string.lz_get_user_info_fail, Toast.LENGTH_SHORT).show();
+                            ToastUtils.showShort( R.string.lz_get_user_info_fail);
                             return;
                         }
                         AccountInfoManager.getInstance().cacheAccount(value);
@@ -267,7 +268,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(getContext(), R.string.lz_get_user_info_fail, Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort( R.string.lz_get_user_info_fail);
                         AccountInfoManager.getInstance().clearAccount();
                     }
 

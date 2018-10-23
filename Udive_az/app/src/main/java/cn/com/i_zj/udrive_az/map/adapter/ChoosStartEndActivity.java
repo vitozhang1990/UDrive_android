@@ -74,7 +74,7 @@ public class ChoosStartEndActivity extends AppCompatActivity implements PoiSearc
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 keyWord = checkEditText(searchText);
-                if(!keyWord.equals("")){
+                if(! "".equals(keyWord)){
                     doSearchQuery();
                 }
 
@@ -181,7 +181,7 @@ public class ChoosStartEndActivity extends AppCompatActivity implements PoiSearc
      */
     public static String checkEditText(EditText editText) {
         if (editText != null && editText.getText() != null
-                && !(editText.getText().toString().trim().equals(""))) {
+                && !( "".equals(editText.getText().toString().trim()))) {
             return editText.getText().toString().trim();
         } else {
             return "";

@@ -25,6 +25,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.Utils;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -300,7 +302,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
       @Override
       public void onTick(long millisUntilFinished) {
         if (null != condeSecondView) {
-          condeSecondView.setTextColor(getContext().getResources().getColor(R.color.text_gray_color));
+          condeSecondView.setTextColor(Utils.getApp().getResources().getColor(R.color.text_gray_color));
           condeSecondView.setEnabled(false);
           condeSecondView.setText((millisUntilFinished / 1000) + "秒后重发");
         }
