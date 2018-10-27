@@ -53,8 +53,7 @@
 
     <View
         style="@style/line_horizontal"
-        android:layout_marginLeft="@dimen/main_drawer_left_item_left_margin"
-        android:layout_marginRight="@dimen/main_drawer_left_item_right_margin" />
+         />
 
     <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
         android:id="@+id/di_my_type"
@@ -83,10 +82,7 @@
         app:item_tv_right_text_color="@color/right_text_color" />
 
 
-    <View
-        style="@style/line_horizontal"
-        android:layout_marginLeft="@dimen/main_drawer_left_item_left_margin"
-        android:layout_marginRight="@dimen/main_drawer_left_item_right_margin" />
+
 
     <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
         android:id="@+id/di_money"
@@ -101,10 +97,7 @@
         app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
         app:item_tv_right_text_color="@color/right_text_color" />
 
-    <View
-        style="@style/line_horizontal"
-        android:layout_marginLeft="@dimen/main_drawer_left_item_left_margin"
-        android:layout_marginRight="@dimen/main_drawer_left_item_right_margin" />
+
 
     <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
         android:id="@+id/di_about"
@@ -117,10 +110,6 @@
         app:item_tv_mid_text="@string/lz_about_title"
         app:item_tv_mid_text_color="@color/black" />
 
-    <View
-        style="@style/line_horizontal"
-        android:layout_marginLeft="@dimen/main_drawer_left_item_left_margin"
-        android:layout_marginRight="@dimen/main_drawer_left_item_right_margin" />
 
     <Space
         android:layout_width="match_parent"

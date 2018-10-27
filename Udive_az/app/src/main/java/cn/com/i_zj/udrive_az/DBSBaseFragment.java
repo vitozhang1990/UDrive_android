@@ -42,10 +42,9 @@ public abstract class DBSBaseFragment extends Fragment {
     if (null == progressDialog) {
       progressDialog = new ProgressDialog(getActivity());
       progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      progressDialog.setMessage(content);
       progressDialog.setCancelable(false);
     }
-
+    progressDialog.setMessage(content);
     if (!progressDialog.isShowing()) {
       progressDialog.show();
     }
@@ -56,9 +55,8 @@ public abstract class DBSBaseFragment extends Fragment {
       progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
       progressDialog.setMessage(content);
       progressDialog.setCancelable(touchCancel);
-      progressDialog.setCanceledOnTouchOutside(touchCancel);
     }
-
+    progressDialog.setCanceledOnTouchOutside(touchCancel);
     if (!progressDialog.isShowing()) {
       progressDialog.show();
     }

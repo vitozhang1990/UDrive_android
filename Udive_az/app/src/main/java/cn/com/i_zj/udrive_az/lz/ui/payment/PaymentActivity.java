@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.UIUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -309,15 +310,16 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
     private void handleDetail(OrderDetailResult value) {
         mOrderItem = value;
         tvCarNumber.setText(value.data.plateNumber + "");
-
-        Picasso.with(this).load(value.data.url).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(ivTrajectory);
+        if(!StringUtils.isEmpty(value.data.url)){
+            Picasso.with(this).load(value.data.url).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(ivTrajectory);
+        }
 
         carDistance.setText("里程(" + value.data.mileage + "公里)", Float.parseFloat(value.data.mileage + "") + "元");
-        value.data.durationTime = 100;
+
         if (value.data.durationTime > 60) {
-            carTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f), Float.parseFloat(value.data.durationTime + "") + "元");
+            carTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f), Float.parseFloat(value.data.realPayAmount  / 100f+ "") + "元");
         } else {
-            carTime.setText("时长(" + (value.data.durationTime) + "分钟)", Float.parseFloat(value.data.durationTime + "") + "元");
+            carTime.setText("时长(" + (value.data.durationTime) + "分钟)", Float.parseFloat(value.data.realPayAmount / 100f + "") + "元");
         }
         tvMoney.setText("");
         SpannableString spannableString = SpannableStringUtil.setColorAndSizeSpan(String.format(Locale.getDefault(), "¥  %.2f", value.data.realPayAmount / 100f) + "", Color.RED, UIUtils.dp2px(30));
@@ -438,6 +440,8 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
         payReq.timeStamp = payInfo.timestamp;
         payReq.sign = payInfo.sign;
         boolean result = iwxapi.sendReq(payReq);
+
+
         Log.e("*****", "**" + result + "***");
     }
 

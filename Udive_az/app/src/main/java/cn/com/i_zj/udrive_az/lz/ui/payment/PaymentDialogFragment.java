@@ -37,6 +37,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 付款PaymentDialogFragment
+ */
 public class PaymentDialogFragment extends BottomSheetDialogFragment implements View.OnClickListener {
     public static final int PAY_NONE = 0;
     public static final int PAY_YU_E = 1;
@@ -87,9 +90,9 @@ public class PaymentDialogFragment extends BottomSheetDialogFragment implements 
         ivClose.setOnClickListener(this);
         btmCommit.setOnClickListener(this);
 
-        payYuE.setView(R.mipmap.ic_launcher, "余额", true);
-        payAliPay.setView(R.mipmap.ic_launcher, "支付宝", !payYuE.isCheck());
-        payWechat.setView(R.mipmap.ic_launcher, "微信", !payYuE.isCheck() && !payAliPay.isCheck());
+        payYuE.setView(R.mipmap.ic_payment_yue, "余额", true);
+        payAliPay.setView(R.mipmap.ic_payment_alipay, "支付宝", !payYuE.isCheck());
+        payWechat.setView(R.mipmap.ic_payment_wechat, "微信", !payYuE.isCheck() && !payAliPay.isCheck());
 
         Bundle arguments = getArguments();
         OrderDetailResult orderDetailResult = (OrderDetailResult) arguments.getSerializable(ORDER_DETAIL);

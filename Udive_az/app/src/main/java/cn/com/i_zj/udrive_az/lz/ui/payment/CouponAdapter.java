@@ -35,7 +35,7 @@ public class CouponAdapter extends BaseQuickAdapter<UnUseCouponResult.DataBean, 
             e.printStackTrace();
         }
         helper.setText(R.id.tv_name, item.getName())
-                .setText(R.id.tv_time, "有效期: " + simpleDateFormat.format(time))
+                .setText(R.id.tv_time, "有效期: "+item.getDistribute_time()+"至" + simpleDateFormat.format(time) + "")
                 .setText(R.id.tv_msg, item.getDiscription())
                 .setText(R.id.tv_money, String.format(Locale.getDefault(), "%2.2f 元", (item.getPreferential_amount() / 100f)));
 

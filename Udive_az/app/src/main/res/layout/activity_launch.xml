@@ -4,24 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.AppCompatImageView
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginTop="80dp"
-        android:scaleType="centerInside"
-        android:src="@mipmap/launch_top"/>
-
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginBottom="20dp"
-        android:scaleType="centerInside"
-        android:src="@mipmap/launch_bottom"/>
+        android:src="@mipmap/image_launch"
+        android:scaleType="fitXY"
+        android:layout_height="match_parent" />
 </RelativeLayout>

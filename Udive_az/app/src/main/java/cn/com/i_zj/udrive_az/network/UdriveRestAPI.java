@@ -1,6 +1,8 @@
 package cn.com.i_zj.udrive_az.network;
 
 
+import org.json.JSONObject;
+
 import java.util.Map;
 
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -30,6 +32,7 @@ import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.UserDepositResult;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import okhttp3.MultipartBody;
@@ -53,6 +56,8 @@ import retrofit2.http.Url;
  */
 
 public interface UdriveRestAPI {
+
+     String  DETAIL_URL="http://zzbcjj.com:8888?orderNum=";
 
     @FormUrlEncoded
     @Headers("Authorization: Basic dGVzdDp0ZXN0")
@@ -192,7 +197,7 @@ public interface UdriveRestAPI {
 
     //结束行程
     @PUT("/mobile/tripOrder/completeTripOrder/{orderNum}")
-    Observable<DoorBean> completeTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<OrderDetailResult> completeTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
     //取消预约
     @Headers("Content-Type: application/json")
     @PUT("/mobile/car/cancelReservation")
@@ -212,4 +217,8 @@ public interface UdriveRestAPI {
 
     @POST("/mobile/wechatpay/getPrepayId/rechargeOrder/{orderNum}")
     Observable<WeichatPayOrder> getWeiChatPayOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    //更新订单终点停车场
+    @Headers("Content-Type: application/json")
+    @PUT("/mobile/tripOrder/updateDestinationPark")
+    Observable<RetParkObj> updateDestinationPark(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
 }

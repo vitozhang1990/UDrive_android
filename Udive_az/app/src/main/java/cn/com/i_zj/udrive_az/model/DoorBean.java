@@ -1,5 +1,7 @@
 package cn.com.i_zj.udrive_az.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by liuwei on 2018/9/5.
  */
@@ -15,6 +17,7 @@ public class DoorBean {
 
     private int code;
     private String message;
+    @SerializedName("data")
     private String data;
 
     public int getCode() {

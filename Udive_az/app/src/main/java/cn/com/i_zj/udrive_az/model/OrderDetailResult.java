@@ -96,5 +96,36 @@ public class OrderDetailResult implements Serializable{
 
         @SerializedName("url")
         public String url;
+
+        private DiscountEntity discount;
+
+        @SerializedName("durationFee")
+        public int durationFee;
+
+        @SerializedName("mileageFee")
+        public int mileageFee;
+
+        @SerializedName("preferentialAmount")
+        public int preferentialAmount;
+        @SerializedName("discountAmount")
+        public  int discountAmount;
+
+        private  CarInfoEntity car;
+
+        public CarInfoEntity getCar() {
+            return car;
+        }
+
+        public void setCar(CarInfoEntity car) {
+            this.car = car;
+        }
+
+        public DiscountEntity getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(DiscountEntity discount) {
+            this.discount = discount;
+        }
     }
 }

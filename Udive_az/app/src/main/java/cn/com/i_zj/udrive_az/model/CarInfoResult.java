@@ -78,6 +78,7 @@ public class CarInfoResult implements Serializable{
     private int parkId;
     private String parkName;
     private String parkAddress;
+    private boolean trafficControl;
 
     public int getId() {
       return id;
@@ -189,6 +190,14 @@ public class CarInfoResult implements Serializable{
 
     public void setParkAddress(String parkAddress) {
       this.parkAddress = parkAddress;
+    }
+
+    public boolean isTrafficControl() {
+      return trafficControl;
+    }
+
+    public void setTrafficControl(boolean trafficControl) {
+      this.trafficControl = trafficControl;
     }
   }
 }

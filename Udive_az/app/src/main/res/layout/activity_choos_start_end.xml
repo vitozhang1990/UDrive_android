@@ -9,7 +9,8 @@
     <RelativeLayout
         android:id="@+id/rl_head"
         android:layout_width="match_parent"
-        android:layout_height="44dp">
+        android:background="@color/white"
+        android:layout_height="48dp">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,6 +20,7 @@
             android:id="@+id/iv_back"
             />
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/rl6"
         android:layout_below="@+id/rl_head"
@@ -54,7 +56,7 @@
                     android:layout_toRightOf="@+id/iv3"
                     android:background="@drawable/bg_map_gray"
                     android:gravity="center_vertical"
-                    android:text="益州国际停车场"
+                    android:text=""
                     android:textColor="@color/color_map_btn"
                     android:textSize="@dimen/sp_16" />
             </RelativeLayout>

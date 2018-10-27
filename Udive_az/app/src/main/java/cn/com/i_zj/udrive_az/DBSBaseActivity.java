@@ -25,120 +25,121 @@ import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
 public abstract class DBSBaseActivity extends BaseActivity {
 
-  protected ProgressDialog progressDialog;
+    protected ProgressDialog progressDialog;
 
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    if (null != getSupportActionBar()) {
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (null != getSupportActionBar()) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        setContentView(getLayoutResource());
+        EventBus.getDefault().register(this);
     }
-    setContentView(getLayoutResource());
-    EventBus.getDefault().register(this);
-  }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        finish();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
+        ButterKnife.bind(this);
+    }
+
+    protected abstract int getLayoutResource();
+
+    public void showProgressDialog(String content) {
+        if (null == progressDialog) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(true);
+        }
+        progressDialog.setMessage(content);
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    public void showProgressDialog(String content, boolean touchCancel) {
+        if (null == progressDialog) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(true);
+
+        }
+        progressDialog.setCanceledOnTouchOutside(touchCancel);
+        progressDialog.setMessage(content);
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    public void dissmisProgressDialog() {
+        if (null != progressDialog && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void showToast(int res) {
+        Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
+    }
+
+    public void startActivity(Class<?> activity) {
+        Intent intent = new Intent(this, activity);
+        startActivity(intent);
+    }
+
+    public void startActivityForResult(Class<?> activity, int requestCode) {
+        Intent intent = new Intent(this, activity);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//    Bugtags.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//    Bugtags.onPause(this);
+    }
+
+    public boolean checkEmpty(EditText editText, String errorContent) {
+        final String content = editText.getText().toString();
+        if (TextUtils.isEmpty(content)) {
+            showToast(errorContent);
+            return false;
+        }
         return true;
     }
-    return super.onOptionsItemSelected(item);
-  }
 
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    EventBus.getDefault().unregister(this);
-  }
-
-  @Override
-  public void setContentView(@LayoutRes int layoutResID) {
-    super.setContentView(layoutResID);
-    ButterKnife.bind(this);
-  }
-
-  protected abstract int getLayoutResource();
-
-  public void showProgressDialog(String content) {
-    if (null == progressDialog) {
-      progressDialog = new ProgressDialog(this);
-      progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      progressDialog.setMessage(content);
-      progressDialog.setCancelable(false);
-      progressDialog.setCanceledOnTouchOutside(true);
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return super.dispatchTouchEvent(event);
     }
 
-    if (!progressDialog.isShowing()) {
-      progressDialog.show();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EmptyEvent emptyEvent) {
     }
-  }
-  public void showProgressDialog(String content,boolean touchCancel) {
-    if (null == progressDialog) {
-      progressDialog = new ProgressDialog(this);
-      progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      progressDialog.setMessage(content);
-      progressDialog.setCancelable(true);
-      progressDialog.setCanceledOnTouchOutside(touchCancel);
-    }
-
-    if (!progressDialog.isShowing()) {
-      progressDialog.show();
-    }
-  }
-  public void dissmisProgressDialog() {
-    if (null != progressDialog && progressDialog.isShowing()) {
-      progressDialog.dismiss();
-    }
-  }
-
-  public void showToast(String message) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-  }
-
-  public void showToast(int res) {
-    Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
-  }
-
-  public void startActivity(Class<?> activity) {
-    Intent intent = new Intent(this, activity);
-    startActivity(intent);
-  }
-
-  public void startActivityForResult(Class<?> activity, int requestCode) {
-    Intent intent = new Intent(this, activity);
-    startActivityForResult(intent, requestCode);
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-//    Bugtags.onResume(this);
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-//    Bugtags.onPause(this);
-  }
-
-  public boolean checkEmpty(EditText editText, String errorContent) {
-    final String content = editText.getText().toString();
-    if (TextUtils.isEmpty(content)) {
-      showToast(errorContent);
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public boolean dispatchTouchEvent(MotionEvent event) {
-    return super.dispatchTouchEvent(event);
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onEvent(EmptyEvent emptyEvent) {
-  }
 }

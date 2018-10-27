@@ -39,7 +39,7 @@ public class UnFinishOrderResult implements Serializable {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         /**
          * id : 2
          * number : 20180001
@@ -81,7 +81,9 @@ public class UnFinishOrderResult implements Serializable {
         private int status;
         private int discountId;
         private int preferentialId;
-
+        private CarInfoEntity car;
+        private  ParksResult.DataBean toPark;
+        private  ParksResult.DataBean fromPark;
         public int getId() {
             return id;
         }
@@ -232,6 +234,30 @@ public class UnFinishOrderResult implements Serializable {
 
         public void setPreferentialId(int preferentialId) {
             this.preferentialId = preferentialId;
+        }
+
+        public CarInfoEntity getCar() {
+            return car;
+        }
+
+        public void setCar(CarInfoEntity car) {
+            this.car = car;
+        }
+
+        public ParksResult.DataBean getToPark() {
+            return toPark;
+        }
+
+        public void setToPark(ParksResult.DataBean toPark) {
+            this.toPark = toPark;
+        }
+
+        public ParksResult.DataBean getFromPark() {
+            return fromPark;
+        }
+
+        public void setFromPark(ParksResult.DataBean fromPark) {
+            this.fromPark = fromPark;
         }
     }
 }

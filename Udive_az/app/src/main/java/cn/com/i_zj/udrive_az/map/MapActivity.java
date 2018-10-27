@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextPaint;
 import android.support.design.widget.TabLayout;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -63,7 +64,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
   private CarsFragment myFragment2;
   private TabLayout tabLayout;
   private RelativeLayout rl_where;
-  private RelativeLayout rl_info;
+  private LinearLayout ll_info;
   private ArrayList<ParksResult.DataBean> dataBeans;
   private ArrayList<CarInfoResult.DataBean> carBeans;
   private TextView tv_pname;
@@ -166,7 +167,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
     mViewPager = findViewById(R.id.viewpager);
     tabLayout = findViewById(R.id.tblayout);
     rl_where = findViewById(R.id.rl_where);
-    rl_info = findViewById(R.id.rl_info);
+    ll_info = findViewById(R.id.ll_info);
     tv_pname = findViewById(R.id.tv_pname);
     tv_adress = findViewById(R.id.tv_paradress);
     findViewById(R.id.btn_yuding).setOnClickListener(new View.OnClickListener() {
@@ -265,9 +266,9 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
                 }
                 tv_pname.setText(result.getData().get(0).getParkName());
                 tv_adress.setText(result.getData().get(0).getParkAddress());
-                rl_info.setVisibility(View.VISIBLE);
+                ll_info.setVisibility(View.VISIBLE);
               } else {
-                rl_info.setVisibility(View.GONE);
+                ll_info.setVisibility(View.GONE);
                 rl_where.setVisibility(View.GONE);
                 ToastUtils.showShort("该停车场暂无车辆信息");
               }
@@ -355,7 +356,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
   protected Bitmap getMyBitmap(String pm_val) {
 
     Bitmap bitmap = BitmapDescriptorFactory.fromResource(
-      R.drawable.marker).getBitmap();
+      R.mipmap.ic_cheweishu_llinshi).getBitmap();
     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
       bitmap.getHeight());
     Canvas canvas = new Canvas(bitmap);

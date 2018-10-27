@@ -163,7 +163,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
         return;
       }
 
-      if (!RegexUtils.isMobileExact(phone)) {
+      if (!RegexUtils.isNewMobileExact(phone)) {
         showToast("手机号格式错误");
         return;
       }
@@ -195,7 +195,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
   }
 
   public void login(String phone, String code) {
-    showProgressDialog("登陆中");
+    showProgressDialog("登录中");
     UdriveRestClient.getClentInstance().login(DeviceUtils.getDeviceId(), phone, code)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
@@ -208,7 +208,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
         @Override
         public void onNext(SessionResult sessionResult) {
           if (null != sessionResult) {
-            showToast("登陆成功");
+            showToast("登录成功");
             countDownTimer.cancel();
             SessionManager.getInstance().cacheSession(sessionResult);
             EventBus.getDefault().post(new LoginSuccessEvent());

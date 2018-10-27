@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -43,6 +44,8 @@ public class CouponDialogFragment extends BottomSheetDialogFragment implements B
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
 
+    private TextView mTvNoUseCoupon;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class CouponDialogFragment extends BottomSheetDialogFragment implements B
 
         progressBar = inflate.findViewById(R.id.progressBar);
         recyclerView = inflate.findViewById(R.id.recycler);
-
+        mTvNoUseCoupon=inflate.findViewById(R.id.tv_no_use_coupon);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         list = new ArrayList<>();
 
@@ -59,7 +62,16 @@ public class CouponDialogFragment extends BottomSheetDialogFragment implements B
         couponAdapter.setOnItemClickListener(this);
         couponAdapter.bindToRecyclerView(recyclerView);
         findUnUsePreferential();
+        initEvent();
         return inflate;
+    }
+    private  void initEvent(){
+        mTvNoUseCoupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new CouponPayEvent(null));
+            }
+        });
     }
 
     public void findUnUsePreferential() {

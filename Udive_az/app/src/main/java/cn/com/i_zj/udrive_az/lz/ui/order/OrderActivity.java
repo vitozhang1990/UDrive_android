@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -17,11 +20,15 @@ import java.util.List;
 
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentDialogFragment;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
+import cn.com.i_zj.udrive_az.view.EmptyView;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -36,12 +43,13 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
     private OrderAdapter orderAdapter;
     private PaymentDialogFragment paymentDialogFragment;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
-
+        ScreenManager.getScreenManager().pushActivity(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.lz_my_order);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -56,7 +64,7 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
         mSwipeRefreshLayout = findViewById(R.id.swipeRefresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        RecyclerView recyclerView = findViewById(R.id.recycler);
+        recyclerView = findViewById(R.id.recycler);
         list = new ArrayList<>();
         orderAdapter = new OrderAdapter(R.layout.item_order, list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -83,17 +91,22 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-        Intent intent = new Intent(this, PaymentActivity.class);
+
         OrderResult.OrderItem orderItem = list.get(position);
-        intent.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
-        if (orderItem.status == Constants.ORDER_MOVE) {
+
+        if (orderItem.status == Constants.ORDER_MOVE) {//行程中
+            Intent intent = new Intent(this, PaymentActivity.class);
+            intent.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
             intent.putExtra(PaymentActivity.TITLE, getResources().getString(R.string.order_move));
-        } else if (orderItem.status == Constants.ORDER_WAIT_PAY) {
-            intent.putExtra(PaymentActivity.TITLE, getResources().getString(R.string.order_wait_pay));
-            startActivity(intent);
-        } else if (orderItem.status == Constants.ORDER_FINISH) {
-            intent.putExtra(PaymentActivity.TITLE, getResources().getString(R.string.order_finish));
-            startActivity(intent);
+        } else if (orderItem.status == Constants.ORDER_WAIT_PAY) {// 待付款
+            Intent intent1 = new Intent(this, ActConfirmOrder.class);
+            intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
+            startActivity(intent1);
+        } else if (orderItem.status == Constants.ORDER_FINISH) {// 已完成
+            Intent intent2 = new Intent(this, ActOrderPayment.class);
+            intent2.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
+            intent2.putExtra(ActOrderPayment.TITLE, getResources().getString(R.string.order_finish));
+            startActivity(intent2);
         }
 
 
@@ -146,7 +159,10 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
                         }
                         List<OrderResult.OrderItem> data = value.orderList;
                         if (data.size() == 0) {
-                            orderAdapter.setEmptyView(R.layout.layout_empty);
+                            EmptyView emptyView= new EmptyView(recyclerView.getContext(),recyclerView);
+                            emptyView.setImage(R.mipmap.pic_order_null);
+                            emptyView.setMsg("还没有订单哦");
+                            orderAdapter.setEmptyView(emptyView);
                         }
                         orderAdapter.addData(data);
                     }

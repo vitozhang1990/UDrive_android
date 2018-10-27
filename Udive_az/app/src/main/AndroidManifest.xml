@@ -58,7 +58,7 @@
         <activity
             android:name=".login.WalletActivity"
             android:label="@string/activity_wallet"
-            android:theme="@style/AppTheme.NoActionBar"  />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".login.BalanceActivity"
             android:label="@string/activity_balance"
@@ -84,6 +84,11 @@
             android:label="@string/activity_about"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".lz.ui.payment.ActOrderPayment"
+            android:label="@string/activity_about"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".lz.ui.camera.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -101,6 +106,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".map.ReserveActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.payment.ActConfirmOrder"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 高德定位 -->
@@ -170,6 +178,13 @@
         <activity
             android:name=".lz.ui.coupon.CouponListActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".web.WebActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".lz.ui.payment.ActPaySucc"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
     </application>
 
 </manifest>

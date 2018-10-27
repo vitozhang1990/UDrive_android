@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -49,6 +50,8 @@ public class ChoosStartEndActivity extends AppCompatActivity implements PoiSearc
     private double startLatitude;
     private double startLongitude;
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>();
+    private String startParkName;
+    private TextView  mTvStart;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,7 @@ public class ChoosStartEndActivity extends AppCompatActivity implements PoiSearc
         fetchParks();
         searchText=findViewById(R.id.tv_zhongdian);
         rv_poi=findViewById(R.id.rv_poi);
+        mTvStart=findViewById(R.id.tv_qidian);
         findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +69,8 @@ public class ChoosStartEndActivity extends AppCompatActivity implements PoiSearc
         });
         startLatitude=getIntent().getDoubleExtra("startLatitude",0);
         startLongitude=getIntent().getDoubleExtra("startLongitude",0);
+        startParkName=getIntent().getStringExtra("parkName");
+        mTvStart.setText(startParkName+"");
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.view.EmptyView;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -87,7 +91,10 @@ public class CouponListActivity extends DBSBaseActivity implements SwipeRefreshL
                     public void onNext(UnUseCouponResult value) {
                         mSwipeRefreshLayout.setRefreshing(false);
                         if (value.getData().size() == 0) {
-                            mAdapter.setEmptyView(R.layout.layout_empty);
+                            EmptyView emptyView= new EmptyView(mRecyclerView.getContext(),mRecyclerView);
+                            emptyView.setImage(R.mipmap.pic_coupon_null);
+                            emptyView.setMsg("暂无可用优惠券");
+                            mAdapter.setEmptyView(emptyView);
                         }
                         mAdapter.addData(value.getData());
                     }

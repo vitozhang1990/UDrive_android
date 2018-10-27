@@ -75,4 +75,7 @@
     <string name="order_finish">已完成</string>
     <string name="about_more">----- 让出行更可行 -----</string>
     <string name="no_can_use">无可用</string>
+    <string name="cost_detail">费用明细</string>
+    <string name="confirm_order">确认订单</string>
+    <string name="pay_succ">支付成功</string>
 </resources>

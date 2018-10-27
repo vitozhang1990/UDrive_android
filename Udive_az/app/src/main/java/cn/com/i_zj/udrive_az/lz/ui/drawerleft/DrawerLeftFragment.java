@@ -49,6 +49,7 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.StringUtils;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -108,7 +109,11 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
         AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
         if (accountInfo != null) {
-            mTvUserName.setText(accountInfo.data.username);
+            if(accountInfo.data!=null&&!StringUtils.isEmpty(accountInfo.data.username)&&accountInfo.data.username.length()>=11){
+                StringBuilder sb = new StringBuilder(accountInfo.data.username);
+                sb.replace(3, 7, "****");
+                mTvUserName.setText(sb.toString());
+            }
             parseIdType(accountInfo.data.idCardState);
             mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",(accountInfo.data.balance / 100f + accountInfo.data.giveBalance / 100f) ));
             parseMoney(accountInfo);
@@ -258,7 +263,12 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                             return;
                         }
                         AccountInfoManager.getInstance().cacheAccount(value);
-                        mTvUserName.setText(value.data.username);
+                        if(value.data!=null&&!StringUtils.isEmpty(value.data.username)&&value.data.username.length()>=11){
+                            StringBuilder sb = new StringBuilder(value.data.username);
+                            sb.replace(3, 7, "****");
+                            mTvUserName.setText(sb.toString());
+                        }
+
                         parseIdType(value.data.idCardState);
                         parseMoney(value);
                         mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",(value.data.balance / 100f + value.data.giveBalance / 100f) ));
