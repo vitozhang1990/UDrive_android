@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
@@ -26,7 +27,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
 /**
@@ -112,6 +115,7 @@ public class CarsFragment extends Fragment {
             tvXuhang.setText(String.valueOf(result.getMaxDistance()));
             tvFenzhong.setText(deciMal(result.getTimeFee(), 100) + "");
             tvGongli.setText(deciMal(result.getMileagePrice(), 100) + "");
+            Glide.with(getActivity()).load( CarTypeImageUtils.getCarImageByBrand(result.getBrand(),result.getCarColor())).into(ivCar);
             if(result.isTrafficControl()){
                 mTvTrafficControl.setVisibility(View.VISIBLE);
             }else {

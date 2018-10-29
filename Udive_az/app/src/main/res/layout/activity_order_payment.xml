@@ -39,11 +39,11 @@
 
                 <ImageView
                     android:id="@+id/iv_car"
-                    android:layout_width="60dp"
-                    android:layout_height="50dp"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:src="@mipmap/dazhong" />
+                    android:src="@mipmap/pic_cartype_baolai" />
 
                 <TextView
                     android:id="@+id/tv_car_number"

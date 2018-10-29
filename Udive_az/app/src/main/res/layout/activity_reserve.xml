@@ -7,10 +7,7 @@
     android:fitsSystemWindows="true"
     tools:context=".map.MapActivity">
 
-    <com.amap.api.maps.MapView
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.amap.api.maps.MapView>
+
 
     <RelativeLayout
         android:id="@+id/rl_head"
@@ -48,7 +45,11 @@
             android:textColor="#999999"
             android:textSize="13sp" />
     </RelativeLayout>
-
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_below="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.amap.api.maps.MapView>
     <RelativeLayout
         android:id="@+id/rl_dengdai"
         android:layout_width="match_parent"
@@ -155,16 +156,16 @@
             <RelativeLayout
                 android:id="@+id/rl8"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_marginLeft="@dimen/dp_14"
                 android:layout_marginRight="25dp">
 
                 <ImageView
                     android:id="@+id/iv_car"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@drawable/testcar" />
+                    android:src="@mipmap/pic_cartype_baolai" />
 
                 <TextView
                     android:id="@+id/tv_carnum"
@@ -389,10 +390,10 @@
 
                 <ImageView
                     android:id="@+id/iv_car1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@drawable/testcar" />
+                    android:src="@mipmap/pic_cartype_baolai" />
 
                 <TextView
                     android:id="@+id/tv_carnum2"
@@ -525,8 +526,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:drawableTop="@mipmap/ic_findcar"
                         android:layout_centerInParent="true"
-                        android:text="寻车"
+                        android:text="声音寻车"
                         android:textColor="#999999" />
                 </RelativeLayout>
             </LinearLayout>

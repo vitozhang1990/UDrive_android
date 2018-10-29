@@ -49,5 +49,6 @@ public class ActPaySucc extends DBSBaseActivity {
     public void onClick() {
         ScreenManager.getScreenManager().popAllActivityExceptOne(OrderActivity.class);
         startActivity(new Intent(ActPaySucc.this,MainActivity.class));
+        finish();
     }
 }

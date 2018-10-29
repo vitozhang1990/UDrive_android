@@ -2,6 +2,7 @@ package cn.com.i_zj.udrive_az.lz.ui.payment;
 
 import android.support.annotation.Nullable;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -30,7 +31,8 @@ public class CouponAdapter extends BaseQuickAdapter<UnUseCouponResult.DataBean, 
         long time = 0;
         try {
             time = simpleDateFormat.parse(item.getDistribute_time()).getTime();
-            time = time + item.getValidity() * 24 * 60 * 60 * 1000;
+            time = time + item.getValidity() * 24 * 60 * 60 * 1000l;
+            LogUtils.e( simpleDateFormat.format(time));
         } catch (ParseException e) {
             e.printStackTrace();
         }

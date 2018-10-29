@@ -1,7 +1,6 @@
 package cn.com.i_zj.udrive_az.map;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,8 +10,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextPaint;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationListener;
@@ -35,8 +31,6 @@ import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.model.Polyline;
-import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DrivePath;
@@ -44,10 +38,9 @@ import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
-import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.blankj.utilcode.util.Utils;
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,8 +52,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.com.i_zj.udrive_az.BaseActivity;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
@@ -71,22 +62,26 @@ import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
+import cn.com.i_zj.udrive_az.model.GeoCoordinate;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.overlay.DrivingRouteOverlay;
-import cn.com.i_zj.udrive_az.utils.AMapUtil;
+import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
+import cn.com.i_zj.udrive_az.utils.GetCenterPointFromListOfCoordinates;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
+import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static cn.com.i_zj.udrive_az.utils.GetCenterPointFromListOfCoordinates.getCenterPoint400;
 
 /**
  * 等待用车---行程中
@@ -142,6 +137,10 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     TextView mTvPname;
     @BindView(R.id.tv_genghuan)
     TextView tvGenHuan;
+    @BindView(R.id.iv_car)
+    ImageView mIvCar;
+    @BindView(R.id.iv_car1)
+    ImageView mIvCar1;
 
     private AMap mAmap;
     //声明AMapLocationClient类对象
@@ -260,10 +259,12 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     tv_carnum2.setText(bunldBean.getPlateNumber() + "");
                     startTime = System.currentTimeMillis();
                     latLonPoint1 = new LatLonPoint(startLatitude, startLongitude);
-                    fromPark= new ParksResult.DataBean();
+                    fromPark = new ParksResult.DataBean();
                     fromPark.setLongitude(startLongitude);
                     fromPark.setLatitude(startLatitude);
                     fromPark.setName(parkBean.getName());
+                    tvgonglishu.setText(bunldBean.getMaxDistance() + "km");
+                    Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(bunldBean.getBrand(), bunldBean.getCarColor())).into(mIvCar);
                     startTimerCount();
                 }
 
@@ -284,13 +285,15 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     tv_carnum2.setText(reservationBean.getData().getPlateNumber());
                     startTime = reservationBean.getData().getCreateTime();
                     latLonPoint1 = new LatLonPoint(startLatitude, startLongitude);
-
+                    Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(reservationBean.getData().getBrand(), reservationBean.getData().getCarColor())).into(mIvCar);
+                    tvgonglishu.setText(reservationBean.getData().getRemainderRange() + "km");
                     startTimerCount();
                 }
             } else if (type.equals("3")) {// 行程中
                 orderResultBean = (UnFinishOrderResult) intent.getSerializableExtra("bunld");
                 if (orderResultBean != null) {
                     state = 1;
+                    ivBack.setVisibility(View.INVISIBLE);
                     rlDengdai.setVisibility(View.GONE);
                     rlXingzhengzhong.setVisibility(View.VISIBLE);
                     tvTitle.setText("行程中");
@@ -319,6 +322,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         tv_carnum2.setText(car.getPlateNumber());
                         tvColor1.setText(car.getCarColor());
                         tv_gonglishu1.setText(car.getMaxDistance() + "km");
+                        Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar1);
                     }
 
                 }
@@ -414,7 +418,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
 //                    mAmap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
 //                            new LatLng(latLonPoint1.getLatitude(), latLonPoint1.getLongitude()), new LatLng(latLonPoint2.getLatitude(), latLonPoint2.getLongitude())), 20));
                 }
-                return false;
+                return true;
             }
         });
 
@@ -622,7 +626,15 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                 carId = String.valueOf(bean.getData().getCarId());
                                 oderId = String.valueOf(bean.getData().getId());
                                 orderNum = String.valueOf(bean.getData().getNumber());
-                                if(toPark!=null){
+                                ivBack.setVisibility(View.INVISIBLE);
+                                if ("1".equals(type)) {
+                                    tv_gonglishu1.setText(bunldBean.getMaxDistance() + "km");
+                                    Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(bunldBean.getBrand(), bunldBean.getCarColor())).into(mIvCar1);
+                                } else if ("2".equals(type)) {
+                                    tv_gonglishu1.setText(reservationBean.getData().getRemainderRange() + "km");
+                                    Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(reservationBean.getData().getBrand(), reservationBean.getData().getCarColor())).into(mIvCar1);
+                                }
+                                if (toPark != null) {
                                     mTvPname.setText(toPark.getName());
                                 }
 
@@ -862,8 +874,8 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     public void onNext(RetParkObj retParkObj) {
                         dissmisProgressDialog();
                         if (retParkObj.getCode() == 1) {
-                            toPark= retParkObj.getDate();
-                            if(toPark!=null){
+                            toPark = retParkObj.getDate();
+                            if (toPark != null) {
                                 mTvPname.setText(toPark.getName());
                             }
                         }
@@ -906,14 +918,14 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 mAmap.moveCamera(CameraUpdateFactory.zoomTo(11));
                 //将地图移动到定位点
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
-
+                //----------什么鬼意思
                 if (type.equals("1")) {
                     float distance = AMapUtils.calculateLineDistance(
                             new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()),
                             new LatLng(parkBean.getLatitude(), parkBean.getLongitude())
                     );
                     int dis = (int) (distance / 1000);
-                    tvgonglishu.setText(dis + "km");
+//                    tvgonglishu.setText(dis + "km");
 //                    tv_gonglishu1.setText(dis + "/km");
                 } else if (type.equals("1")) {
                     float distance = AMapUtils.calculateLineDistance(
@@ -921,7 +933,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             new LatLng(reservationBean.getData().getLatitude(), reservationBean.getData().getLongitude())
                     );
                     int dis = (int) (distance / 1000);
-                    tvgonglishu.setText(dis + "km");
+//                    tvgonglishu.setText(dis + "km");
 //                    tv_gonglishu1.setText(dis + "/km");
                 }
 
@@ -1011,10 +1023,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             if (btnState == 0) {
                 tv_zhongdian.setText(name);
                 tv_zhongdian.setTextColor(getResources().getColor(R.color.color_map_btn));
-            }else {
+            } else {
                 updateDestinationPark();
             }
-
 
 
             latLonPoint1 = new LatLonPoint(startLatitude, startLongitude);
@@ -1046,12 +1057,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
             drivingRouteOverlay.addToMap();
             drivingRouteOverlay.zoomToSpan();
-//            LatLngBounds latLngBounds = new LatLngBounds(new LatLng(latLonPoint1.getLatitude(), latLonPoint1.getLongitude()), new LatLng(latLonPoint2.getLatitude(), latLonPoint2.getLongitude()));
-//            mAmap.setMapStatusLimits(latLngBounds);
+
 //            mAmap.moveCamera((CameraUpdateFactory.zoomTo(11)) );
-            mAmap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    new LatLng(latLonPoint1.getLatitude(), latLonPoint1.getLongitude()),
-                    new LatLng(latLonPoint2.getLatitude(), latLonPoint2.getLongitude())), 11));
+//            mAmap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+//                    new LatLng(latLonPoint1.getLatitude(), latLonPoint1.getLongitude()),
+//                    new LatLng(latLonPoint2.getLatitude(), latLonPoint2.getLongitude())), 11));
 
             for (int i = 0; i < dataBeans.size(); i++) {
                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBeans.get(i).getLatitude(), dataBeans.get(i).getLongitude()));
@@ -1071,7 +1081,14 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 }
                 Marker marker = mAmap.addMarker(markerOptions);
                 marker.setObject(dataBeans.get(i).getId());
+
             }
+
+            LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+            bounds.include(new LatLng(latLonPoint1.getLatitude(), latLonPoint1.getLongitude()));
+            bounds.include(new LatLng(latLonPoint2.getLatitude(), latLonPoint2.getLongitude()));
+            int bottom = ToolsUtils.getWindowHeight(ReserveActivity.this) - ToolsUtils.getWindowHeight(ReserveActivity.this) / 3 - SizeUtils.dp2px(ReserveActivity.this, 48);
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngBoundsRect(bounds.build(), 0, 0, SizeUtils.dp2px(ReserveActivity.this, 48), bottom));
         } else {
 //            ToastUtils.showShort("线路规划失败");
         }

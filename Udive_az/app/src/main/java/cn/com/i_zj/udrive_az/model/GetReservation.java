@@ -81,6 +81,7 @@ public class GetReservation implements Serializable {
         private double longitude;
         private double latitude;
         private long createTime;
+        private int remainderRange;
 
         public int getId() {
             return id;
@@ -216,6 +217,14 @@ public class GetReservation implements Serializable {
 
         public void setCreateTime(long createTime) {
             this.createTime = createTime;
+        }
+
+        public int getRemainderRange() {
+            return remainderRange;
+        }
+
+        public void setRemainderRange(int remainderRange) {
+            this.remainderRange = remainderRange;
         }
     }
 }

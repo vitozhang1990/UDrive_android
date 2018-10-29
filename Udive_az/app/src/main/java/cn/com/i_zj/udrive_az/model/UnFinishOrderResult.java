@@ -69,14 +69,14 @@ public class UnFinishOrderResult implements Serializable {
         private int startParkId;
         private int destinationParkId;
         private long startTime;
-        private int endTime;
+        private long endTime;
         private int shouldPayAmount;
         private int realPayAmount;
         private int ownerEarnAmount;
-        private int payTime;
+        private long payTime;
         private int payType;
         private int mileage;
-        private int durationTime;
+        private long durationTime;
         private int deductibleStatus;
         private int status;
         private int discountId;
@@ -140,11 +140,11 @@ public class UnFinishOrderResult implements Serializable {
             this.startTime = startTime;
         }
 
-        public int getEndTime() {
+        public long getEndTime() {
             return endTime;
         }
 
-        public void setEndTime(int endTime) {
+        public void setEndTime(long endTime) {
             this.endTime = endTime;
         }
 
@@ -172,7 +172,7 @@ public class UnFinishOrderResult implements Serializable {
             this.ownerEarnAmount = ownerEarnAmount;
         }
 
-        public int getPayTime() {
+        public long getPayTime() {
             return payTime;
         }
 
@@ -196,11 +196,11 @@ public class UnFinishOrderResult implements Serializable {
             this.mileage = mileage;
         }
 
-        public int getDurationTime() {
+        public long getDurationTime() {
             return durationTime;
         }
 
-        public void setDurationTime(int durationTime) {
+        public void setDurationTime(long durationTime) {
             this.durationTime = durationTime;
         }
 

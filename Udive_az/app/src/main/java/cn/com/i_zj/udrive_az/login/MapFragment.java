@@ -140,7 +140,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         LinearInterpolator lin = new LinearInterpolator();//设置动画匀速运动
         animRefresh.setInterpolator(lin);
         init(savedInstanceState);
-        fetchParks();
     }
 
     private void init(Bundle savedInstanceState) {
@@ -189,6 +188,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     public void onNext(ParksResult result) {
                         dataBeans.clear();
                         dataBeans.addAll(result.getData());
+                        mAmap.clear();
                         for (int i = 0; i < dataBeans.size(); i++) {
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBeans.get(i).getLatitude(), dataBeans.get(i).getLongitude()));
                             String name = dataBeans.get(i).getName();
@@ -342,7 +342,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         dissmisProgressDialog();
                         if (result != null) {
                             if (result.getCode() == 1) {
-                                if (!result.getData().equals("")) {
+                                if (!"".equals(result.getData())&&result.getData()!=null) {
                                     if (result.getData().getOrderType() != 0) {
                                         showUnfinshOrder();
                                     } else {
@@ -350,7 +350,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                         intent.putExtra("type", "1");
                                         intent.putExtra("bunld", bunldBean);
                                         intent.putExtra("bunldPark", buldParkBean);
-                                        intent.putExtra("id", result.getData().getId() + "");
+                                        intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
 
                                     }
@@ -412,7 +412,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 }
                 LogUtils.e(SessionManager.getInstance().getAuthorization());
                 // 获取停车场车辆列表信息
-                showProgressDialog("正在获取信息");
+//                showProgressDialog("正在获取信息");
                 UdriveRestClient.getClentInstance().getCarInfo("/mobile/car/getReservationList/" + marker.getObject())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -423,7 +423,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                             @Override
                             public void onNext(CarInfoResult result) {
-                                dissmisProgressDialog();
+//                                dissmisProgressDialog();
                                 if (result.getData().size() != 0) {
                                     carBeans.clear();
                                     carBeans.addAll(result.getData());
@@ -484,13 +484,13 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                             @Override
                             public void onError(Throwable e) {
-                                dissmisProgressDialog();
+//                                dissmisProgressDialog();
                                 e.printStackTrace();
                             }
 
                             @Override
                             public void onComplete() {
-                                dissmisProgressDialog();
+//                                dissmisProgressDialog();
 
                             }
                         });
@@ -555,6 +555,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
+        fetchParks();
     }
 
     @Override

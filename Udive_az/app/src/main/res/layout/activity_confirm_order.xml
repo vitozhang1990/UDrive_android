@@ -60,7 +60,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:text="@string/no_can_use" />
+                    android:drawableRight="@mipmap/ic_arrow_s"
+                    android:text="" />
 
             </LinearLayout>
 

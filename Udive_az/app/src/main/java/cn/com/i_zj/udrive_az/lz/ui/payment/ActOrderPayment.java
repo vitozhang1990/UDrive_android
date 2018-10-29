@@ -31,6 +31,7 @@ import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
@@ -151,6 +152,7 @@ public class ActOrderPayment extends DBSBaseActivity {
                 }).error(R.mipmap.pic_dingdan_complete).into(mIvImage);
             }
 
+
             tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "元");
             if (value.data.durationTime > 60) {
                 tvDurationTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f));
@@ -163,6 +165,7 @@ public class ActOrderPayment extends DBSBaseActivity {
             if (carInfoEntity != null) {
                 tvCarType.setText(carInfoEntity.getBrand());
                 tvCarColor.setText(carInfoEntity.getCarColor());
+                Glide.with(ActOrderPayment.this).load( CarTypeImageUtils.getCarImageByBrand(carInfoEntity.getBrand(),carInfoEntity.getCarColor())).into(ivCar);
             }
 
         }

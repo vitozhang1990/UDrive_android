@@ -45,6 +45,7 @@ public class MainActivity extends DBSBaseActivity {
 
     @BindView(R.id.main_tv_tip)
     TextView tipView;
+    AlertDialog unfinishedOrderDialog;
 
     @Override
     protected int getLayoutResource() {
@@ -64,18 +65,24 @@ public class MainActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ScreenManager.getScreenManager().pushActivity(this);
-        if (SessionManager.getInstance().getAuthorization() != null) {
 
-            getReservation();
-            getUnfinishedOrder();
-        }
         Calendar c = Calendar.getInstance();//
         int month = c.get(Calendar.MONTH) + 1;// 获取当前月份
         int day = c.get(Calendar.DAY_OF_MONTH);// 获取当日期
 
         if (month <= 8 || (month == 9 && day < 5)) {
             tipView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ScreenManager.getScreenManager().pushActivity(this);
+        if (SessionManager.getInstance().getAuthorization() != null) {
+
+            getReservation();
+            getUnfinishedOrder();
         }
     }
 
@@ -167,20 +174,9 @@ public class MainActivity extends DBSBaseActivity {
                                         intent.putExtra("type", "3");
                                         intent.putExtra("bunld", result);
                                         startActivity(intent);
+                                    } else if (result.getData().getStatus() == 1) {
+                                        showUnfinishedOrderDialog();
                                     }
-                                } else if (result.getData().getStatus() == 1) {
-                                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                                    dialog.setTitle("通知")
-                                            .setMessage("您有未付款的订单")
-                                            .setPositiveButton("去付款", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    Intent intent = new Intent(MainActivity.this, OrderActivity.class);
-                                                    startActivityForResult(intent, 103);
-                                                    LogUtils.e("111");
-                                                }
-                                            }).setCancelable(false)
-                                            .create().show();
                                 }
                             }
                         }
@@ -190,6 +186,7 @@ public class MainActivity extends DBSBaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        LogUtils.e("==============>" + e.getMessage());
                     }
 
                     @Override
@@ -197,6 +194,33 @@ public class MainActivity extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    private void showUnfinishedOrderDialog() {
+        if (unfinishedOrderDialog == null) {
+            unfinishedOrderDialog = new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("通知")
+                    .setMessage("您有未付款的订单")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setPositiveButton("去付款", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                            startActivityForResult(intent, 103);
+                            LogUtils.e("111");
+                        }
+                    }).setCancelable(false)
+                    .create();
+        }
+        if (!unfinishedOrderDialog.isShowing()) {
+            unfinishedOrderDialog.show();
+        }
+
     }
 
     @Override
