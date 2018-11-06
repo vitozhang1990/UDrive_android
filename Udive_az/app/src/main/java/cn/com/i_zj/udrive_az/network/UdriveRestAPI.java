@@ -34,6 +34,7 @@ import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.model.req.AddDriverCardInfo;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
+import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -227,4 +228,7 @@ public interface UdriveRestAPI {
     @Headers("Content-Type: application/json")
     @PUT("/mobile/tripOrder/updateDestinationPark")
     Observable<RetParkObj> updateDestinationPark(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+
+    @GET("/mobile/appversion/1/check")
+    Observable<RetAppversionObj> appversionCheck(@Query("version") String version);
 }

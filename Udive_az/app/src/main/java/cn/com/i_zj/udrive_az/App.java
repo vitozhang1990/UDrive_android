@@ -12,6 +12,8 @@ import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareConfig;
 import com.umeng.socialize.UmengTool;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by wli on 2018/8/11.
  */
@@ -24,6 +26,8 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         appContext = this;
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
         Bugtags.start("d6aeaf5636259046f115c36522316c61", this, Bugtags.BTGInvocationEventNone);
         Utils.init(this);
         UMConfigure.setLogEnabled(true);

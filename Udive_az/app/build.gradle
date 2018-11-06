@@ -50,12 +50,14 @@ android {
             storePassword "Vc{,Kq68T,:>4ML"
             keyAlias "Udrive"
             keyPassword "%QeFh&QQZ;~8{52"
+            v2SigningEnabled false
         }
         debug {
             storeFile file("udrive_keystore")
             storePassword "Vc{,Kq68T,:>4ML"
             keyAlias "Udrive"
             keyPassword "%QeFh&QQZ;~8{52"
+            v2SigningEnabled false
         }
     }
 }
@@ -153,4 +155,5 @@ dependencies {
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
     implementation project(':pickerview')
+    implementation files('libs/jpush-android-3.1.7.jar')
 }

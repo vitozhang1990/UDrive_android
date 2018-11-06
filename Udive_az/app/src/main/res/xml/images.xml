@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <external-path path="Android/data/cn.com.i_zj.udrive_az/files/Download/" name="tempApk" />
     <external-path
         name="image"
         path="tempCamera/"/>
+    <root-path
+        name="root_path"
+        path="." />
 </paths>

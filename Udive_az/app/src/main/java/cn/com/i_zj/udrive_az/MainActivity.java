@@ -1,9 +1,14 @@
 package cn.com.i_zj.udrive_az;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,10 +33,16 @@ import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.model.AppversionEntity;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
+import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
+import cn.com.i_zj.udrive_az.utils.DownloadApk;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
+import cn.com.i_zj.udrive_az.utils.ToolsUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -46,7 +57,7 @@ public class MainActivity extends DBSBaseActivity {
     @BindView(R.id.main_tv_tip)
     TextView tipView;
     AlertDialog unfinishedOrderDialog;
-
+     AppUpdateDialog appUpdateDialog;
     @Override
     protected int getLayoutResource() {
         MapUtils.setStatusBar(this);
@@ -78,12 +89,10 @@ public class MainActivity extends DBSBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ScreenManager.getScreenManager().pushActivity(this);
-        if (SessionManager.getInstance().getAuthorization() != null) {
 
-            getReservation();
-            getUnfinishedOrder();
-        }
+        appversionCheck();
+
+
     }
 
     @OnClick(R.id.main_tv_personal_info)
@@ -194,6 +203,87 @@ public class MainActivity extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    private void appversionCheck() {
+        String version = "";
+        try {
+            version = ToolsUtils.getVersionName(MainActivity.this);
+        } catch (Exception e) {
+
+        }
+
+        UdriveRestClient.getClentInstance().appversionCheck(version)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<RetAppversionObj>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(RetAppversionObj result) {
+                        LogUtils.e("55");
+                        if (result != null && result.getCode() == 1) {
+
+                            if (result.getData() != null) {// 有更新
+                                showUpdateAppDialog(result.getData());
+
+                            } else {
+                                ScreenManager.getScreenManager().pushActivity(MainActivity.this);
+                                if (SessionManager.getInstance().getAuthorization() != null) {
+                                    getReservation();
+                                    getUnfinishedOrder();
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        LogUtils.e("==============>" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void showUpdateAppDialog(final AppversionEntity appversionEntity) {
+        if(appUpdateDialog==null){
+            appUpdateDialog = new AppUpdateDialog(MainActivity.this);
+        }
+        appUpdateDialog.setAppversion(appversionEntity);
+        appUpdateDialog.setOnClickListener(new AppUpdateDialog.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.tv_canel:
+                        appUpdateDialog.dismiss();
+                        break;
+                    case R.id.tv_ok:
+                        appUpdateDialog.dismiss();
+
+                        if(appversionEntity.getState()==1){
+                            DownloadApk downloadApk= new DownloadApk(MainActivity.this);
+                            downloadApk.downloadApk(appversionEntity.getAppUrl());
+                        }else {
+                            AppDownloadManager appDownloadManager = new AppDownloadManager();
+                            appDownloadManager.downloadManager(MainActivity.this,appversionEntity.getAppUrl());
+                        }
+                        break;
+                }
+            }
+        });
+        if(!appUpdateDialog.isShowing()){
+            appUpdateDialog.show();
+        }
+
     }
 
     private void showUnfinishedOrderDialog() {
