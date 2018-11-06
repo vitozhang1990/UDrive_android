@@ -51,7 +51,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.ReserveActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
@@ -283,7 +284,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .setPositiveButton("立即绑定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), IDRegisterActivity.class);
+                        Intent intent = new Intent(getActivity(), ActIdentificationDrivingLicense.class);
                         intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
                         startActivity(intent);
                     }
@@ -306,7 +307,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .setPositiveButton("立即认证", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), IDRegisterActivity.class);
+                        Intent intent = new Intent(getActivity(), ActIdentificationIDCard.class);
                         intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
                         startActivity(intent);
                     }
@@ -352,7 +353,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                         intent.putExtra("bunldPark", buldParkBean);
                                         intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
-
+                                        ll_info.setVisibility(View.GONE);
+                                        rl_where.setVisibility(View.GONE);
+                                        btn_yuding.setVisibility(View.GONE);
                                     }
 
                                 }

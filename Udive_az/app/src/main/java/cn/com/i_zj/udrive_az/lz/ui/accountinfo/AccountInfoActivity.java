@@ -8,16 +8,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.zjcx.face.camera.CameraActivity;
+
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.login.SessionManager;
-import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.view.UserInfoItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.FileUtil;
 
 /**
  * 账户信息
@@ -73,12 +77,9 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.ui_register)
     public void onRegisterClick(View view) {
-//        Intent intent = new Intent(this, IDRegisterActivity.class);
-//        intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
-//        startActivity(intent);
+
         if (accountInfo != null && (accountInfo.data.idCardState == Constants.ID_UN_AUTHORIZED || accountInfo.data.idCardState == Constants.ID_AUTHORIZED_FAIL)) {
-            Intent intent = new Intent(this, IDRegisterActivity.class);
-            intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
+            Intent intent = new Intent(this, ActIdentificationIDCard.class);
             startActivity(intent);
         } else if (accountInfo != null && accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
             Toast.makeText(this, R.string.under_reving, Toast.LENGTH_SHORT).show();
@@ -107,29 +108,28 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.ui_driver_license)
     public void onDriverLicense(View view) {
-//        Intent intent = new Intent(this, IDRegisterActivity.class);
-//        intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
-//        startActivity(intent);
-        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-        if (accountInfo == null) {
-            Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS || accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-            if (accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
-                Toast.makeText(this, "驾驶证已认证", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
-                Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(this, IDRegisterActivity.class);
-                intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
-                startActivity(intent);
-            }
-        } else {
-            Toast.makeText(this, "请先去实名认证", Toast.LENGTH_SHORT).show();
-        }
+
+        Intent intent = new Intent(this, ActIdentificationDrivingLicense.class);
+        startActivity(intent);
+//        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
+//        if (accountInfo == null) {
+//            Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS || accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
+//            if (accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
+//                Toast.makeText(this, "驾驶证已认证", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
+//                Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Intent intent = new Intent(this, ActIdentificationDrivingLicense.class);
+//                startActivity(intent);
+//            }
+//        } else {
+//            Toast.makeText(this, "请先去实名认证", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     private String parseIdType(int code) {

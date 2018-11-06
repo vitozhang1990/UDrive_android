@@ -38,6 +38,8 @@
     <string name="lz_account_phone">手机</string>
     <string name="lz_account_true_name">实名认证</string>
     <string name="lz_account_driver_license">驾驶证</string>
+    <string name="account_driver_license">驾照认证</string>
+
     <string name="lz_left_yuan">元</string>
     <string name="lz_left_get_money_fail">获取我的钱包金额失败</string>
     <string name="lz_left_setting">设置</string>

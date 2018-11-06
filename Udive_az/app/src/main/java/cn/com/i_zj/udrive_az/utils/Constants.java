@@ -33,6 +33,13 @@ public class Constants {
 
   public static final String WEIXIN_PAY_TYPE_BALANCE = "pay_balance";
 
+  public static final String FREESDKAPPID = "D6DCS23LDg3MoEUm3i4hrRGAUfTxFXnyNsFQeWp1aua4";
+  public static final String FDSDKKEY = "FffG51bBe9WyWUsmHS3Hkuij1tw7YZTwocV2FFDSU6H7";
+  public static final String FTSDKKEY = "FffG51bBe9WyWUsmHS3HkuibrVfwWN2eFHodkptzyaAg";
+
+  public static final String LIVENESSAPPID = "D6DCS23LDg3MoEUm3i4hrRGAUfTxFXnyNsFQeWp1aua4";
+  public static final String LIVENESSSDKKEY = "FffG51bBe9WyWUsmHS3Hkv4c7UQk5pPfLR1z6gMK3119";
+
   //未认证
   public static final int ID_UN_AUTHORIZED = 0;
   //审核中

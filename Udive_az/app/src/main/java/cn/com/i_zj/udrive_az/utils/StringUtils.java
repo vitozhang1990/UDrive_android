@@ -1,6 +1,9 @@
 package cn.com.i_zj.udrive_az.utils;
 
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,6 +12,14 @@ import java.util.List;
  * @Created time 2016-08-16 22 ：57
  */
 public class StringUtils {
+    public static String strToDateFormat(String date) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        formatter.setLenient(false);
+        Date newDate= formatter.parse(date);
+        formatter = new SimpleDateFormat("yyyy.MM.dd");
+        return formatter.format(newDate);
+    }
+
     /**
      * 判断字符串是否为null或长度为0
      *

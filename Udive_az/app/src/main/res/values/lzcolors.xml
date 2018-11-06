@@ -12,5 +12,6 @@
     <color name="order_pay">#bc2929</color>
     <color name="right_text_color">#CACACA</color>
     <color name="btn_bg">#31333d</color>
+    <color name="et_bg">#FFE0E4EA</color>
     <color name="traffic_control">#FD4C0E</color>
 </resources>

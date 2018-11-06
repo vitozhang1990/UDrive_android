@@ -9,4 +9,15 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="map">地图</string>
+    <string name="ok">使用</string>
+    <string name="remake">重拍</string>
+    <string-array name="vehicle_type">　　
+        <item>A1</item>
+        <item>A2</item>
+        <item>A3</item>
+        <item>B1</item>
+        <item>B2</item>
+        <item>C1</item>
+        <item>C2</item>　　　　
+    </string-array>
 </resources>

@@ -159,7 +159,15 @@ public class ToolsUtils {
 
         return resultData;
     }
+    public static String getTime(Date date, String fromat) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat(fromat);
+            return format.format(date);
+        } catch (Exception e) {
+            return "";
+        }
 
+    }
     /**
      * 检测某个应用是否安装
      *

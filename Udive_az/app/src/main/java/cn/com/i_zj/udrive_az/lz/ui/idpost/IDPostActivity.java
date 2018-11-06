@@ -57,7 +57,9 @@ import okhttp3.RequestBody;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
- * 身份证信息
+ *
+ *  手持身份证信息
+ *  身份证信息
  */
 public class IDPostActivity extends BaseActivity implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
@@ -100,7 +102,7 @@ public class IDPostActivity extends BaseActivity implements View.OnClickListener
 
         Bundle bundleExtra = getIntent().getExtras();
         if (bundleExtra != null) {
-            IdBean idBean = (IdBean) bundleExtra.getParcelable(Constants.URL_BEAN);
+            IdBean idBean = (IdBean) bundleExtra.getSerializable(Constants.URL_BEAN);
             if (idBean != null) {
                 mEtName.setText(idBean.getName());
                 mEtNumber.setText(idBean.getNum());

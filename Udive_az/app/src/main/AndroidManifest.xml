@@ -75,10 +75,38 @@
             android:name=".lz.ui.share.ShareActivity"
             android:label="@string/activity_share"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!--用户-->
         <activity
             android:name=".lz.ui.accountinfo.AccountInfoActivity"
             android:label="@string/activity_account_info"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActIdentificationIDCard"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:hardwareAccelerated="false"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.accountinfo.ActIdentificationCameraTwo"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="landscape"
+
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActIdentificationDrivingLicense"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActBioassay"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name="com.zjcx.face.camera.CameraActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/NoTitleFullscreen"/>
+
         <activity
             android:name=".lz.ui.about.AboutActivity"
             android:label="@string/activity_about"

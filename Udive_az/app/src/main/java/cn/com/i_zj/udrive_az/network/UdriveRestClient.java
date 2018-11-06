@@ -23,14 +23,14 @@ public class UdriveRestClient {
     /**
      * 正式
      */
-    private static final String HOST_ONLINE = "http://132.232.128.121:8088/";
+//    private static final String HOST_ONLINE = "http://132.232.128.121:8088/";
 
     /**
      * 测试
      */
 //    public static final String HOST_ONLINE = "http://47.98.47.82:8088/";
 
-//      private static final String HOST_ONLINE = "http://192.168.1.54:8088/";
+      private static final String HOST_ONLINE = "http://192.168.1.54:8088/";
 //      private static final String HOST_ONLINE = "http://192.168.1.56:8088/";
     public synchronized static UdriveRestAPI getClentInstance() {
         if (null == udriveRestAPI) {

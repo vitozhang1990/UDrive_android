@@ -153,7 +153,7 @@ public class ActOrderPayment extends DBSBaseActivity {
             }
 
 
-            tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "元");
+            tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             if (value.data.durationTime > 60) {
                 tvDurationTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f));
             } else {

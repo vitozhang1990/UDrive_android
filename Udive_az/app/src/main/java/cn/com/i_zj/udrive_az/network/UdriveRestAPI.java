@@ -32,6 +32,8 @@ import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.UserDepositResult;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.model.req.AddDriverCardInfo;
+import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -78,7 +80,7 @@ public interface UdriveRestAPI {
     @Headers("Content-Type: application/json")
     @PUT("/mobile/card/addDriverCardInfo")
     Observable<DriverResult> addDriver(@Header("Authorization") String Authorization,
-                                       @Body Map<String, Object> body);
+                                       @Body AddDriverCardInfo body);
 
     //我的钱包
     @GET("/mobile/pay/myWallet")
@@ -103,7 +105,11 @@ public interface UdriveRestAPI {
     @PUT("/mobile/card/addIdCardInfo")
     Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
                                            @Body Map<String, Object> body);
-
+    //上传身份信息
+    @Headers("Content-Type: application/json")
+    @PUT("/mobile/card/addIdCardInfo")
+    Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
+                                           @Body AddIdCardInfo addIdCardInfo);
     //查询所有订单
     @GET("/mobile/tripOrder/queryAllOrdersByUser")
     Observable<OrderResult> queryAllOrdersByUser(@Header("Authorization") String Authorization);

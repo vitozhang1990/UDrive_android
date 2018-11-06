@@ -22,7 +22,7 @@ android {
 
         ndk {
             // 设置支持的 SO 库构架，一般而言，取你所有的库支持的构架的`交集`。
-            abiFilters 'armeabi'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            abiFilters  'armeabi-v7a'// 'armeabi'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
     }
 
@@ -72,9 +72,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-//    implementation 'com.android.support:support-v4:28.0.0-rc02'
-//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+
+    //    implementation 'com.android.support:support-v4:28.0.0-rc02'
+
+    //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
     // google 官方的一些 UI 组件等
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -125,13 +128,16 @@ dependencies {
 
     //recyclerView 扩展
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+
     //侧滑删除
     implementation 'com.github.anzaizai:EasySwipeMenuLayout:1.1.2'
     implementation 'com.bugtags.library:bugtags-lib:latest.integration'
+
     //adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.jaeger.statusbarutil:library:1.5.1'
     implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
+
     //微信支付
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
     implementation files('libs/umeng-share-core-6.9.3.jar')
@@ -144,4 +150,7 @@ dependencies {
     implementation files('libs/commons-lang3-3.8.jar')
     implementation 'com.github.bumptech.glide:glide:3.7.0'
 
+    //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation project(':facelibrary')
+    implementation project(':pickerview')
 }

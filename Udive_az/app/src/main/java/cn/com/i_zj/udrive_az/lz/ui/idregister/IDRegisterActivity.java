@@ -234,7 +234,7 @@ public class IDRegisterActivity extends BaseActivity implements View.OnClickList
         intent.putExtra(Constants.URL_IDENTITY_CARD_PHOTO_FRONT, mFrontUrl);
         intent.putExtra(Constants.URL_IDENTITY_CARD_PHOTO_BEHIND, mBehindUrl);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.URL_BEAN, mIdBean);
+        bundle.putSerializable(Constants.URL_BEAN, mIdBean);
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
     }
@@ -358,7 +358,7 @@ public class IDRegisterActivity extends BaseActivity implements View.OnClickList
         map.put("driverLicencePhotoMaster", mFrontUrl);
         map.put("driverLicencePhotoSlave", mBehindUrl);
 
-        UdriveRestClient.getClentInstance().addDriver(SessionManager.getInstance().getAuthorization(), map)
+        UdriveRestClient.getClentInstance().addDriver(SessionManager.getInstance().getAuthorization(), null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DriverResult>() {

@@ -1,9 +1,6 @@
 package cn.com.i_zj.udrive_az.map.fragment;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,11 +20,8 @@ import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
-import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants;

@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by wo on 2018/9/3.
  */
 
-public class IdBean implements Parcelable{
+public class IdBean implements Serializable{
 
     /**
      * address : 华盛顿特区宜宾法尼亚大道1600号
@@ -35,29 +35,6 @@ public class IdBean implements Parcelable{
     private String sex;
     private boolean success;
 
-    protected IdBean(Parcel in) {
-        address = in.readString();
-        birth = in.readString();
-        config_str = in.readString();
-        name = in.readString();
-        nationality = in.readString();
-        num = in.readString();
-        request_id = in.readString();
-        sex = in.readString();
-        success = in.readByte() != 0;
-    }
-
-    public static final Creator<IdBean> CREATOR = new Creator<IdBean>() {
-        @Override
-        public IdBean createFromParcel(Parcel in) {
-            return new IdBean(in);
-        }
-
-        @Override
-        public IdBean[] newArray(int size) {
-            return new IdBean[size];
-        }
-    };
 
     public String getAddress() {
         return address;
@@ -139,23 +116,6 @@ public class IdBean implements Parcelable{
         this.success = success;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(address);
-        parcel.writeString(birth);
-        parcel.writeString(config_str);
-        parcel.writeString(name);
-        parcel.writeString(nationality);
-        parcel.writeString(num);
-        parcel.writeString(request_id);
-        parcel.writeString(sex);
-        parcel.writeByte((byte) (success ? 1 : 0));
-    }
 
     public static class FaceRectBean {
         /**
@@ -245,19 +205,4 @@ public class IdBean implements Parcelable{
         }
     }
 
-    @Override
-    public String toString() {
-        return "IdBean{" +
-                "address='" + address + '\'' +
-                ", birth='" + birth + '\'' +
-                ", config_str='" + config_str + '\'' +
-                ", face_rect=" + face_rect +
-                ", name='" + name + '\'' +
-                ", nationality='" + nationality + '\'' +
-                ", num='" + num + '\'' +
-                ", request_id='" + request_id + '\'' +
-                ", sex='" + sex + '\'' +
-                ", success=" + success +
-                '}';
-    }
 }

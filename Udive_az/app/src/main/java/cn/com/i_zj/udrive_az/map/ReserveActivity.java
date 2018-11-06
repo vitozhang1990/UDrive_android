@@ -192,7 +192,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             finish();
             return;
         }
-        countDownTimer = new CountDownTimer(1000 * 60 * 15 - time, 1000) {
+        countDownTimer = new CountDownTimer(1000 * 60 * 4 - time, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (null != tv_time) {
