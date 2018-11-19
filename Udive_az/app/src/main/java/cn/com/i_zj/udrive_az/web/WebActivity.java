@@ -9,25 +9,39 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import butterknife.BindView;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.utils.StringUtils;
 
 /**
  * @author JayQiu
  * @create 2018/10/26
  * @Describe
  */
-public class WebActivity extends DBSBaseActivity {
+public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebStatusListener {
     @BindView(R.id.commonWebview)
     WebView webView;
-    public  static  void startWebActivity(Context context ,String url,String title){
-        Intent intent= new Intent(context,WebActivity.class);
-        intent.putExtra("url",url);
-        intent.putExtra("title",title);
+    @BindView(R.id.progress_bar)
+    SeekBar progressBar;
+
+    private UWebChromeClient uWebChromeClient;
+    private UWebViewClient uWebViewClient;
+    private String url;
+    private String title;
+    Toolbar toolbar;
+    private  int index=10;
+
+    public static void startWebActivity(Context context, String url, String title) {
+        Intent intent = new Intent(context, WebActivity.class);
+        intent.putExtra("url", url);
+        intent.putExtra("title", title);
         context.startActivity(intent);
     }
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_web;
@@ -36,8 +50,9 @@ public class WebActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getIntent().getStringExtra("title"));
+        toolbar = findViewById(R.id.toolbar);
+        title = getIntent().getStringExtra("title");
+        toolbar.setTitle(title);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 
 
@@ -46,19 +61,56 @@ public class WebActivity extends DBSBaseActivity {
                 finish();
             }
         });
-        webView.loadUrl(getIntent().getStringExtra("url"));
+        url = getIntent().getStringExtra("url");
+        if (!StringUtils.isEmpty(url)) {
+            if (!url.startsWith("http")) {
+                url = "http://" + url;
+            }
+        }
+        initView();
+    }
+
+    private void initView() {
+        uWebChromeClient = new UWebChromeClient();
+        uWebViewClient = new UWebViewClient();
+        webView.loadUrl(url);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setAppCacheEnabled(true);
         //设置 缓存模式
         webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+
+        //开启 database storage API 功能
+        webView.getSettings().setDatabaseEnabled(true);
         // 开启 DOM storage API 功能
         webView.getSettings().setDomStorageEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
+        //开启 Application Caches 功能
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.setWebViewClient(uWebViewClient);
+        webView.setWebChromeClient(uWebChromeClient);
+        uWebViewClient.setWebStatusListener(this);
+
+        uWebChromeClient.setOnProgressChanged(new UWebChromeClient.onProgressChanged() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
+            public void onProgressChanged(int progress) {
+                if (progress == 100) {
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    progressBar.setProgress(progress);
+                }
             }
         });
+    }
+
+    @Override
+    public void start() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void loadFinish(String titleStr) {
+        progressBar.setVisibility(View.GONE);
+        if(StringUtils.isEmpty(title)){
+            toolbar.setTitle(titleStr);
+        }
     }
 }

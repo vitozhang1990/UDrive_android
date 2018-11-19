@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +41,11 @@ import io.reactivex.schedulers.Schedulers;
  * 我的订单
  */
 public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter.OnItemClickListener,
-        BaseQuickAdapter.OnItemChildClickListener, SwipeRefreshLayout.OnRefreshListener {
+        BaseQuickAdapter.OnItemChildClickListener {
     private List<OrderResult.OrderItem> list;
     private OrderAdapter orderAdapter;
     private PaymentDialogFragment paymentDialogFragment;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SmartRefreshLayout smartRefreshLayout;
     private RecyclerView recyclerView;
 
     @Override
@@ -61,8 +64,13 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
             }
         });
 
-        mSwipeRefreshLayout = findViewById(R.id.swipeRefresh);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        smartRefreshLayout = findViewById(R.id.swipeRefresh);
+        smartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                getFindTripOrders();
+            }
+        });
 
         recyclerView = findViewById(R.id.recycler);
         list = new ArrayList<>();
@@ -83,11 +91,7 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
         getFindTripOrders();
     }
 
-    @Override
-    public void onRefresh() {
 
-        getFindTripOrders();
-    }
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -108,8 +112,6 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
             intent2.putExtra(ActOrderPayment.TITLE, getResources().getString(R.string.order_finish));
             startActivity(intent2);
         }
-
-
     }
 
     @Override
@@ -140,19 +142,20 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
     }
 
     private void getFindTripOrders() {
-        list.clear();
-        orderAdapter.setNewData(list);
+
         UdriveRestClient.getClentInstance().queryAllOrdersByUser(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<OrderResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mSwipeRefreshLayout.setRefreshing(true);
                     }
 
                     @Override
                     public void onNext(OrderResult value) {
+                        smartRefreshLayout.finishRefresh(true);
+                        list.clear();
+                        orderAdapter.setNewData(list);
                         if (value == null) {
                             orderAdapter.setEmptyView(R.layout.layout_error);
                             return;
@@ -170,13 +173,13 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        mSwipeRefreshLayout.setRefreshing(false);
+                        smartRefreshLayout.finishRefresh(true);
                         orderAdapter.setEmptyView(R.layout.layout_error);
                     }
 
                     @Override
                     public void onComplete() {
-                        mSwipeRefreshLayout.setRefreshing(false);
+
                     }
                 });
     }

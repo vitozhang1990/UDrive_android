@@ -17,7 +17,7 @@ import cn.com.i_zj.udrive_az.R;
 /**
  * @author JayQiu
  * @create 2018/10/24
- * @Describe
+ * @Describe  空或者失败显示View
  */
 public class EmptyView extends FrameLayout {
     ImageView ivImag;

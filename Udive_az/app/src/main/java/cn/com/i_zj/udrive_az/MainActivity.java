@@ -1,23 +1,20 @@
 package cn.com.i_zj.udrive_az;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.umeng.socialize.UMShareAPI;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -30,19 +27,27 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AppversionEntity;
 import cn.com.i_zj.udrive_az.model.GetReservation;
+import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
+import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
+import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
+import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDilog;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -57,7 +62,15 @@ public class MainActivity extends DBSBaseActivity {
     @BindView(R.id.main_tv_tip)
     TextView tipView;
     AlertDialog unfinishedOrderDialog;
-     AppUpdateDialog appUpdateDialog;
+    AppUpdateDialog appUpdateDialog;
+    @BindView(R.id.tv_msg)
+    TextView tvMsg;
+    @BindView(R.id.rl_note)
+    RelativeLayout rlNote;
+
+    private ActivityInfo homeNote;
+    private HomeAdvDilog homeAdvDilog;
+
     @Override
     protected int getLayoutResource() {
         MapUtils.setStatusBar(this);
@@ -76,7 +89,7 @@ public class MainActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        ScreenManager.getScreenManager().pushActivity(MainActivity.this);
         Calendar c = Calendar.getInstance();//
         int month = c.get(Calendar.MONTH) + 1;// 获取当前月份
         int day = c.get(Calendar.DAY_OF_MONTH);// 获取当日期
@@ -89,15 +102,27 @@ public class MainActivity extends DBSBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         appversionCheck();
-
-
     }
 
     @OnClick(R.id.main_tv_personal_info)
     public void onPersonalInfoClick(View view) {
         personalDarwLayout.openDrawer(Gravity.START);
+    }
+
+    @OnClick({R.id.main_tv_msg,R.id.rl_note})
+    public void onClick(View v) {
+        switch (v.getId()){
+            case  R.id.main_tv_msg:
+                startActivity(ActMsg.class);
+                break;
+            case R.id.rl_note:
+                if(homeNote!=null){
+                    WebActivity.startWebActivity(MainActivity.this,homeNote.getHref(),homeNote.getTitle());
+                }
+                break;
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -225,26 +250,23 @@ public class MainActivity extends DBSBaseActivity {
                     public void onNext(RetAppversionObj result) {
                         LogUtils.e("55");
                         if (result != null && result.getCode() == 1) {
-
                             if (result.getData() != null) {// 有更新
                                 showUpdateAppDialog(result.getData());
-
                             } else {
-                                ScreenManager.getScreenManager().pushActivity(MainActivity.this);
                                 if (SessionManager.getInstance().getAuthorization() != null) {
                                     getReservation();
                                     getUnfinishedOrder();
                                 }
+                                getActivity();
                             }
-
                         }
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         LogUtils.e("==============>" + e.getMessage());
+                        getActivity();
                     }
 
                     @Override
@@ -254,8 +276,58 @@ public class MainActivity extends DBSBaseActivity {
                 });
     }
 
+    private void getActivity() {
+
+        UdriveRestClient.getClentInstance().activity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<BaseRetObj<HomeActivityEntity>>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new UObserver<HomeActivityEntity>() {
+                    @Override
+                    public void onSuccess(HomeActivityEntity homeActivityEntity) {
+
+                        if (homeActivityEntity != null) {
+                            homeNote = homeActivityEntity.getNote();
+                            if(homeNote!=null){
+                                rlNote.setVisibility(View.VISIBLE);
+                                tvMsg.setText(homeNote.getTitle());
+                            }else {
+                                rlNote.setVisibility(View.GONE);
+                            }
+                            if(!StringUtils.isEmpty(homeActivityEntity.getActivitys())){
+                                if (homeAdvDilog == null) {
+                                    homeAdvDilog = new HomeAdvDilog(MainActivity.this);
+                                }
+                                homeAdvDilog.setData(homeActivityEntity.getActivitys());
+                                if (!homeAdvDilog.isShowing()) {
+                                    homeAdvDilog.show();
+                                }
+                            }
+
+                        }else {
+                            if(rlNote.getVisibility()==View.VISIBLE){
+                                rlNote.setVisibility(View.GONE);
+                                homeNote=null;
+                            }
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onException(int code, String message) {
+//                        showToast(message);
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                });
+    }
+
     private void showUpdateAppDialog(final AppversionEntity appversionEntity) {
-        if(appUpdateDialog==null){
+        if (appUpdateDialog == null) {
             appUpdateDialog = new AppUpdateDialog(MainActivity.this);
         }
         appUpdateDialog.setAppversion(appversionEntity);
@@ -269,18 +341,18 @@ public class MainActivity extends DBSBaseActivity {
                     case R.id.tv_ok:
                         appUpdateDialog.dismiss();
 
-                        if(appversionEntity.getState()==1){
-                            DownloadApk downloadApk= new DownloadApk(MainActivity.this);
+                        if (appversionEntity.getState() == 1) {
+                            DownloadApk downloadApk = new DownloadApk(MainActivity.this);
                             downloadApk.downloadApk(appversionEntity.getAppUrl());
-                        }else {
+                        } else {
                             AppDownloadManager appDownloadManager = new AppDownloadManager();
-                            appDownloadManager.downloadManager(MainActivity.this,appversionEntity.getAppUrl());
+                            appDownloadManager.downloadManager(MainActivity.this, appversionEntity.getAppUrl());
                         }
                         break;
                 }
             }
         });
-        if(!appUpdateDialog.isShowing()){
+        if (!appUpdateDialog.isShowing()) {
             appUpdateDialog.show();
         }
 
@@ -337,4 +409,6 @@ public class MainActivity extends DBSBaseActivity {
         }
         return false;
     }
+
+
 }

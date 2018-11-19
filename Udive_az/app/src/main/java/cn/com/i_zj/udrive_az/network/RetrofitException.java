@@ -35,15 +35,15 @@ public class RetrofitException extends RuntimeException {
       } catch (IOException e) {
       }
     }
-    return new RetrofitException(message, url, response, Kind.HTTP, null, retrofit);
+    return new RetrofitException(response.code(),message, url, response, Kind.HTTP, null, retrofit);
   }
 
   public static RetrofitException networkError(IOException exception) {
-    return new RetrofitException(exception.getMessage(), null, null, Kind.NETWORK, exception, null);
+    return new RetrofitException(1,exception.getMessage(), null, null, Kind.NETWORK, exception, null);
   }
 
   public static RetrofitException unexpectedError(Throwable exception) {
-    return new RetrofitException(exception.getMessage(), null, null, Kind.UNEXPECTED, exception, null);
+    return new RetrofitException(0,exception.getMessage(), null, null, Kind.UNEXPECTED, exception, null);
   }
 
   public enum Kind {
@@ -56,10 +56,11 @@ public class RetrofitException extends RuntimeException {
   private final Response response;
   private final Kind kind;
   private final Retrofit retrofit;
-
-  RetrofitException(String message, String url, Response response, Kind kind, Throwable exception, Retrofit retrofit) {
+  private final  int code;
+  RetrofitException(int code,String message, String url, Response response, Kind kind, Throwable exception, Retrofit retrofit) {
     super(message, exception);
     this.url = url;
+    this.code=code;
     this.response = response;
     this.kind = kind;
     this.retrofit = retrofit;
@@ -79,6 +80,10 @@ public class RetrofitException extends RuntimeException {
 
   public Retrofit getRetrofit() {
     return retrofit;
+  }
+
+  public int getCode() {
+    return code;
   }
 
   public <T> T getErrorBodyAs(Class<T> type) throws IOException {

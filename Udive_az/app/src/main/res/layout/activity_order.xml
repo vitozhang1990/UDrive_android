@@ -8,18 +8,28 @@
     tools:context=".lz.ui.order.OrderActivity">
 
     <include layout="@layout/layout_lz_toolbar" />
-
-    <android.support.v4.widget.SwipeRefreshLayout
+    <View style="@style/line_horizontal" />
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/swipeRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srlAccentColor="@android:color/white"
+        app:srlEnablePreviewInEditMode="true"
+        app:srlPrimaryColor="@android:color/white">
+
+        <cn.com.i_zj.udrive_az.widget.urefresh.URefreshHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 
 </LinearLayout>

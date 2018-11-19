@@ -3,9 +3,11 @@ package cn.com.i_zj.udrive_az.network;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.CouponResult;
@@ -13,6 +15,7 @@ import cn.com.i_zj.udrive_az.model.CreateDepositResult;
 import cn.com.i_zj.udrive_az.model.DepositAmountResult;
 import cn.com.i_zj.udrive_az.model.DriverResult;
 import cn.com.i_zj.udrive_az.model.GetReservation;
+import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
 import cn.com.i_zj.udrive_az.model.MyWalletResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
@@ -34,7 +37,9 @@ import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.model.req.AddDriverCardInfo;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
+import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -176,7 +181,9 @@ public interface UdriveRestAPI {
       @GET("/mobile/park/findRelativeParks")
       Observable<ParksResult> getParks();
 
-
+    //获取停车场
+    @GET("/mobile/park/findRelativeParks")
+    Observable<BaseRetObj<List<ParksResult.DataBean>>> getParkslll();
     @GET()
     Observable<CarInfoResult> getCarInfo(@Url String id);
     //预约车辆接口
@@ -231,4 +238,14 @@ public interface UdriveRestAPI {
 
     @GET("/mobile/appversion/1/check")
     Observable<RetAppversionObj> appversionCheck(@Query("version") String version);
+
+    @POST("/open/registration/up")
+    Observable<BaseRetObj<Object>> registration( @Body Map<String, Object> body);
+    @POST("/open/registration/down")
+    Observable<BaseRetObj<String>> registrationDown( @Body Map<String, Object> body);
+    @GET("/mobile/activity/index")
+    Observable<BaseRetObj<HomeActivityEntity>> activity();
+    @GET("/mobile/activity/page")
+    Observable<BaseRetObj<RetEventObj>> activityPage(@Query("pageNumber") int pageNumber, @Query("pageSize")int pageSize);
+
 }

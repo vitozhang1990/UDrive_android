@@ -43,8 +43,10 @@ import cn.com.i_zj.udrive_az.model.NetworkResult;
 import cn.com.i_zj.udrive_az.model.SessionResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.DeviceUtils;
+import cn.com.i_zj.udrive_az.utils.PushUtil;
 import cn.com.i_zj.udrive_az.utils.RegexUtils;
 import cn.com.i_zj.udrive_az.widget.VerificationCodeEditText;
+import cn.jpush.android.api.JPushInterface;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -211,6 +213,8 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
             showToast("登录成功");
             countDownTimer.cancel();
             SessionManager.getInstance().cacheSession(sessionResult);
+          String  regId = JPushInterface.getRegistrationID(LoginDialogFragment.this.getContext());
+            PushUtil.registPush(regId);
             EventBus.getDefault().post(new LoginSuccessEvent());
             dismiss();
           } else {

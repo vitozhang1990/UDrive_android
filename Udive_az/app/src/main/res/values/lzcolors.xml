@@ -8,7 +8,7 @@
     <color name="order_type_bg">#474752</color>
 
     <color name="order_connect">#E3E3E3</color>
-
+    <color name="view_bg">#fafafa</color>
     <color name="order_pay">#bc2929</color>
     <color name="right_text_color">#CACACA</color>
     <color name="btn_bg">#31333d</color>

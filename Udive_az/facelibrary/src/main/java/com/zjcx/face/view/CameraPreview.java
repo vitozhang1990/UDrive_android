@@ -424,4 +424,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public interface OnImageData {
         void onImageData(byte[] data);
     }
+
 }

@@ -17,7 +17,7 @@ android {
         targetSdkVersion 28
         multiDexEnabled true
         versionCode 6
-        versionName "1.12.1"
+        versionName "1.14.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -34,11 +34,15 @@ android {
         release {
             minifyEnabled false
             signingConfig signingConfigs.debug
+            zipAlignEnabled true  // Zipalign优化
+            shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
         }
         debug {
             minifyEnabled false
+            zipAlignEnabled true  // Zipalign优化
+            shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -60,6 +64,11 @@ android {
             v2SigningEnabled false
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 apply plugin: 'com.bugtags.library.plugin'
@@ -71,9 +80,7 @@ bugtags {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     //    implementation 'com.android.support:support-v4:28.0.0-rc02'
 
@@ -93,9 +100,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
 
     // kotlin，语言库
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.anko:anko-common:$anko_version"
 
     // okhttp，网络库
@@ -109,12 +120,18 @@ dependencies {
     // picasso，图片库
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
+    implementation 'com.facebook.fresco:fresco:0.12.0'
+    implementation 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
+
     // eventbus，事件总线
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     // butterknife，反射库，方便代码编写
     implementation 'com.jakewharton:butterknife:8.8.0'
     kapt 'com.jakewharton:butterknife-compiler:8.8.0'
+
+
+
 
     //utils
     implementation 'com.blankj:utilcode:1.9.8'
@@ -151,7 +168,8 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.70.android'
     implementation files('libs/commons-lang3-3.8.jar')
     implementation 'com.github.bumptech.glide:glide:3.7.0'
-
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
     implementation project(':pickerview')

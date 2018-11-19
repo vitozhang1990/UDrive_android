@@ -109,6 +109,10 @@ public class CarsFragment extends Fragment {
             tvXuhang.setText(String.valueOf(result.getMaxDistance()));
             tvFenzhong.setText(deciMal(result.getTimeFee(), 100) + "");
             tvGongli.setText(deciMal(result.getMileagePrice(), 100) + "");
+            if("北汽LITE".equals(result.getBrand())){
+                tvRanliao.setText("电动车");
+            }
+
             Glide.with(getActivity()).load( CarTypeImageUtils.getCarImageByBrand(result.getBrand(),result.getCarColor())).into(ivCar);
             if(result.isTrafficControl()){
                 mTvTrafficControl.setVisibility(View.VISIBLE);

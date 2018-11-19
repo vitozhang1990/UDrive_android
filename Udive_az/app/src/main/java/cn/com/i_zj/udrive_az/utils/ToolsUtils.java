@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.view.WindowManager;
 
@@ -36,7 +38,11 @@ public class ToolsUtils {
         int version = packInfo.versionCode;
         return version;
     }
-
+    public static boolean isConnected(Context context) {
+        ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = conn.getActiveNetworkInfo();
+        return (info != null && info.isConnected());
+    }
     /**
      * 获取版本名称
      *
@@ -132,7 +138,16 @@ public class ToolsUtils {
         return timeStemp;
 
     }
+    public static String getTime(long time, String xxx){
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(xxx);
+            return simpleDateFormat.format(time);
+        } catch (Exception e) {
+            e.printStackTrace();
 
+        }
+        return "";
+    }
     /**
      * 获取application中指定的meta-data
      * @return 如果没有获取成功(没有对应值，或者异常)，则返回值为空

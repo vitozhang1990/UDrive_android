@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.trello.rxlifecycle2.components.support.RxFragment;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -19,7 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
-public abstract class DBSBaseFragment extends Fragment {
+public abstract class DBSBaseFragment extends RxFragment {
 
   protected ProgressDialog progressDialog;
 

@@ -14,7 +14,7 @@
     <cn.com.i_zj.udrive_az.map.CompatToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="45dp"
         android:fitsSystemWindows="true"
         android:minHeight="45dp"
         android:padding="0dp">

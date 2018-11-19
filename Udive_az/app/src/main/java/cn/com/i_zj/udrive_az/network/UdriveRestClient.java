@@ -6,8 +6,11 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.utils.StringUtils;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -30,8 +33,11 @@ public class UdriveRestClient {
      */
 //    public static final String HOST_ONLINE = "http://47.98.47.82:8088/";
 
-      private static final String HOST_ONLINE = "http://192.168.1.54:8088/";
+//      private static final String HOST_ONLINE = "http://192.168.1.54:8088/";
 //      private static final String HOST_ONLINE = "http://192.168.1.56:8088/";
+    private static final String HOST_ONLINE = "http://test.zzbcjj.com:8088/";
+
+
     public synchronized static UdriveRestAPI getClentInstance() {
         if (null == udriveRestAPI) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -75,7 +81,13 @@ public class UdriveRestClient {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            return chain.proceed(chain.request());
+            Request.Builder builder = chain.request()
+                    .newBuilder();
+            String aAuthorization = SessionManager.getInstance().getAuthorization();
+            if (!StringUtils.isEmpty(aAuthorization)) {
+                builder.addHeader("Authorization", aAuthorization);
+            }
+            return chain.proceed(builder.build());
         }
     }
 }

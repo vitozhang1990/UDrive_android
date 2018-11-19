@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_adv"
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+    </android.support.v4.view.ViewPager>
+
+
+
+    <LinearLayout
+        android:id="@+id/ll_indiactor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/vp_adv"
+        android:gravity="center"
+        android:orientation="horizontal" >
+    </LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:src="@mipmap/ic_ad_close"
+        android:layout_below="@+id/vp_adv"
+        android:id="@+id/iv_close"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_48"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
