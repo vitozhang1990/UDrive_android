@@ -125,9 +125,10 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
             finish();
             return;
         }
-        checkPermission();
-        initTimerCount();
         startNot();
+        checkPermission();
+
+
     }
 
     private void initView() {
@@ -212,7 +213,10 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
             EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.READ_PHONE_STATE);
         } else {
             initView();
+            initTimerCount();
             initSDK();
+
+
         }
     }
 
@@ -228,6 +232,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
         if (perms.size() > 0) {
             ToastUtils.showShort(R.string.permission_success);
             initView();
+            initTimerCount();
             initSDK();
         } else {
             ToastUtils.showShort(R.string.permission_file);
@@ -310,7 +315,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
                     isLive = true;
                     startTimer();
                 }
-                if (timeindex > 1) {
+                if (timeindex >=1) {
                     File file = saveImage(data, width, height);
                     if (file != null) {
                         timeindex = 0;
@@ -476,9 +481,16 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
 
     @Override
     protected void onDestroy() {
-        vCamera.cwStopCamera();
-        ftEngine.AFT_FSDK_UninitialFaceEngine();
-        arcFaceEngine.unInitEngine();
+        if(vCamera!=null){
+            vCamera.cwStopCamera();
+        }
+        if(ftEngine!=null){
+            ftEngine.AFT_FSDK_UninitialFaceEngine();
+        }
+
+        if(arcFaceEngine!=null){
+            arcFaceEngine.unInitEngine();
+        }
         cancelTimer();
         super.onDestroy();
     }

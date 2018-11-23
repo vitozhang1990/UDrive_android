@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -25,10 +26,10 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
@@ -58,6 +59,10 @@ public class DepositActivity extends DBSBaseActivity {
 
     @BindView(R.id.deposit_tv_status)
     AppCompatTextView depositTvStatus;
+    @BindView(R.id.deposit_btn_withdraw)
+    AppCompatButton depositBtnWithdraw;
+    @BindView(R.id.deposit_btn_recharge)
+    AppCompatButton depositBtnRecharge;
 
     @Override
     protected int getLayoutResource() {
@@ -123,12 +128,14 @@ public class DepositActivity extends DBSBaseActivity {
         }
 
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
             dissmisProgressDialog();
         }
     }
+
     private void getDepositOrderNumber() {
         if (userDepositResult == null) {
             Toast.makeText(DepositActivity.this, "获取信息失败,请稍后再试!", Toast.LENGTH_SHORT).show();
@@ -158,7 +165,7 @@ public class DepositActivity extends DBSBaseActivity {
     }
 
     private void getDepositMoney(String orderNumber) {
-        showProgressDialog("加载中...",true);
+        showProgressDialog("加载中...", true);
         UdriveRestClient.getClentInstance().refundMoney(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -193,7 +200,7 @@ public class DepositActivity extends DBSBaseActivity {
 
     //获取押金信息
     private void getUserDeposit() {
-        showProgressDialog("加载中...",true);
+        showProgressDialog("加载中...", true);
         UdriveRestClient.getClentInstance().userDeposit(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -260,24 +267,29 @@ public class DepositActivity extends DBSBaseActivity {
     private void parseDepositStatus(UserDepositResult value) {
         if (value.data.payState == 1) {
             depositTvStatus.setText("待缴纳");
+            depositBtnWithdraw.setEnabled(false);// 提现
             dissmisProgressDialog();
         } else if (value.data.payState == 2) {
             depositTvStatus.setText("已缴纳");
+            depositBtnWithdraw.setEnabled(true);
+            depositBtnRecharge.setEnabled(false);// 不可充值
             dissmisProgressDialog();
         } else if (value.data.payState == 3) {
             depositTvStatus.setText("退款中");
             dissmisProgressDialog();
+            depositBtnWithdraw.setEnabled(false);
         } else if (value.data.payState == 4) {
             depositTvStatus.setText("已退款");
             getDepositAmount();
         } else {
             depositTvStatus.setText("未缴纳");
+            depositBtnWithdraw.setEnabled(false);
             getDepositAmount();
         }
     }
 
     private void getCreateDepositNumber(final int type) {
-        showProgressDialog("加载中...",true);
+        showProgressDialog("加载中...", true);
         UdriveRestClient.getClentInstance().createDeposit(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -417,7 +429,8 @@ public class DepositActivity extends DBSBaseActivity {
                         dissmisProgressDialog();
                     } else {
                         // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-                        showToast("支付失败");dissmisProgressDialog();
+                        showToast("支付失败");
+                        dissmisProgressDialog();
                     }
                     break;
                 }

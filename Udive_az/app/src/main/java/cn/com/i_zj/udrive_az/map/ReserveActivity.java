@@ -75,6 +75,7 @@ import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -141,6 +142,8 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     ImageView mIvCar;
     @BindView(R.id.iv_car1)
     ImageView mIvCar1;
+    @BindView(R.id.iv_na)
+    ImageView mIvNa;
 
     private AMap mAmap;
     //声明AMapLocationClient类对象
@@ -192,11 +195,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             finish();
             return;
         }
-        countDownTimer = new CountDownTimer(1000 * 60 * 4 - time, 1000) {
+        countDownTimer = new CountDownTimer(1000 * 60 * 15 - time, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (null != tv_time) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");//12小时制
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");//12小时制
                     Date date = new Date();
                     date.setTime(millisUntilFinished);
                     tv_time.setText(simpleDateFormat.format(date));
@@ -306,15 +309,15 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     orderNum = String.valueOf(orderResultBean.getData().getNumber());
                     if (orderResultBean.getData().getFromPark() != null) {
                         fromPark = orderResultBean.getData().getFromPark();
-                        latLonPoint1 = new LatLonPoint(fromPark.getLatitude(), fromPark.getLongitude());
+                        latLonPoint1 = new LatLonPoint(fromPark.getLatitude(), fromPark.getLongtitude());
                         startLatitude = fromPark.getLatitude();
-                        startLongitude = fromPark.getLongitude();
+                        startLongitude = fromPark.getLongtitude();
                     }
                     if (orderResultBean.getData().getToPark() != null) {
                         toPark = orderResultBean.getData().getToPark();
 
                         mTvPname.setText(toPark.getName());
-                        latLonPoint2 = new LatLonPoint(toPark.getLatitude(), toPark.getLongitude());
+                        latLonPoint2 = new LatLonPoint(toPark.getLatitude(), toPark.getLongtitude());
                     }
                     if (orderResultBean.getData().getCar() != null) {
                         car = orderResultBean.getData().getCar();
@@ -369,6 +372,21 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 startActivity(intent);
             }
         });
+        mIvNa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (latLonPoint2 != null) {
+                    NavigationDialog navigationDialog = new NavigationDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("lng", String.valueOf(latLonPoint2.getLongitude()));
+                    bundle.putString("lat", String.valueOf(latLonPoint2.getLatitude()));
+                    navigationDialog.setArguments(bundle);
+                    navigationDialog.show(getSupportFragmentManager(), "navigation");
+                }
+
+            }
+        });
+
     }
 
     //初始化地图

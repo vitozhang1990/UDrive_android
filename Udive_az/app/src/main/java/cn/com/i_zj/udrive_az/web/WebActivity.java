@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -12,10 +13,16 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author JayQiu
@@ -27,13 +34,13 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     WebView webView;
     @BindView(R.id.progress_bar)
     SeekBar progressBar;
-
+    private Disposable disposable;
     private UWebChromeClient uWebChromeClient;
     private UWebViewClient uWebViewClient;
     private String url;
     private String title;
     Toolbar toolbar;
-    private  int index=10;
+    private int index = 10;
 
     public static void startWebActivity(Context context, String url, String title) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -71,6 +78,7 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     }
 
     private void initView() {
+        progressBar.setProgress(0);
         uWebChromeClient = new UWebChromeClient();
         uWebViewClient = new UWebViewClient();
         webView.loadUrl(url);
@@ -92,11 +100,9 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
         uWebChromeClient.setOnProgressChanged(new UWebChromeClient.onProgressChanged() {
             @Override
             public void onProgressChanged(int progress) {
-                if (progress == 100) {
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setProgress(progress);
-                }
+
+                nextPor(progress);
+
             }
         });
     }
@@ -108,9 +114,47 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
 
     @Override
     public void loadFinish(String titleStr) {
-        progressBar.setVisibility(View.GONE);
-        if(StringUtils.isEmpty(title)){
+        nextPor(100);
+        if (StringUtils.isEmpty(title)) {
             toolbar.setTitle(titleStr);
         }
+    }
+
+    private void nextPor(final int progress) {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        Observable.interval(0, 10, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        int oldPro = progressBar.getProgress();
+                        Log.e("====>", oldPro + "============");
+                        if (oldPro <= progress) {
+                            oldPro = oldPro + 2;
+                            progressBar.setProgress(oldPro);
+                        }
+                        if (oldPro >= 100) {
+                            progressBar.setVisibility(View.GONE);
+                            disposable.dispose();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

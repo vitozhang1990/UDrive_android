@@ -46,6 +46,7 @@ public class CouponDialogFragment extends BottomSheetDialogFragment implements B
 
     private TextView mTvNoUseCoupon;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

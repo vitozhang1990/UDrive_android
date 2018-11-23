@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -102,7 +104,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     private String title;
     private String orderNumber;
     private OrderDetailResult.OrderItem mOrderItem;
-    private CouponDialogFragment couponDialogFragment;
+    private CouponsDialogFragment couponDialogFragment;
 
     @Override
     protected int getLayoutResource() {
@@ -115,7 +117,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
         title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
         initView();
-        findUnUsePreferential();
+
         findTripOrders();
     }
 
@@ -141,10 +143,17 @@ public class ActConfirmOrder extends DBSBaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_coupon:
+                if (mOrderItem == null) {
+                    return;
+                }
+
                 if (couponDialogFragment != null && !couponDialogFragment.isHidden()) {
                     couponDialogFragment.dismiss();
                 }
-                couponDialogFragment = new CouponDialogFragment();
+                couponDialogFragment = new CouponsDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("orderNumber", mOrderItem.id + "");
+                couponDialogFragment.setArguments(bundle);
                 couponDialogFragment.show(getSupportFragmentManager(), "coupon");
                 break;
             case R.id.btn_commit:
@@ -216,7 +225,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
                             return;
                         }
                         showDate(value);
-
+                        findUnUsePreferential();
 
                     }
 
@@ -237,20 +246,28 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
     private void showDate(OrderDetailResult value) {
         if (value.data != null) {
+
             mOrderItem = value.data;
+
             discountEntity = mOrderItem.getDiscount();
             btnCommit.setVisibility(View.VISIBLE);
             OrderDetailResult.OrderItem orderItem = value.data;
             tvSubMoneyCount.setText((value.data.shouldPayAmount) / 100f + "元");
             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
             if (accountInfo != null) {
-                payYuE.setView(R.mipmap.ic_payment_yue, "微信  "+String.format(Locale.getDefault(),"（%.2f 元）",(accountInfo.data.balance / 100f + accountInfo.data.giveBalance / 100f) ), true);
+
+                double balance = (accountInfo.data.balance + accountInfo.data.giveBalance) / (double) 100;
+                payYuE.setView(R.mipmap.ic_payment_yue, "余额  " + String.format(Locale.getDefault(), "（%.2f 元）", balance), true);
             }
 
             if (value.data.preferentialAmount > 0) {
-                tvCoupon.setText(""+value.data.preferentialAmount / 100f + "元");
+                tvCoupon.setText("");
+                SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan( "-"+value.data.preferentialAmount / 100f + "元", Color.RED, SizeUtils.sp2px(ActConfirmOrder.this, 14));
+                tvCoupon.append(spannableString1);
+            }else {
+                tvCoupon.setText("不使用优惠券");
             }
-            tvMoneyCount.setText("合计" + (orderItem.shouldPayAmount-value.data.preferentialAmount ) / 100f + "元");
+            tvMoneyCount.setText("合计" + (orderItem.shouldPayAmount - value.data.preferentialAmount) / 100f + "元");
 
 
             if (discountEntity != null) {
@@ -258,10 +275,10 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
                 tvVipMoneyCount.setText("-" + (value.data.discountAmount) / 100f + "元");
                 btnCommit.setText("确认支付" + (value.data.realPayAmount) / 100f + "元");
-                tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "元");
+                tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             } else {
                 btnCommit.setText("确认支付" + (orderItem.realPayAmount) / 100f + "元");
-                tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "元");
+                tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             }
 
         }
@@ -309,7 +326,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
                     @Override
                     public void onNext(PayOrderByBlanceResult value) {
                         dissmisProgressDialog();
-                        if(value!=null&&value.getCode()==1){
+                        if (value != null && value.getCode() == 1) {
                             ActPaySucc.startActPaySucc(ActConfirmOrder.this);
                             finish();
                         }
@@ -335,6 +352,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
     /**
      * 优惠券
+     *
      * @param orderId
      * @param pId
      */
@@ -426,10 +444,10 @@ public class ActConfirmOrder extends DBSBaseActivity {
                     @Override
                     public void onNext(WeichatPayOrder value) {
                         dissmisProgressDialog();
-                        if(value!=null&&value.code==1){
+                        if (value != null && value.code == 1 || value.code == 1012) {
                             gotoWexinPayActivity(value.data);
-                        }else {
-                          ToastUtils.showShort("微信支付失败了");
+                        } else {
+                            ToastUtils.showShort("微信支付失败了");
                         }
 
 
@@ -450,7 +468,6 @@ public class ActConfirmOrder extends DBSBaseActivity {
     private void gotoWexinPayActivity(WeichatPayOrder.WeiChatPayDetail payInfo) {
         IWXAPI iwxapi = WXAPIFactory.createWXAPI(this, Constants.WEIXIN_APP_ID, false);
         iwxapi.registerApp(Constants.WEIXIN_APP_ID);
-
         PayReq payReq = new PayReq();
         payReq.appId = payInfo.appid;
         payReq.partnerId = payInfo.partnerid;
@@ -462,6 +479,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
         boolean result = iwxapi.sendReq(payReq);
         Log.e("*****", "**" + result + "***");
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
@@ -471,6 +489,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
             finish();
         }
     }
+
     private static final int SDK_PAY_FLAG = 1;
 
     private void gotoAliPayActivity(final String orderInfo) {
@@ -533,41 +552,40 @@ public class ActConfirmOrder extends DBSBaseActivity {
             Toast.makeText(ActConfirmOrder.this, "数据请求失败", Toast.LENGTH_SHORT).show();
             return;
         }
-        UdriveRestClient.getClentInstance().findUnUsePreferential(SessionManager.getInstance().getAuthorization(), accountInfo.data.userId + "")
+        if (mOrderItem == null) {
+            return;
+        }
+        UdriveRestClient.getClentInstance().v1FindUnUsePreferential(mOrderItem.id + "", accountInfo.data.userId + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<UnUseCouponResult>() {
+                .subscribe(new UObserver<List<UnUseCouponResult.DataBean>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(UnUseCouponResult value) {
-                        if (value!=null) {
-                            if(!StringUtils.isEmpty(value.getData())){
-                                SpannableString spannableString = SpannableStringUtil.setColorAndSizeSpan("可用优惠券", Color.GRAY, SizeUtils.sp2px(ActConfirmOrder.this,14));
-                                tvCoupon.append(spannableString);
-                                SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan(value.getData().size()+"", Color.RED, SizeUtils.sp2px(ActConfirmOrder.this,14));
-                                tvCoupon.append(spannableString1);
-                                SpannableString spannableString2 = SpannableStringUtil.setColorAndSizeSpan("张", Color.GRAY, SizeUtils.sp2px(ActConfirmOrder.this,14));
-                                tvCoupon.append(spannableString2);
-                            }else {
-                                tvCoupon.setText("没有可用的优惠券");
-                            }
-                        }else {
+                    public void onSuccess(List<UnUseCouponResult.DataBean> value) {
+                        if (!StringUtils.isEmpty(value)) {
+                            tvCoupon.setText("");
+                            SpannableString spannableString = SpannableStringUtil.setColorAndSizeSpan("可用优惠券", Color.GRAY, SizeUtils.sp2px(ActConfirmOrder.this, 14));
+                            tvCoupon.append(spannableString);
+                            SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan(value.size() + "", Color.RED, SizeUtils.sp2px(ActConfirmOrder.this, 14));
+                            tvCoupon.append(spannableString1);
+                            SpannableString spannableString2 = SpannableStringUtil.setColorAndSizeSpan("张", Color.GRAY, SizeUtils.sp2px(ActConfirmOrder.this, 14));
+                            tvCoupon.append(spannableString2);
+                        } else {
                             tvCoupon.setText("没有可用的优惠券");
                         }
+                    }
+
+                    @Override
+                    public void onException(int code, String message) {
 
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
+                    public void onFinish() {
 
                     }
                 });

@@ -1,5 +1,6 @@
 package cn.com.i_zj.udrive_az.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class UnUseCouponResult {
@@ -37,7 +38,8 @@ public class UnUseCouponResult {
         this.data = data;
     }
 
-    public static class DataBean {
+
+    public static class DataBean implements Serializable {
         /**
          * distribute_time : 2018-08-30
          * discription : 注册赠送优惠券
@@ -52,7 +54,9 @@ public class UnUseCouponResult {
          * type : 0
          * forbidden_state : 1
          */
-
+        public static  final  int BAOLAI=1;
+        public static  final  int POLO=2;
+        public static  final  int LITE=3;
         private String distribute_time;
         private String discription;
         private long create_time;
@@ -65,6 +69,13 @@ public class UnUseCouponResult {
         private int validity;
         private int type;
         private int forbidden_state;
+        private int brand_id;
+        private int preferential_type;
+        private float rebate;
+        private float instant_rebate_amount;
+        private String start_time;
+        private String end_time;
+        private int max_amount;
 
         public String getDistribute_time() {
             return distribute_time;
@@ -160,6 +171,62 @@ public class UnUseCouponResult {
 
         public void setForbidden_state(int forbidden_state) {
             this.forbidden_state = forbidden_state;
+        }
+
+        public int getBrand_id() {
+            return brand_id;
+        }
+
+        public void setBrand_id(int brand_id) {
+            this.brand_id = brand_id;
+        }
+
+        public int getPreferential_type() {
+            return preferential_type;
+        }
+
+        public void setPreferential_type(int preferential_type) {
+            this.preferential_type = preferential_type;
+        }
+
+        public float getRebate() {
+            return rebate;
+        }
+
+        public void setRebate(float rebate) {
+            this.rebate = rebate;
+        }
+
+        public float getInstant_rebate_amount() {
+            return instant_rebate_amount;
+        }
+
+        public void setInstant_rebate_amount(float instant_rebate_amount) {
+            this.instant_rebate_amount = instant_rebate_amount;
+        }
+
+        public String getStart_time() {
+            return start_time;
+        }
+
+        public void setStart_time(String start_time) {
+            this.start_time = start_time;
+        }
+
+        public String getEnd_time() {
+            return end_time;
+        }
+
+        public void setEnd_time(String end_time) {
+            this.end_time = end_time;
+        }
+
+        public int getMax_amount() {
+            return max_amount;
+        }
+
+        public void setMax_amount(int max_amount) {
+            this.max_amount = max_amount;
         }
     }
 }

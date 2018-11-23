@@ -1,9 +1,11 @@
 package cn.com.i_zj.udrive_az;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.umeng.socialize.UMShareAPI;
 
@@ -21,6 +24,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -52,9 +56,10 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class MainActivity extends DBSBaseActivity {
+public class MainActivity extends DBSBaseActivity implements EasyPermissions.PermissionCallbacks{
 
     @BindView(R.id.drawer_layout)
     DrawerLayout personalDarwLayout;
@@ -70,6 +75,8 @@ public class MainActivity extends DBSBaseActivity {
 
     private ActivityInfo homeNote;
     private HomeAdvDilog homeAdvDilog;
+
+    private  boolean isFirst=true;
 
     @Override
     protected int getLayoutResource() {
@@ -97,8 +104,41 @@ public class MainActivity extends DBSBaseActivity {
         if (month <= 8 || (month == 9 && day < 5)) {
             tipView.setVisibility(View.VISIBLE);
         }
+        checkPermission();
     }
 
+    /**
+     * 检测权限
+     */
+    private void checkPermission() {
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE);
+
+        if (!external) {
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (perms.size() > 0) {
+            ToastUtils.showShort(R.string.permission_success);
+        } else {
+            ToastUtils.showShort(R.string.permission_file);
+        }
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showShort(R.string.permission_request_fail);
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -257,7 +297,11 @@ public class MainActivity extends DBSBaseActivity {
                                     getReservation();
                                     getUnfinishedOrder();
                                 }
-                                getActivity();
+
+                                if(isFirst){
+                                    isFirst=false;
+                                    getActivity();
+                                }
                             }
                         }
                     }
@@ -266,7 +310,10 @@ public class MainActivity extends DBSBaseActivity {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         LogUtils.e("==============>" + e.getMessage());
-                        getActivity();
+                        if(isFirst){
+                            isFirst=false;
+                            getActivity();
+                        }
                     }
 
                     @Override

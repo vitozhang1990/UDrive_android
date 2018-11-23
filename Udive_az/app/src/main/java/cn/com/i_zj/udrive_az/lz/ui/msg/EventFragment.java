@@ -90,7 +90,7 @@ public class EventFragment extends DBSBaseFragment {
                             }else {
                                 listAdapter.addData(response.getList());
                             }
-                            swipeRefresh.setEnableLoadmore(!response.isLastPage());
+                            swipeRefresh.setEnableLoadmore(!response.isHasNextPage());
 
                         }
                     }

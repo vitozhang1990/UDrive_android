@@ -90,7 +90,7 @@ class EventKFragment : DBSBaseFragment() {
                                 }
                                 eventListAdapter.addData(response.list)
                             }
-                            swipeRefresh.isEnableLoadmore = !response.isLastPage
+                            swipeRefresh.isEnableLoadmore = response.isHasNextPage
                         }
                     }
 
@@ -107,7 +107,7 @@ class EventKFragment : DBSBaseFragment() {
 
                     override fun onFinish() {
                         if (page == 1) {
-                            swipeRefresh.finishRefresh();
+                            swipeRefresh.finishRefresh()
                         } else {
                             swipeRefresh.finishLoadmore()
                         }

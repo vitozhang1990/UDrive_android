@@ -22,15 +22,15 @@ public class WalletResult {
     public int userId;
 
     @SerializedName("userBalance")
-    public float userBalance;
+    public long userBalance;
 
     @SerializedName("preferentialAmount")
-    public float preferentialAmount;
+    public int preferentialAmount;
 
     @SerializedName("carIncome")
     public int carIncome;
 
     @SerializedName("giveBalance")
-    public int giveBalance;
+    public long giveBalance;
   }
 }

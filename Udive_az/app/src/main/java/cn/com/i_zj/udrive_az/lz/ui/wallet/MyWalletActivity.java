@@ -210,12 +210,14 @@ public class MyWalletActivity extends DBSBaseActivity {
         pay_alipay.setCheck(position == ALI);
         pay_wechat.setCheck(position == WECHAT);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
             dissmisProgressDialog();
         }
     }
+
     //获取押金信息
     private void getMyWallet() {
         showProgressDialog("加载中...", true);
@@ -234,9 +236,11 @@ public class MyWalletActivity extends DBSBaseActivity {
                         if (value.data == null) {
                             Toast.makeText(MyWalletActivity.this, "获取数据失败", Toast.LENGTH_SHORT).show();
                         } else {
-                            tv_yu_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", Float.parseFloat("" + (value.data.userBalance / 100f + value.data.giveBalance / 100f))));
-                            tv_zeng_e_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", Float.parseFloat("" + value.data.giveBalance / 100f)));
-                            tv_ben_jin_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", Float.parseFloat("" + value.data.userBalance / 100f)));
+
+                            double balance = (value.data.userBalance + value.data.giveBalance) / (double) 100;
+                            tv_yu_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", balance));
+                            tv_zeng_e_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", Double.parseDouble("" + value.data.giveBalance / 100d)));
+                            tv_ben_jin_msg.setText(String.format(Locale.getDefault(), "¥ %.2f", Double.parseDouble("" + value.data.userBalance / 100d)));
                         }
                     }
 

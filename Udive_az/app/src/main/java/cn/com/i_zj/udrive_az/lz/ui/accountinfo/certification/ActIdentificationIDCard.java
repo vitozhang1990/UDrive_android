@@ -236,7 +236,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
             showToast("请输入证件号码");
             return false;
         }
-        addIdCardInfo.setIdentityCardNumber(idName);
+        addIdCardInfo.setIdentityCardNumber(idNum);
         //
         String startTime = addIdCardInfo.getValidaTime();
         if (StringUtils.isEmpty(startTime)) {

@@ -118,8 +118,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
             mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",(accountInfo.data.balance / 100f + accountInfo.data.giveBalance / 100f) ));
             parseMoney(accountInfo);
         } else {
-            mTvUserName.setText("");
-            mTvAccountType.setText("");
+            mTvUserName.setText("未登录");
+            mTvAccountType.setText("未认证用户");
             mDiMoney.setRightText("");
             mDiDeposit.setRightText("");
         }
@@ -271,7 +271,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                         parseIdType(value.data.idCardState);
                         parseMoney(value);
-                        mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",(value.data.balance / 100f + value.data.giveBalance / 100f) ));
+                        double balance=(value.data.balance + value.data.giveBalance )/(double)100;
+                        mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",balance));
 
 //                        mDiDeposit.setRightText(value.data.depositState == 0 ? getString(R.string.lz_un_jiaona) : getString(R.string.lz_jiaona));
                     }

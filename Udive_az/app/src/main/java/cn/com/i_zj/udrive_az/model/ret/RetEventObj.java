@@ -11,15 +11,15 @@ import cn.com.i_zj.udrive_az.model.ActivityInfo;
  * @Describe
  */
 public class RetEventObj implements Serializable {
-    private boolean isLastPage;
+    private boolean  hasNextPage;
     private List<ActivityInfo> list;
 
-    public boolean isLastPage() {
-        return isLastPage;
+    public boolean isHasNextPage() {
+        return hasNextPage;
     }
 
-    public void setLastPage(boolean lastPage) {
-        isLastPage = lastPage;
+    public void setHasNextPage(boolean hasNextPage) {
+        this.hasNextPage = hasNextPage;
     }
 
     public List<ActivityInfo> getList() {

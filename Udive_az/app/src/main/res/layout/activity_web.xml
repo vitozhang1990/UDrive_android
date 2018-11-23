@@ -22,7 +22,7 @@
             android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="@color/activity_bg"
             android:max="100"
             android:thumb="@drawable/progress_shape"

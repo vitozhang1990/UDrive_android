@@ -16,13 +16,16 @@ android {
         minSdkVersion 18
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 6
-        versionName "1.14.4"
+        versionCode 9
+        versionName "1.14.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
 
         ndk {
             // 设置支持的 SO 库构架，一般而言，取你所有的库支持的构架的`交集`。
-            abiFilters  'armeabi-v7a'// 'armeabi'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            abiFilters 'armeabi-v7a'
+// 'armeabi'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
     }
 
@@ -37,7 +40,8 @@ android {
             zipAlignEnabled true  // Zipalign优化
             shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
+            buildConfigField 'String', 'API_BASE_URL', '"http://132.232.128.121:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://zzbcjj.com:8888?orderNum="'
         }
         debug {
             minifyEnabled false
@@ -45,8 +49,12 @@ android {
             shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+            buildConfigField 'String', 'API_BASE_URL', '"http://test.zzbcjj.com:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zzbcjj.com:8888?orderNum="'
 
+//            buildConfigField 'String', 'API_BASE_URL', '"http://132.232.128.121:8088/"'
+//            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://zzbcjj.com:8888?orderNum="'
+        }
     }
     signingConfigs {
         release {
@@ -105,8 +113,9 @@ dependencies {
     implementation 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
 
     // kotlin，语言库
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.anko:anko-common:$anko_version"
 
     // okhttp，网络库
@@ -119,7 +128,6 @@ dependencies {
 
     // picasso，图片库
     implementation 'com.squareup.picasso:picasso:2.5.2'
-
     implementation 'com.facebook.fresco:fresco:0.12.0'
     implementation 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
 
@@ -129,9 +137,6 @@ dependencies {
     // butterknife，反射库，方便代码编写
     implementation 'com.jakewharton:butterknife:8.8.0'
     kapt 'com.jakewharton:butterknife-compiler:8.8.0'
-
-
-
 
     //utils
     implementation 'com.blankj:utilcode:1.9.8'
@@ -170,8 +175,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
+
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
     implementation project(':pickerview')
     implementation files('libs/jpush-android-3.1.7.jar')
+
+
 }

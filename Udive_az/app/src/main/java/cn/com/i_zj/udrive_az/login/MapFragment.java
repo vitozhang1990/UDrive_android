@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +15,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextPaint;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -42,14 +45,19 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
@@ -66,6 +74,7 @@ import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
+import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -109,6 +118,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     TextView tv_dis;
     @BindView(R.id.iv_refresh)
     ImageView ivRefresh;
+    Unbinder unbinder;
     private AMap mAmap;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -343,7 +353,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         dissmisProgressDialog();
                         if (result != null) {
                             if (result.getCode() == 1) {
-                                if (!"".equals(result.getData())&&result.getData()!=null) {
+                                if (!"".equals(result.getData()) && result.getData() != null) {
                                     if (result.getData().getOrderType() != 0) {
                                         showUnfinshOrder();
                                     } else {
@@ -660,6 +670,22 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 break;
         }
     }
+
+
+
+    @OnClick(R.id.rl1)
+    public void onClick() {
+        if(buldParkBean!=null){
+            NavigationDialog  navigationDialog=new NavigationDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("lng",String.valueOf(buldParkBean.getLongitude()));
+            bundle.putString("lat",String.valueOf(buldParkBean.getLatitude()));
+            navigationDialog.setArguments(bundle );
+            navigationDialog.show(getChildFragmentManager(), "navigation");
+        }
+    }
+
+
 
 
 }

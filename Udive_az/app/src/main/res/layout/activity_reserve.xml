@@ -7,12 +7,13 @@
     android:fitsSystemWindows="true"
     tools:context=".map.MapActivity">
 
-
+    <!--......-->
 
     <RelativeLayout
         android:id="@+id/rl_head"
         android:layout_width="match_parent"
         android:layout_height="44dp"
+
         android:background="@color/white">
 
         <ImageView
@@ -45,13 +46,16 @@
             android:textColor="#999999"
             android:textSize="13sp" />
     </RelativeLayout>
+
     <com.amap.api.maps.MapView
         android:id="@+id/map"
-        android:layout_below="@+id/rl_head"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.amap.api.maps.MapView>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_head"></com.amap.api.maps.MapView>
+
     <RelativeLayout
         android:id="@+id/rl_dengdai"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_yuding"
@@ -118,9 +122,9 @@
                         android:layout_height="36dp"
                         android:layout_marginLeft="@dimen/dp_14"
                         android:layout_marginRight="25dp"
-                        android:orientation="horizontal"
                         android:layout_toRightOf="@+id/iv4"
-                        android:background="@drawable/bg_map_gray">
+                        android:background="@drawable/bg_map_gray"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/tv_zhongdian"
@@ -132,14 +136,14 @@
                             android:textSize="@dimen/sp_16" />
 
                         <TextView
+                            android:id="@+id/tv_replace_parking"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:text="更换"
-                            android:id="@+id/tv_replace_parking"
-                            android:visibility="gone"
-                            android:textColor="@color/red" />
+                            android:textColor="@color/red"
+                            android:visibility="gone" />
                     </RelativeLayout>
                 </RelativeLayout>
             </RelativeLayout>
@@ -344,7 +348,21 @@
                     android:textSize="15sp" />
             </RelativeLayout>
 
+            <ImageView
+                android:id="@+id/iv_na"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/rl_tv_genghuan"
+                android:layout_marginRight="@dimen/margin_4"
+                android:layout_toLeftOf="@+id/rl_tv_genghuan"
+                android:paddingLeft="@dimen/margin_4"
+                android:paddingTop="@dimen/margin_4"
+                android:paddingRight="@dimen/margin_eight"
+                android:paddingBottom="2dp"
+                android:src="@mipmap/juli" />
+
             <RelativeLayout
+                android:id="@+id/rl_tv_genghuan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -485,10 +503,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="锁定"
                         android:drawableTop="@mipmap/suoche"
-                        android:textColor="#999"
-                         />
+                        android:text="锁定"
+                        android:textColor="#999" />
                 </RelativeLayout>
 
                 <View
@@ -506,10 +523,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="开锁"
                         android:drawableTop="@mipmap/kaiche"
-                        android:textColor="#999"
-                         />
+                        android:text="开锁"
+                        android:textColor="#999" />
                 </RelativeLayout>
 
                 <View
@@ -526,8 +542,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableTop="@mipmap/ic_findcar"
                         android:layout_centerInParent="true"
+                        android:drawableTop="@mipmap/ic_findcar"
                         android:text="声音寻车"
                         android:textColor="#999999" />
                 </RelativeLayout>
@@ -539,12 +555,12 @@
         android:id="@+id/btn_yuding"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_44"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="@dimen/margin_ten"
         android:layout_marginTop="@dimen/margin_4"
         android:layout_marginRight="@dimen/margin_ten"
         android:layout_marginBottom="@dimen/margin_ten"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:background="@drawable/bg_map_button"
         android:text="@string/kaishiyongche"
         android:textColor="@color/white" />

@@ -4,21 +4,11 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
-import android.view.View
 import butterknife.BindView
 import butterknife.OnClick
 import cn.com.i_zj.udrive_az.DBSBaseActivity
 import cn.com.i_zj.udrive_az.R
 import cn.com.i_zj.udrive_az.lz.adapter.UFragmentPagerAdapter
-import cn.com.i_zj.udrive_az.model.ParksResult
-import cn.com.i_zj.udrive_az.network.UObserver
-import cn.com.i_zj.udrive_az.network.UdriveRestClient
-import cn.com.i_zj.udrive_az.utils.ToastUtil
-import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.components.RxFragment
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 /**
  * @author JayQiu
@@ -51,7 +41,7 @@ class ActMsg : DBSBaseActivity() {
     }
 
     @OnClick(R.id.iv_back)
-    fun onClick(v: View) {
+    fun onClick() {
         finish()
     }
 

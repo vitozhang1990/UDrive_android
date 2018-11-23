@@ -24,6 +24,12 @@ public class OrderResult {
     public static class OrderItem {
         @SerializedName("startParkId")
         public int startParkId;
+        @SerializedName("carColor")
+        public  String carColor;
+        @SerializedName("brand")
+        public  String brand;
+        @SerializedName("brandId")
+        public  int brandId;
 
         @SerializedName("startParkName")
         public String startParkName;

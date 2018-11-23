@@ -56,7 +56,10 @@ public class ParksResult implements Serializable{
 
     private int id;
     private String address;
+
     private double longitude;
+    // ------适配错误字段
+    private double longtitude;
     private double latitude;
     private int parkCountBalance;
     private int validCarCount;
@@ -116,6 +119,14 @@ public class ParksResult implements Serializable{
 
     public void setName(String name) {
       this.name = name;
+    }
+
+    public double getLongtitude() {
+      return longtitude;
+    }
+
+    public void setLongtitude(double longtitude) {
+      this.longtitude = longtitude;
     }
   }
 }

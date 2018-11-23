@@ -1,10 +1,12 @@
 package cn.com.i_zj.udrive_az.login;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -15,9 +17,13 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.coupon.CouponListActivity;
+import cn.com.i_zj.udrive_az.lz.ui.coupons.CouponsActivity;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
+import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -86,7 +92,7 @@ public class WalletActivity extends DBSBaseActivity {
 
     @OnClick(R.id.wallet_layout_coupon)
     public void onCouponClick(View view) {
-        startActivity(new Intent(this, CouponListActivity.class));
+        startActivity(new Intent(this, CouponsActivity.class));
     }
 
     private void fetchBalance(String authorization) {
@@ -122,8 +128,13 @@ public class WalletActivity extends DBSBaseActivity {
     private void bindData(WalletResult walletResult) {
         this.walletResult = walletResult;
         if (null != walletResult && null != walletResult.data) {
-            balanceView.setText(String.format(Locale.getDefault(),"%.2f 元",(walletResult.data.userBalance / 100f + walletResult.data.giveBalance / 100f)));
-//            couponeView.setText((int) walletResult.data.preferentialAmount + " 张");
+            double balance = (walletResult.data.userBalance + walletResult.data.giveBalance) / (double) 100;
+            balanceView.setText(String.format(Locale.getDefault(), "%.2f 元", balance));
+            couponeView.setText("");
+            SpannableString spannableString = SpannableStringUtil.setColorAndSizeSpan(walletResult.data.preferentialAmount + "", Color.BLACK, SizeUtils.sp2px(WalletActivity.this, 14));
+            couponeView.append(spannableString);
+            SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan(" 张", Color.GRAY, SizeUtils.sp2px(WalletActivity.this, 14));
+            couponeView.append(spannableString1);
         }
     }
 }

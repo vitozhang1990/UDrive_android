@@ -27,13 +27,13 @@ public class AccountInfoResult {
         public int depositState;
 
         @SerializedName("balance")
-        public float balance;
+        public long balance;
 
         @SerializedName("idCardState")
         public int idCardState;
 
         @SerializedName("giveBalance")
-        public int giveBalance;
+        public long giveBalance;
         @SerializedName("driverState")
         public int driverState;
     }

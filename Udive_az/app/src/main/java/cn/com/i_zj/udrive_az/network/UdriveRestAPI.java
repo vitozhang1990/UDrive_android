@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Map;
 
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -65,7 +66,8 @@ import retrofit2.http.Url;
 
 public interface UdriveRestAPI {
 
-     String  DETAIL_URL="http://zzbcjj.com:8888?orderNum=";
+    //     String  DETAIL_URL="http://zzbcjj.com:8888?orderNum=";
+    String DETAIL_URL = BuildConfig.ORDER_DETAIL_URL;
 
     @FormUrlEncoded
     @Headers("Authorization: Basic dGVzdDp0ZXN0")
@@ -111,11 +113,13 @@ public interface UdriveRestAPI {
     @PUT("/mobile/card/addIdCardInfo")
     Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
                                            @Body Map<String, Object> body);
+
     //上传身份信息
     @Headers("Content-Type: application/json")
     @PUT("/mobile/card/addIdCardInfo")
     Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
                                            @Body AddIdCardInfo addIdCardInfo);
+
     //查询所有订单
     @GET("/mobile/tripOrder/queryAllOrdersByUser")
     Observable<OrderResult> queryAllOrdersByUser(@Header("Authorization") String Authorization);
@@ -135,11 +139,15 @@ public interface UdriveRestAPI {
     //获取优惠券
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/payAmount")
-    Observable<OrderDetailResult> payAmount(@Header("Authorization") String Authorization,@Body Map<String, Object> body);
+    Observable<OrderDetailResult> payAmount(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
 
     //获取所有的优惠券
     @GET("/mobile/preferential/findAllPreferential")
     Observable<UnUseCouponResult> findAllPreferential(@Header("Authorization") String Authorization, @Query("userId") String id);
+
+    //获取所有的优惠券
+    @GET("/mobile/v1/preferential/findAllPreferential")
+    Observable<BaseRetObj<List<UnUseCouponResult.DataBean>>> v1FindAllPreferential(@Query("userId") String id);
 
     //获取押金订单号
     @GET("/mobile/deposit/refundDeposit")
@@ -164,7 +172,7 @@ public interface UdriveRestAPI {
     //余额支付
     @Headers("Content-Type: application/json")
     @POST("/mobile/pay/payOrderByBalance")
-    Observable<PayOrderByBlanceResult> payOrderByBalance(@Header("Authorization") String Authorization,@Body Map<String, Object> body);
+    Observable<PayOrderByBlanceResult> payOrderByBalance(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
 
     //行程订单微信支付统一下单获取预支付ID
     @POST("/mobile/wechatpay/getPrepayId/tripOrder/{orderNum}")
@@ -175,21 +183,29 @@ public interface UdriveRestAPI {
     Observable<AliPayOrder> getAliPayTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
 
     //获取所有可用的优惠券
-      @GET("/mobile/preferential/findUnUsePreferential")
-      Observable<UnUseCouponResult> findUnUsePreferential(@Header("Authorization") String Authorization, @Query("userId") String id);
-      //获取停车场
-      @GET("/mobile/park/findRelativeParks")
-      Observable<ParksResult> getParks();
+    @GET("/mobile/preferential/findUnUsePreferential")
+    Observable<UnUseCouponResult> findUnUsePreferential(@Header("Authorization") String Authorization, @Query("userId") String id);
+
+    //获取所有可用的优惠券
+    @GET("/mobile/v1/preferential/findUnUsePreferential")
+    Observable<BaseRetObj<List<UnUseCouponResult.DataBean>>> v1FindUnUsePreferential(@Query("orderId") String Authorization, @Query("userId") String id);
+
+    //获取停车场
+    @GET("/mobile/park/findRelativeParks")
+    Observable<ParksResult> getParks();
 
     //获取停车场
     @GET("/mobile/park/findRelativeParks")
     Observable<BaseRetObj<List<ParksResult.DataBean>>> getParkslll();
+
     @GET()
     Observable<CarInfoResult> getCarInfo(@Url String id);
+
     //预约车辆接口
     @Headers("Content-Type: application/json")
     @POST("mobile/tripOrder/reservation")
     Observable<ReserVationBean> reservation(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+
     //创建订单接口
     @Headers("Content-Type: application/json")
     @POST("mobile/tripOrder/create")
@@ -204,6 +220,7 @@ public interface UdriveRestAPI {
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/lockCar")
     Observable<DoorBean> lockCar(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+
     //寻车
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/searchCarBySound")
@@ -212,6 +229,7 @@ public interface UdriveRestAPI {
     //结束行程
     @PUT("/mobile/tripOrder/completeTripOrder/{orderNum}")
     Observable<OrderDetailResult> completeTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+
     //取消预约
     @Headers("Content-Type: application/json")
     @PUT("/mobile/car/cancelReservation")
@@ -231,6 +249,7 @@ public interface UdriveRestAPI {
 
     @POST("/mobile/wechatpay/getPrepayId/rechargeOrder/{orderNum}")
     Observable<WeichatPayOrder> getWeiChatPayOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+
     //更新订单终点停车场
     @Headers("Content-Type: application/json")
     @PUT("/mobile/tripOrder/updateDestinationPark")
@@ -240,12 +259,15 @@ public interface UdriveRestAPI {
     Observable<RetAppversionObj> appversionCheck(@Query("version") String version);
 
     @POST("/open/registration/up")
-    Observable<BaseRetObj<Object>> registration( @Body Map<String, Object> body);
+    Observable<BaseRetObj<Object>> registration(@Body Map<String, Object> body);
+
     @POST("/open/registration/down")
-    Observable<BaseRetObj<String>> registrationDown( @Body Map<String, Object> body);
+    Observable<BaseRetObj<String>> registrationDown(@Body Map<String, Object> body);
+
     @GET("/mobile/activity/index")
     Observable<BaseRetObj<HomeActivityEntity>> activity();
+
     @GET("/mobile/activity/page")
-    Observable<BaseRetObj<RetEventObj>> activityPage(@Query("pageNumber") int pageNumber, @Query("pageSize")int pageSize);
+    Observable<BaseRetObj<RetEventObj>> activityPage(@Query("pageNumber") int pageNumber, @Query("pageSize") int pageSize);
 
 }

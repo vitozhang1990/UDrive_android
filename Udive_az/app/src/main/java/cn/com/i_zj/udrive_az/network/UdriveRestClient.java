@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import okhttp3.Interceptor;
@@ -35,7 +36,7 @@ public class UdriveRestClient {
 
 //      private static final String HOST_ONLINE = "http://192.168.1.54:8088/";
 //      private static final String HOST_ONLINE = "http://192.168.1.56:8088/";
-    private static final String HOST_ONLINE = "http://test.zzbcjj.com:8088/";
+    private static final String HOST_ONLINE = BuildConfig.API_BASE_URL;
 
 
     public synchronized static UdriveRestAPI getClentInstance() {

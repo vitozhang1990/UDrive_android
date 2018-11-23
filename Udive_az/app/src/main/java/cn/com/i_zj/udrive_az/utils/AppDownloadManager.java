@@ -32,7 +32,8 @@ public class AppDownloadManager {
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setAllowedOverRoaming(true);
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS+"/tempApk", "nxnk.apk");
+            String updateFilePath = createDir(context);
+            request.setDestinationInExternalFilesDir(context, updateFilePath, "nxnk.apk");
             request.setTitle("你行你开");
             request.setDescription("正在更新");
             request.setMimeType("application/vnd.android.package-archive");
@@ -42,7 +43,6 @@ public class AppDownloadManager {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             }
 
-//            installFile(context,Environment.getExternalStorageDirectory()+"/nxnk.apk");
             DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             long downloadId = dm.enqueue(request);
             downloadQuery(context, downloadId);
@@ -58,19 +58,19 @@ public class AppDownloadManager {
      * @param activity
      * @param downloadId
      */
-    private void downloadQuery(final  Activity activity,final long downloadId) {
+    private void downloadQuery(final Activity activity, final long downloadId) {
 
 
         // 注册广播监听系统的下载完成事件。
         IntentFilter intentFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        BroadcastReceiver    broadcastReceiver = new BroadcastReceiver() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+
                 long ID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
                 if (ID == downloadId) {
-                    Toast.makeText(context, "任务:" + downloadId + " 下载完成!", Toast.LENGTH_LONG).show();
+
                     getApkFile(activity,ID);
-//                    installFile(activity,"");
                 }
             }
         };
@@ -78,23 +78,66 @@ public class AppDownloadManager {
         activity.registerReceiver(broadcastReceiver, intentFilter);
 
     }
-    private void getApkFile(Activity context,final long downloadId){
-        DownloadManager dm = (DownloadManager)context. getSystemService(Context.DOWNLOAD_SERVICE);
+
+    private void getApkFile(Activity context, final long downloadId) {
+        DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = dm.query(query);
         if (c != null) {
             if (c.moveToFirst()) {
                 String fileUri = c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI));
                 //
-                Log.e("=============>",fileUri);
-                installFile(context,fileUri);
+                if (fileUri != null) {
+                    installFile(context, fileUri);
+                }else {
+                    Toast.makeText(context,  " 下载失败!", Toast.LENGTH_LONG).show();
+                }
+                Log.e("getApkFile=====>", fileUri);
+
             }
             c.close();
         }
     }
-    private void installFile(Activity context,String updateFilePath) {
+
+    private String createFile(Context context, String name) {
+        String path;
+        if (FileUtil.externalExist()) {
+            path = FileUtil.getFilePathName(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(), "tempApk");
+        } else {
+            path = FileUtil.getFilePathName(context.getFilesDir().getAbsolutePath(), "tempApk");
+        }
+        File updateDir = new File(path);
+        if (!updateDir.exists()) {
+            updateDir.mkdirs();
+        }
+        File updateFile = new File(FileUtil.getFilePathName(path, name));
+        if (updateFile.exists()) {
+            updateFile.delete();
+        }
+        try {
+            updateFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return updateFile.getAbsolutePath();
+    }
+    private String createDir(Context context){
+        String path;
+        if (FileUtil.externalExist()) {
+            path = FileUtil.getFilePathName(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(), "tempApk");
+        } else {
+            path = FileUtil.getFilePathName(context.getFilesDir().getAbsolutePath(), "tempApk");
+        }
+        File updateDir = new File(path);
+        if (!updateDir.exists()) {
+            updateDir.mkdirs();
+        }
+        return path;
+    }
+
+    private void installFile(Activity context, String updateFilePath) {
 //        updateFilePath=context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)+"/tempApk/nxnk.apk";
-        updateFilePath=updateFilePath.replace("file://","");
+        updateFilePath = updateFilePath.replace("file://", "");
         File apkFile = new File(updateFilePath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         //判断是否是AndroidN以及更高的版本
