@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import org.reactivestreams.Subscription;
 
@@ -68,6 +69,8 @@ public class HomeAdvDilog extends Dialog {
         View view = View.inflate(mContext, R.layout.dialog_home_adv, null);
         setContentView(view);
         ButterKnife.bind(this, view);
+        int  imgWidth = (int)(ToolsUtils.getWindowWidth(mContext)*0.8);
+        vpAdv.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int)(imgWidth /7f * 9)));
         setViewPagerScrollSpeed();
         arrayList = new ArrayList<>();
         this.mLLAv.removeAllViews();
@@ -109,7 +112,10 @@ public class HomeAdvDilog extends Dialog {
         p.width = (int) (display.getWidth() * 0.8); // 宽度设置为屏幕的
         window.setAttributes(p);
         window.setGravity(Gravity.CENTER); // 此处可以设置dialog显示的位置
-        nextImage();
+        if(arrayList!=null&&arrayList.size()>1){
+            nextImage();
+        }
+
     }
 
     private void initEvent() {

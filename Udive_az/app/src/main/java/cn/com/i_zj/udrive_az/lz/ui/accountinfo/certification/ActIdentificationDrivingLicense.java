@@ -196,10 +196,10 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
      * 检测照相机权限
      */
     private void checkPermission() {
-        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
 
         if (!external) {
-            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
         }
     }
 
