@@ -2,7 +2,6 @@ package cn.com.i_zj.udrive_az.utils.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.Display;
 import android.view.Gravity;
@@ -13,8 +12,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import org.reactivestreams.Subscription;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -34,14 +31,13 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
  * @author JayQiu
  * @create 2018/11/7
  * @Describe
  */
-public class HomeAdvDilog extends Dialog {
+public class HomeAdvDiaog extends Dialog {
     @BindView(R.id.vp_adv)
     ViewPager vpAdv;
     @BindView(R.id.ll_indiactor)
@@ -57,7 +53,7 @@ public class HomeAdvDilog extends Dialog {
     private ArrayList<ActivityInfo> arrayList;
     private  Disposable disposable;
 
-    public HomeAdvDilog(Context context) {
+    public HomeAdvDiaog(Context context) {
         super(context, R.style.UpdateDialogStytle);
         mContext = context;
         initView();
@@ -165,7 +161,7 @@ public class HomeAdvDilog extends Dialog {
         mIvClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HomeAdvDilog.this.dismiss();
+                HomeAdvDiaog.this.dismiss();
             }
         });
     }

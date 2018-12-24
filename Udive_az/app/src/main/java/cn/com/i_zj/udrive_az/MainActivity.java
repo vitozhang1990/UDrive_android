@@ -50,7 +50,7 @@ import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
-import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDilog;
+import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDiaog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,7 +59,7 @@ import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class MainActivity extends DBSBaseActivity implements EasyPermissions.PermissionCallbacks{
+public class MainActivity extends DBSBaseActivity implements EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout personalDarwLayout;
@@ -74,9 +74,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     RelativeLayout rlNote;
 
     private ActivityInfo homeNote;
-    private HomeAdvDilog homeAdvDilog;
+    private HomeAdvDiaog homeAdvDilog;
 
-    private  boolean isFirst=true;
+    private boolean isFirst = true;
 
     @Override
     protected int getLayoutResource() {
@@ -111,10 +111,10 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
      * 检测权限
      */
     private void checkPermission() {
-        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA);
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
 
         if (!external) {
-            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA);
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
         }
     }
 
@@ -139,6 +139,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         ToastUtils.showShort(R.string.permission_request_fail);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -150,15 +151,15 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         personalDarwLayout.openDrawer(Gravity.START);
     }
 
-    @OnClick({R.id.main_tv_msg,R.id.rl_note})
+    @OnClick({R.id.main_tv_msg, R.id.rl_note})
     public void onClick(View v) {
-        switch (v.getId()){
-            case  R.id.main_tv_msg:
+        switch (v.getId()) {
+            case R.id.main_tv_msg:
                 startActivity(ActMsg.class);
                 break;
             case R.id.rl_note:
-                if(homeNote!=null){
-                    WebActivity.startWebActivity(MainActivity.this,homeNote.getHref(),homeNote.getTitle());
+                if (homeNote != null) {
+                    WebActivity.startWebActivity(MainActivity.this, homeNote.getHref(), homeNote.getTitle());
                 }
                 break;
         }
@@ -298,8 +299,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                     getUnfinishedOrder();
                                 }
 
-                                if(isFirst){
-                                    isFirst=false;
+                                if (isFirst) {
+                                    isFirst = false;
                                     getActivity();
                                 }
                             }
@@ -310,8 +311,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         LogUtils.e("==============>" + e.getMessage());
-                        if(isFirst){
-                            isFirst=false;
+                        if (isFirst) {
+                            isFirst = false;
                             getActivity();
                         }
                     }
@@ -335,15 +336,15 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
                         if (homeActivityEntity != null) {
                             homeNote = homeActivityEntity.getNote();
-                            if(homeNote!=null){
+                            if (homeNote != null) {
                                 rlNote.setVisibility(View.VISIBLE);
                                 tvMsg.setText(homeNote.getTitle());
-                            }else {
+                            } else {
                                 rlNote.setVisibility(View.GONE);
                             }
-                            if(!StringUtils.isEmpty(homeActivityEntity.getActivitys())){
+                            if (!StringUtils.isEmpty(homeActivityEntity.getActivitys())) {
                                 if (homeAdvDilog == null) {
-                                    homeAdvDilog = new HomeAdvDilog(MainActivity.this);
+                                    homeAdvDilog = new HomeAdvDiaog(MainActivity.this);
                                 }
                                 homeAdvDilog.setData(homeActivityEntity.getActivitys());
                                 if (!homeAdvDilog.isShowing()) {
@@ -351,10 +352,10 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 }
                             }
 
-                        }else {
-                            if(rlNote.getVisibility()==View.VISIBLE){
+                        } else {
+                            if (rlNote.getVisibility() == View.VISIBLE) {
                                 rlNote.setVisibility(View.GONE);
-                                homeNote=null;
+                                homeNote = null;
                             }
                         }
 

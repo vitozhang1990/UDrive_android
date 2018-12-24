@@ -199,7 +199,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             @Override
             public void onTick(long millisUntilFinished) {
                 if (null != tv_time) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");//12小时制
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("00:mm:ss");//12小时制
                     Date date = new Date();
                     date.setTime(millisUntilFinished);
                     tv_time.setText(simpleDateFormat.format(date));

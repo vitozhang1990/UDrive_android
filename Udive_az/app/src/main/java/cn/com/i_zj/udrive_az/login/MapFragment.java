@@ -59,6 +59,8 @@ import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
+import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
@@ -69,12 +71,14 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
+import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
+import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -118,6 +122,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     TextView tv_dis;
     @BindView(R.id.iv_refresh)
     ImageView ivRefresh;
+
+    @BindView(R.id.tv_park_detail)
+    TextView tvParkDetail;
+
     Unbinder unbinder;
     private AMap mAmap;
     //声明AMapLocationClient类对象
@@ -135,6 +143,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     String parkid;
     String carid;
     private Animation animRefresh;
+    private ParkDetailDialog parkDetailDialog;
 
     @Override
     protected int getLayoutResource() {
@@ -252,7 +261,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
             if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
                 if (accountInfo.data.depositState == 2) {
-                    yuyue();
+//                    yuyue();
+                    showParkOutAmountDialog(100000f);
                 } else {
                     ToastUtil.show(getActivity(), "请先缴纳押金");
                 }
@@ -326,6 +336,24 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (!alertDialog.isShowing()) {
             alertDialog.show();
         }
+    }
+    private  void showParkOutAmountDialog(float cost){
+        new AlertDialog.Builder(getActivity())
+                .setTitle("支付提示")
+                .setMessage("该车辆出停车场时可能需要付费"+cost+"元，待订单结束后返还至账户余额")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        yuyue();
+                    }
+                })
+                .create().show();
     }
 
     /**
@@ -650,7 +678,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .create().show();
     }
 
-    @OnClick({R.id.iv_refresh, R.id.iv_mylocation})
+    @OnClick({R.id.iv_refresh, R.id.iv_mylocation, R.id.tv_park_detail})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_refresh:
@@ -668,25 +696,52 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     mLocationClient.startLocation();
                 }
                 break;
+            case R.id.tv_park_detail:
+
+                getParkRemark();
+                break;
         }
     }
 
 
-
     @OnClick(R.id.rl1)
     public void onClick() {
-        if(buldParkBean!=null){
-            NavigationDialog  navigationDialog=new NavigationDialog();
+        if (buldParkBean != null) {
+            NavigationDialog navigationDialog = new NavigationDialog();
             Bundle bundle = new Bundle();
-            bundle.putString("lng",String.valueOf(buldParkBean.getLongitude()));
-            bundle.putString("lat",String.valueOf(buldParkBean.getLatitude()));
-            navigationDialog.setArguments(bundle );
+            bundle.putString("lng", String.valueOf(buldParkBean.getLongitude()));
+            bundle.putString("lat", String.valueOf(buldParkBean.getLatitude()));
+            navigationDialog.setArguments(bundle);
             navigationDialog.show(getChildFragmentManager(), "navigation");
         }
     }
 
 
+    private void getParkRemark() {
+        UdriveRestClient.getClentInstance().getParkRemark(parkid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new UObserver<ParkRemark>() {
+                    @Override
+                    public void onSuccess(ParkRemark response) {
+                        parkDetailDialog = new ParkDetailDialog(getActivity());
+                        response.setName(buldParkBean.getName());// 只能这样去取
+                        parkDetailDialog.showData(response);
+                        parkDetailDialog.show();
+                    }
 
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+
+                    @Override
+                    public void onException(int code, String message) {
+                        showToast(message);
+                    }
+                });
+    }
 
 }
 
