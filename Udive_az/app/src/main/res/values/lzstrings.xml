@@ -37,6 +37,7 @@
     <string name="lz_account_head">头像</string>
     <string name="lz_account_phone">手机</string>
     <string name="lz_account_true_name">实名认证</string>
+    <string name="lz_costs_that_name">费用说明</string>
     <string name="lz_account_driver_license">驾驶证</string>
     <string name="account_driver_license">驾照认证</string>
 

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
+import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
+import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -135,6 +137,10 @@ public interface UdriveRestAPI {
     //获取订单详情
     @GET("/mobile/tripOrder/{orderNum}")
     Observable<OrderDetailResult> tripOrderDetail(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+
+    //获取订单轨迹
+    @GET("/mobile/tripOrder/originContrail/{orderId}")
+    Observable<BaseRetObj<OriginContrail>> originContrail(@Header("Authorization") String Authorization, @Path("orderId") String orderId);
 
     //获取优惠券
     @Headers("Content-Type: application/json")
@@ -269,5 +275,14 @@ public interface UdriveRestAPI {
 
     @GET("/mobile/activity/page")
     Observable<BaseRetObj<RetEventObj>> activityPage(@Query("pageNumber") int pageNumber, @Query("pageSize") int pageSize);
+
+    /**
+     * 获取停车场图片
+     * @param id
+     * @return
+     */
+    @GET("/mobile/park/remark/{id}")
+    Observable<BaseRetObj<ParkRemark>> getParkRemark(@Path("id") String id);
+
 
 }

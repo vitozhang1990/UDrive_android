@@ -171,6 +171,10 @@
         <activity
             android:name=".lz.ui.idpost.IDPostActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.usecar.ActOverparking"
+            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -9,6 +9,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.MapView;
+import com.amap.api.trace.LBSTraceClient;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -26,9 +29,12 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.lz.util.HttpUtils;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
@@ -66,8 +72,9 @@ public class ActOrderPayment extends DBSBaseActivity {
     TextView tvRealPayAmount;
     @BindView(R.id.tv_detail)
     TextView tvDetail;
-    @BindView(R.id.iv_imag)
-    ImageView mIvImage;
+    @BindView(R.id.mv_map)
+    MapView mMapView;
+    AMap mAMap;
     private String title;
     private String orderNumber;
 
@@ -81,6 +88,7 @@ public class ActOrderPayment extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
+        mMapView.onCreate(savedInstanceState);
         initView();
         findTripOrders();
     }
@@ -94,6 +102,8 @@ public class ActOrderPayment extends DBSBaseActivity {
                 finish();
             }
         });
+        mAMap=mMapView.getMap();
+        mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
     }
 
     public void findTripOrders() {
@@ -132,24 +142,47 @@ public class ActOrderPayment extends DBSBaseActivity {
                 });
     }
 
+    private  void originContrail(String orderId){
+        UdriveRestClient.getClentInstance().originContrail(SessionManager.getInstance().getAuthorization(), orderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new UObserver<OriginContrail>() {
+                    @Override
+                    public void onSuccess(OriginContrail response) {
+
+                    }
+
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+
+                    @Override
+                    public void onException(int code, String message) {
+                        showToast(message);
+                    }
+                });
+    }
+
     private void showDate(OrderDetailResult value) {
         if (value.data != null) {
-
+            originContrail(value.data.id+"");
             if(!StringUtils.isEmpty(value.data.url)){
-                Glide.with(ActOrderPayment.this).load(value.data.url).listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ToolsUtils.getWindowWidth(ActOrderPayment.this),
-                                ToolsUtils.getWindowWidth(ActOrderPayment.this));
-                        mIvImage.setLayoutParams(layoutParams);
-                        return false;
-                    }
-                }).error(R.mipmap.pic_dingdan_complete).into(mIvImage);
+//                Glide.with(ActOrderPayment.this).load(value.data.url).listener(new RequestListener<String, GlideDrawable>() {
+//                    @Override
+//                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ToolsUtils.getWindowWidth(ActOrderPayment.this),
+//                                ToolsUtils.getWindowWidth(ActOrderPayment.this));
+//                        mIvImage.setLayoutParams(layoutParams);
+//                        return false;
+//                    }
+//                }).error(R.mipmap.pic_dingdan_complete).into(mIvImage);
             }
 
 
