@@ -38,6 +38,8 @@ import com.zjcx.face.listener.OnFrameListener;
 import com.zjcx.face.util.Contants;
 import com.zjcx.face.view.CameraPreview;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,6 +50,7 @@ import java.util.concurrent.Executors;
 import butterknife.BindView;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -440,14 +443,20 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
                     public void onNext(IDResult value) {
                         if (value != null && value.getCode() == 1) {
                             showToast("信息提交成功");
-                            ScreenManager.getScreenManager().popAllActivityExceptOne(ActIdentificationIDCard.class);
+//                            ScreenManager.getScreenManager().popAllActivityExceptOne(ActIdentificationIDCard.class);
+                            EventBus.getDefault().post(new CloseActivityEvent());
                             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
                             accountInfo.data.idCardState = Constants.ID_UNDER_REVIEW;
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
                             setResult(RESULT_OK);
                             finish();
                         } else {
-                            showToast("信息提交失败重新进行人脸识别");
+                            if(value!=null){
+                                showToast("信息提交失败Code:"+value.getCode());
+                            }else {
+                                showToast("信息提交失败");
+                            }
+
                             live = true;
                             timeindex = 0;
                         }

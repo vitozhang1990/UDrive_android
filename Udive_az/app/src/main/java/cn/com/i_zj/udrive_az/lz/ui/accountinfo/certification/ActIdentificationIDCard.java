@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.pickerview.TimePickerView;
 
 import org.apache.commons.codec.binary.Base64;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -45,6 +46,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.ActIdentificationCameraTwo;
@@ -117,7 +119,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
                 finish();
             }
         });
-        ScreenManager.getScreenManager().pushActivity(this);
+//        ScreenManager.getScreenManager().pushActivity(this);
         initView();
         initEvent();
         checkPermission();
@@ -625,4 +627,9 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
         }
         return ssfFactory;
     }
+    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+    public void onDataSynEvent(CloseActivityEvent event) {
+        finish();
+    }
+
 }

@@ -184,6 +184,7 @@ public class ActIdentificationCameraTwo extends DBSBaseActivity {
                 tvRemake.setVisibility(View.INVISIBLE);
                 ivCamera.setVisibility(View.VISIBLE);
                 displayImageView.setVisibility(View.GONE);
+                cameraView.getCameraControl().resume();
                 break;
         }
     }
