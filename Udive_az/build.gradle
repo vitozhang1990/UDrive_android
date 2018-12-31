@@ -4,9 +4,9 @@ buildscript {
     ext.kotlin_version = '1.2.61'
     ext.anko_version = '0.10.1'
     repositories {
+        mavenCentral()
         google()
         jcenter()
-        mavenCentral()
     }
     dependencies {
 //        classpath 'com.android.tools.build:gradle:3.0.1'
@@ -20,6 +20,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         jcenter()
         maven { url 'https://oss.jfrog.org/libs-snapshot' }

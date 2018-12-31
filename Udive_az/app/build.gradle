@@ -58,9 +58,9 @@ android {
 //            buildConfigField 'String', 'API_BASE_URL', '"http://132.232.128.121:8088/"'
 //            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://zzbcjj.com:8888?orderNum="'
 
-            buildConfigField 'String', 'API_BASE_URL', '"http://prod.zzbcjj.com:8088/"'
-            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://prod.zzbcjj.com:8888?orderNum="'
-            buildConfigField 'String', 'SHARE_URL', '"http://prod.zzbcjj.com?ref?referral="'
+            buildConfigField 'String', 'API_BASE_URL', '"http://test.zzbcjj.com:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zzbcjj.com:8888?orderNum="'
+            buildConfigField 'String', 'SHARE_URL', '"http://test.zzbcjj.com?ref?referral="'
         }
     }
     signingConfigs {

@@ -46,7 +46,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,7 +61,6 @@ import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
-import cn.com.i_zj.udrive_az.model.GeoCoordinate;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
@@ -70,7 +68,6 @@ import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
-import cn.com.i_zj.udrive_az.utils.GetCenterPointFromListOfCoordinates;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
@@ -81,8 +78,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static cn.com.i_zj.udrive_az.utils.GetCenterPointFromListOfCoordinates.getCenterPoint400;
 
 /**
  * 等待用车---行程中
@@ -396,7 +391,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
-//    MapUtils.setMapCustomStyleFile(this, mAmap);
+        MapUtils.setMapCustomStyleFile(this, mAmap);
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听

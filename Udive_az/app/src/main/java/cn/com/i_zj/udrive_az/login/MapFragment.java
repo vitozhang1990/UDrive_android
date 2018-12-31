@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,9 +14,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextPaint;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -45,25 +42,21 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
-import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.ReserveActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
@@ -75,7 +68,6 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
-import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
@@ -211,8 +203,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         mAmap.clear();
                         for (int i = 0; i < dataBeans.size(); i++) {
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBeans.get(i).getLatitude(), dataBeans.get(i).getLongitude()));
-                            String name = dataBeans.get(i).getName();
-                            if (!StringUtils.isEmpty(name) && name.contains("临时")) {
+                            if (dataBeans.get(i).getCooperate() > 0) {
                                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_monthly, String.valueOf(dataBeans.get(i).getValidCarCount()))));
                             } else {
                                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_llinshi, String.valueOf(dataBeans.get(i).getValidCarCount()))));
@@ -337,10 +328,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             alertDialog.show();
         }
     }
-    private  void showParkOutAmountDialog(float cost){
+
+    private void showParkOutAmountDialog(float cost) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("支付提示")
-                .setMessage("该车辆出停车场时可能需要付费"+cost+"元，待订单结束后返还至账户余额")
+                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -423,7 +415,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
-//    MapUtils.setMapCustomStyleFile(getContext(), mAmap);
+        MapUtils.setMapCustomStyleFile(getContext(), mAmap);
         //初始化定位
         mLocationClient = new AMapLocationClient(getActivity().getApplicationContext());
         //设置定位回调监听
