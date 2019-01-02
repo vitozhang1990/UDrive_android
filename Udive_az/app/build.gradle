@@ -17,7 +17,7 @@ android {
         targetSdkVersion 28
         multiDexEnabled true
         versionCode 11
-        versionName "1.15.1"
+        versionName "1.15.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
