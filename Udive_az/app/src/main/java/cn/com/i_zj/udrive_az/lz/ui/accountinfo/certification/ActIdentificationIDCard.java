@@ -500,7 +500,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
                     String string = response.body().string();
                     if (front) {
                         IdBean idBean = JSONObject.parseObject(string, IdBean.class);
-                        if (idBean != null) {
+                        if (idBean == null) {
                             showToastMsg("身份证解析失败");
                             return;
                         }
