@@ -2,7 +2,10 @@ package cn.com.i_zj.udrive_az.lz.ui.drawerleft;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +17,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareAPI;
@@ -33,18 +36,18 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
+import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.DBSBaseFragment;
-import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.login.WalletActivity;
 import cn.com.i_zj.udrive_az.lz.ui.about.AboutActivity;
-import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.AccountInfoActivity;
+import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
+import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.view.DrawerItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
@@ -92,6 +95,9 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @BindView(R.id.rl_head)
     RelativeLayout mRlHead;
 
+    private NetworkChangeReceiver networkChangeReceiver;
+    private AccountInfoResult accountInfo;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_drawer_left;
@@ -110,13 +116,13 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
         AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
         if (accountInfo != null) {
-            if(accountInfo.data!=null&&!StringUtils.isEmpty(accountInfo.data.username)&&accountInfo.data.username.length()>=11){
+            if (accountInfo.data != null && !StringUtils.isEmpty(accountInfo.data.username) && accountInfo.data.username.length() >= 11) {
                 StringBuilder sb = new StringBuilder(accountInfo.data.username);
                 sb.replace(3, 7, "****");
                 mTvUserName.setText(sb.toString());
             }
             parseIdType(accountInfo.data.idCardState);
-            mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",(accountInfo.data.balance / 100f + accountInfo.data.giveBalance / 100f) ));
+            mDiMoney.setRightText(String.format(Locale.getDefault(), "%.2f 元", (accountInfo.data.balance / 100f + accountInfo.data.giveBalance / 100f)));
             parseMoney(accountInfo);
         } else {
             mTvUserName.setText("未登录");
@@ -129,7 +135,18 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        networkChangeReceiver = new NetworkChangeReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(networkChangeReceiver);
+        }
     }
 
     @OnClick(R.id.rl_head)
@@ -261,11 +278,12 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                     @Override
                     public void onNext(AccountInfoResult value) {
                         if (null == value || null == value.data) {
-                            ToastUtils.showShort( R.string.lz_get_user_info_fail);
+                            ToastUtils.showShort(R.string.lz_get_user_info_fail);
                             return;
                         }
+                        accountInfo = value;
                         AccountInfoManager.getInstance().cacheAccount(value);
-                        if(value.data!=null&&!StringUtils.isEmpty(value.data.username)&&value.data.username.length()>=11){
+                        if (value.data != null && !StringUtils.isEmpty(value.data.username) && value.data.username.length() >= 11) {
                             StringBuilder sb = new StringBuilder(value.data.username);
                             sb.replace(3, 7, "****");
                             mTvUserName.setText(sb.toString());
@@ -273,15 +291,15 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                         parseIdType(value.data.idCardState);
                         parseMoney(value);
-                        double balance=(value.data.balance + value.data.giveBalance )/(double)100;
-                        mDiMoney.setRightText(String.format(Locale.getDefault(),"%.2f 元",balance));
+                        double balance = (value.data.balance + value.data.giveBalance) / (double) 100;
+                        mDiMoney.setRightText(String.format(Locale.getDefault(), "%.2f 元", balance));
 
 //                        mDiDeposit.setRightText(value.data.depositState == 0 ? getString(R.string.lz_un_jiaona) : getString(R.string.lz_jiaona));
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        ToastUtils.showShort( R.string.lz_get_user_info_fail);
+                        ToastUtils.showShort(R.string.lz_get_user_info_fail);
                         AccountInfoManager.getInstance().clearAccount();
                     }
 
@@ -345,7 +363,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onNext(UnFinishOrderResult value) {
-                        if (value == null || value.getData() == null ) {
+                        if (value == null || value.getData() == null) {
 
                         } else {
 //                            mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
@@ -382,5 +400,14 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         UMShareAPI.get(getContext()).onActivityResult(requestCode, resultCode, data);
+    }
+
+    class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtils.isAvailableByPing() && accountInfo == null) {
+                getUserInfo();
+            }
+        }
     }
 }

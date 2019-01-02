@@ -2,8 +2,11 @@ package cn.com.i_zj.udrive_az.login;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,6 +42,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 
@@ -136,6 +140,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     String carid;
     private Animation animRefresh;
     private ParkDetailDialog parkDetailDialog;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected int getLayoutResource() {
@@ -184,7 +189,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             }
         });
 
-
+        networkChangeReceiver = new NetworkChangeReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     private void fetchParks() {
@@ -229,6 +237,14 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 });
     }
 
+    class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtils.isAvailableByPing() && dataBeans.size() == 0) {
+                fetchParks();
+            }
+        }
+    }
 
     @BindView(R.id.btn_yuding)
     Button btn_yuding;
@@ -610,6 +626,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
         mLocationClient.onDestroy();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(networkChangeReceiver);
+        }
     }
 
     //在marker上绘制文字
