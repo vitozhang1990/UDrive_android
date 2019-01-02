@@ -38,14 +38,22 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Polygon;
+import com.amap.api.maps.model.PolygonOptions;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +65,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.constant.ParkType;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
@@ -66,8 +75,11 @@ import cn.com.i_zj.udrive_az.map.ReserveActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
-import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.ParkAreaBean;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
@@ -136,9 +148,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     //TODO 为啥要全局变量
     private ArrayList<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
 
-    private ArrayList<CarInfoResult.DataBean> carBeans = new ArrayList<>();
+    private ArrayList<CarVosBean> carBeans = new ArrayList<>();
     private Map<ParkKey, Marker> markerMap = new HashMap();
-    private CarInfoResult.DataBean bunldBean;
+    private CarVosBean bunldBean;
     private ParksResult.DataBean buldParkBean;
     private LatLng myLocationlatLng;
     String parkid;
@@ -148,6 +160,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private NetworkChangeReceiver networkChangeReceiver;
 
     private boolean showArea = false;
+    private Circle circle;
+    private Polygon polygon;
+    private List<Marker> carMarkers = new ArrayList<>();
 
     @Override
     protected int getLayoutResource() {
@@ -169,7 +184,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void init(Bundle savedInstanceState) {
 
         initViewstMap(savedInstanceState);
-        bunldBean = new CarInfoResult.DataBean();
+        bunldBean = new CarVosBean();
         buldParkBean = new ParksResult.DataBean();
         if (!EasyPermissions.hasPermissions(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             EasyPermissions.requestPermissions(this, "您必须授予我们定位权限才可以正常使用", 101, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -321,17 +336,25 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     @BindView(R.id.btn_yuding)
     Button btn_yuding;
+    @BindView(R.id.btn_yongche)
+    Button btn_yongche;
 
-    @OnClick(R.id.btn_yuding)
+    @OnClick({R.id.btn_yuding, R.id.btn_yongche})
     public void onYudingClick(View view) {
-        if (bunldBean != null && buldParkBean != null) {
-            if (bunldBean.isTrafficControl()) {
-                showTrafficControlDialog();
-            } else {
-                yuyueVerify();
-            }
-        } else {
-            ToastUtils.showShort("请先选择车辆");
+        switch (view.getId()) {
+            case R.id.btn_yuding:
+                if (bunldBean != null && buldParkBean != null) {
+                    if (bunldBean.isTrafficControl()) {
+                        showTrafficControlDialog();
+                    } else {
+                        yuyueVerify();
+                    }
+                } else {
+                    ToastUtils.showShort("请先选择车辆");
+                }
+                break;
+            case R.id.btn_yongche:
+                break;
         }
     }
 
@@ -532,6 +555,18 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         mAmap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                if (circle != null) {
+                    circle.remove();
+                    circle = null;
+                }
+                if (polygon != null) {
+                    polygon.remove();
+                    polygon = null;
+                }
+                for (Marker marke : carMarkers) {
+                    marke.remove();
+                }
+                carMarkers.clear();
                 rl_where.setVisibility(View.GONE);
                 ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
                 buldParkBean = dataBean;
@@ -547,20 +582,61 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 LogUtils.e(SessionManager.getInstance().getAuthorization());
                 // 获取停车场车辆列表信息
 //                showProgressDialog("正在获取信息");
-                UdriveRestClient.getClentInstance().getCarInfo("/mobile/car/getReservationList/" + dataBean.getId())
+                UdriveRestClient.getClentInstance().getParkDetail(dataBean.getId())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Observer<CarInfoResult>() {
+                        .subscribe(new Observer<ParkDetailResult>() {
                             @Override
                             public void onSubscribe(Disposable d) {
+
                             }
 
                             @Override
-                            public void onNext(CarInfoResult result) {
-//                                dissmisProgressDialog();
-                                if (result.getData().size() != 0) {
+                            public void onNext(ParkDetailResult parkDetailResult) {
+                                if (parkDetailResult.getCode() != 1) {
+                                    return;
+                                }
+                                ParkAreaBean parkAreaBean = parkDetailResult.getData().getParkArea();
+                                if (parkAreaBean != null) {
+                                    switch (parkAreaBean.getParkType()) {
+                                        case ParkType.Circle:
+                                            JsonObject circleObject = (JsonObject) new JsonParser().parse(parkAreaBean.getArea());
+                                            String center = circleObject.get("center").getAsString();
+                                            if (center.isEmpty()) {
+                                                return;
+                                            }
+                                            LatLng latLng = new LatLng(Double.parseDouble(center.split(",")[1]), Double.parseDouble(center.split(",")[0]));
+                                            circle = mAmap.addCircle(new CircleOptions()
+                                                    .center(latLng)
+                                                    .radius(circleObject.get("radius").getAsInt())
+                                                    .fillColor(Color.parseColor("#FFCBE2FF"))
+                                                    .strokeColor(Color.parseColor("#FF0075FF"))
+                                                    .strokeWidth(1));
+                                            break;
+                                        case ParkType.Polygon:
+                                        case ParkType.Rectangle:
+                                            List<AreaInfo> areaInfos = new Gson().fromJson(parkAreaBean.getArea(), new TypeToken<List<AreaInfo>>() {
+                                            }.getType());
+                                            if (areaInfos == null || areaInfos.size() == 0) {
+                                                return;
+                                            }
+                                            List<LatLng> latLngs = new ArrayList<>();
+                                            for (AreaInfo info : areaInfos) {
+                                                latLngs.add(new LatLng(info.getLat(), info.getLng()));
+                                            }
+                                            polygon = mAmap.addPolygon(new PolygonOptions()
+                                                    .addAll(latLngs)
+                                                    .fillColor(Color.parseColor("#FFCBE2FF"))
+                                                    .strokeColor(Color.parseColor("#FF0075FF"))
+                                                    .strokeWidth(1));
+                                            break;
+                                    }
+                                }
+
+                                List<CarVosBean> carVosBeans = parkDetailResult.getData().getCarVos();
+                                if (carVosBeans != null && carVosBeans.size() > 0) {
                                     carBeans.clear();
-                                    carBeans.addAll(result.getData());
+                                    carBeans.addAll(carVosBeans);
                                     if (fragments != null) {
                                         for (int i = 0; i < fragments.size(); i++) {
                                             fragments.get(i).onDestroy();
@@ -574,15 +650,15 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                     fragments = new ArrayList<>();
                                     ArrayList<Integer> imgs = new ArrayList<>();
                                     //for循环给list增加fragment
-                                    for (int i = 0; i < result.getData().size(); i++) {
-                                        LogUtils.e(result.getData().get(i).getPlateNumber());
-                                        CarsFragment carsFragment = CarsFragment.newInstance(i, result.getData().get(i));
+                                    for (int i = 0; i < carVosBeans.size(); i++) {
+                                        LogUtils.e(carVosBeans.get(i).getPlateNumber());
+                                        CarsFragment carsFragment = CarsFragment.newInstance(i, carVosBeans.get(i));
                                         fragments.add(carsFragment);
                                         imgs.add(R.drawable.view_selector);
 
                                     }
 
-                                    bunldBean = result.getData().get(0);
+                                    bunldBean = carVosBeans.get(0);
                                     carid = String.valueOf(bunldBean.getId());
                                     BaseFragmentAdapter myPagerAdapter = new BaseFragmentAdapter(getFragmentManager(), fragments, imgs, getContext());
                                     mViewPager.setAdapter(myPagerAdapter);
@@ -598,33 +674,37 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
 
                                     CarsFragment carsFragment = (CarsFragment) fragments.get(0);
-                                    carsFragment.refresh(result.getData().get(0));
+                                    carsFragment.refresh(carVosBeans.get(0));
                                     ll_info.setVisibility(View.VISIBLE);
                                     rlCarinfo.setVisibility(View.VISIBLE);
+                                    btn_yongche.setVisibility(View.GONE);
                                     btn_yuding.setVisibility(View.VISIBLE);
                                     btn_yuding.setEnabled(true);
                                     btn_yuding.setText(Utils.getApp().getResources().getString(R.string.mashangyuding));
+
+                                    for (CarVosBean bean : carVosBeans) {
+                                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bean.getLatitude(), bean.getLongitude()));
+                                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_lite));
+                                        carMarkers.add(mAmap.addMarker(markerOptions));
+                                    }
                                 } else {
                                     ll_info.setVisibility(View.VISIBLE);
                                     rlCarinfo.setVisibility(View.GONE);
                                     rl_where.setVisibility(View.GONE);
+                                    btn_yongche.setVisibility(View.GONE);
                                     btn_yuding.setVisibility(View.VISIBLE);
                                     btn_yuding.setText("暂无车辆");
                                     btn_yuding.setEnabled(false);
-//                                    ToastUtils.showShort("该停车场暂无车辆信息");
                                 }
-
                             }
 
                             @Override
                             public void onError(Throwable e) {
-//                                dissmisProgressDialog();
                                 e.printStackTrace();
                             }
 
                             @Override
                             public void onComplete() {
-//                                dissmisProgressDialog();
 
                             }
                         });
@@ -726,10 +806,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             return bitmap1;
         }
         Bitmap bitmap2 = getMyBitmap(R.mipmap.ic_cheweishu_monthly1, pm_val, 14);
-        Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8,bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8, bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(bitmap1, 0, bitmap2.getHeight() / 8, null);
-        canvas.drawBitmap(bitmap2, bitmap1.getWidth() - bitmap2.getWidth() *  7 / 8, 0, null);
+        canvas.drawBitmap(bitmap2, bitmap1.getWidth() - bitmap2.getWidth() * 7 / 8, 0, null);
         bitmap1.recycle();
         bitmap2.recycle();
         return bitmap;

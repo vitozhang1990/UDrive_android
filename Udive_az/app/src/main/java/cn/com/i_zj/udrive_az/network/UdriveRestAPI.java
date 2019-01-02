@@ -23,6 +23,7 @@ import cn.com.i_zj.udrive_az.model.ImageUrlResult;
 import cn.com.i_zj.udrive_az.model.NetworkResult;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.OrderResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
 import cn.com.i_zj.udrive_az.model.RechargeOrder;
@@ -201,6 +202,10 @@ public interface UdriveRestAPI {
     //获取停车场
     @GET("/mobile/park/findRelativeParks")
     Observable<BaseRetObj<List<ParksResult.DataBean>>> getParkslll();
+
+    //获取停车场明细
+    @GET("/mobile/park/detail/{id}")
+    Observable<ParkDetailResult> getParkDetail(@Path("id") int id);
 
     @GET()
     Observable<CarInfoResult> getCarInfo(@Url String id);

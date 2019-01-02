@@ -103,7 +103,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
 //                }
         bunldBean = carBeans.get(position);
         CarsFragment carsFragment = (CarsFragment) fragments.get(position);
-        carsFragment.refresh(carBeans.get(position));
+//        carsFragment.refresh(carBeans.get(position));
         tv_pname.setText(carBeans.get(position).getParkName());
         tv_adress.setText(carBeans.get(position).getParkAddress());
       }
@@ -245,8 +245,8 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
                 ArrayList<Integer> imgs = new ArrayList<>();
                 //for循环给list增加fragment
                 for (int i = 0; i < result.getData().size(); i++) {
-                  CarsFragment carsFragment = CarsFragment.newInstance(i, result.getData().get(i));
-                  fragments.add(carsFragment);
+//                  CarsFragment carsFragment = CarsFragment.newInstance(i, result.getData().get(i));
+//                  fragments.add(carsFragment);
                   imgs.add(R.drawable.view_selector);
 
                 }

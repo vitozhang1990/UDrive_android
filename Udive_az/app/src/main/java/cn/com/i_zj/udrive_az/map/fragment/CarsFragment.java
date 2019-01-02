@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
@@ -143,7 +144,7 @@ public class CarsFragment extends Fragment {
      * @param carItem s
      * @return fragment
      */
-    public static CarsFragment newInstance(int carItem, CarInfoResult.DataBean result) {
+    public static CarsFragment newInstance(int carItem, ParkDetailResult.DataBean.CarVosBean result) {
         //0, 单位名称, 单位Id, parent_current
         CarsFragment myFragment = new CarsFragment();
         Bundle bundle = new Bundle();
@@ -154,7 +155,7 @@ public class CarsFragment extends Fragment {
         return myFragment;
     }
 
-    public void refresh(CarInfoResult.DataBean result) {
+    public void refresh(ParkDetailResult.DataBean.CarVosBean result) {
         if (result.getBrand() != null && !result.getBrand().equals("")) {
 
         }
