@@ -268,8 +268,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
             if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
                 if (accountInfo.data.depositState == 2) {
-//                    yuyue();
-                    showParkOutAmountDialog(100000f);
+                    yuyue();
+//                    showParkOutAmountDialog(100000f);
                 } else {
                     ToastUtil.show(getActivity(), "请先缴纳押金");
                 }
