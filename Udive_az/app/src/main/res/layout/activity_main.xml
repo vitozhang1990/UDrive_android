@@ -28,21 +28,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <TextView
-                    android:id="@+id/main_tv_tip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="100dp"
-                    android:background="@drawable/round_corner_white_bg"
-                    android:paddingLeft="15dp"
-                    android:paddingTop="5dp"
-                    android:paddingRight="15dp"
-                    android:paddingBottom="5dp"
-                    android:text="车辆将在9月5号上线 敬请期待"
-                    android:textSize="@dimen/dbs_textsize_smaller"
-                    android:visibility="gone" />
-
                 <cn.com.i_zj.udrive_az.map.CompatToolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"

@@ -23,7 +23,6 @@ import com.umeng.socialize.UMShareAPI;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -64,8 +63,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @BindView(R.id.drawer_layout)
     DrawerLayout personalDarwLayout;
 
-    @BindView(R.id.main_tv_tip)
-    TextView tipView;
     AlertDialog unfinishedOrderDialog;
     AppUpdateDialog appUpdateDialog;
     @BindView(R.id.tv_msg)
@@ -97,13 +94,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ScreenManager.getScreenManager().pushActivity(MainActivity.this);
-        Calendar c = Calendar.getInstance();//
-        int month = c.get(Calendar.MONTH) + 1;// 获取当前月份
-        int day = c.get(Calendar.DAY_OF_MONTH);// 获取当日期
-
-        if (month <= 8 || (month == 9 && day < 5)) {
-            tipView.setVisibility(View.VISIBLE);
-        }
         checkPermission();
     }
 
