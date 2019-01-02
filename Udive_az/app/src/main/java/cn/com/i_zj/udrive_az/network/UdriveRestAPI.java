@@ -1,8 +1,6 @@
 package cn.com.i_zj.udrive_az.network;
 
 
-import org.json.JSONObject;
-
 import java.util.List;
 import java.util.Map;
 
@@ -10,30 +8,28 @@ import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
-import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
+import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
-import cn.com.i_zj.udrive_az.model.CouponResult;
 import cn.com.i_zj.udrive_az.model.CreateDepositResult;
+import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DepositAmountResult;
+import cn.com.i_zj.udrive_az.model.DoorBean;
 import cn.com.i_zj.udrive_az.model.DriverResult;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
-import cn.com.i_zj.udrive_az.model.MyWalletResult;
-import cn.com.i_zj.udrive_az.model.CreateOderBean;
-import cn.com.i_zj.udrive_az.model.DoorBean;
-import cn.com.i_zj.udrive_az.model.OrderDetailResult;
-import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
-import cn.com.i_zj.udrive_az.model.RefundDepositResult;
-import cn.com.i_zj.udrive_az.model.ReserVationBean;
-import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.IDResult;
+import cn.com.i_zj.udrive_az.model.ImageUrlResult;
 import cn.com.i_zj.udrive_az.model.NetworkResult;
+import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
+import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
 import cn.com.i_zj.udrive_az.model.RechargeOrder;
+import cn.com.i_zj.udrive_az.model.RefundDepositResult;
+import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.model.SessionResult;
-import cn.com.i_zj.udrive_az.model.ImageUrlResult;
+import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.UserDepositResult;
 import cn.com.i_zj.udrive_az.model.WalletResult;
@@ -45,7 +41,6 @@ import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
-import okhttp3.RequestBody;
 import okhttp3.MultipartBody;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -59,7 +54,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 
 /**
@@ -195,6 +189,10 @@ public interface UdriveRestAPI {
     //获取所有可用的优惠券
     @GET("/mobile/v1/preferential/findUnUsePreferential")
     Observable<BaseRetObj<List<UnUseCouponResult.DataBean>>> v1FindUnUsePreferential(@Query("orderId") String Authorization, @Query("userId") String id);
+
+    //获取停车场区域标签
+    @GET("/mobile/park/areaTags")
+    Observable<AreaTagsResult> getAreaTags();
 
     //获取停车场
     @GET("/mobile/park/findRelativeParks")

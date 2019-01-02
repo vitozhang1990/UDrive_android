@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cn.com.i_zj.udrive_az.R;
-
 public class AMapUtil {
 	/**
 	 * 判断edittext是否null
@@ -233,4 +231,11 @@ public class AMapUtil {
 		}
 
 
+    public static boolean isLatLngValid(LatLng latLng) {
+	    if (latLng == null || latLng.latitude == 0
+                || latLng.longitude == 0) {
+	        return false;
+        }
+        return true;
+    }
 }

@@ -37,6 +37,7 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
@@ -65,11 +66,14 @@ import cn.com.i_zj.udrive_az.map.ReserveActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
@@ -130,9 +134,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private List<Fragment> fragments;
     //TODO 为啥要全局变量
-    private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>();
+    private ArrayList<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
 
     private ArrayList<CarInfoResult.DataBean> carBeans = new ArrayList<>();
+    private Map<ParkKey, Marker> markerMap = new HashMap();
     private CarInfoResult.DataBean bunldBean;
     private ParksResult.DataBean buldParkBean;
     private LatLng myLocationlatLng;
@@ -141,6 +146,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private Animation animRefresh;
     private ParkDetailDialog parkDetailDialog;
     private NetworkChangeReceiver networkChangeReceiver;
+
+    private boolean showArea = false;
 
     @Override
     protected int getLayoutResource() {
@@ -195,6 +202,53 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
     }
 
+    private void fetchAreas() {
+        if (showArea) {
+            return;
+        }
+        UdriveRestClient.getClentInstance().getAreaTags()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<AreaTagsResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(AreaTagsResult result) {
+                        showArea = true;
+                        markerMap.clear();
+                        areaBeans.clear();
+                        areaBeans.addAll(result.getData());
+                        mAmap.clear();
+                        for (int i = 0; i < areaBeans.size(); i++) {
+                            LatLng latLng = new LatLng(areaBeans.get(i).getLatitude(), areaBeans.get(i).getLongitude());
+                            if (!AMapUtil.isLatLngValid(latLng)) {
+                                continue;
+                            }
+                            MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_area, areaBeans.get(i).getName())));
+
+                            Marker marker = mAmap.addMarker(markerOptions);
+//                            marker.setObject(dataBeans.get(i).getId());
+                        }
+                        if (animRefresh != null) {
+                            ivRefresh.clearAnimation();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private void fetchParks() {
         UdriveRestClient.getClentInstance().getParks()
                 .subscribeOn(Schedulers.io())
@@ -206,19 +260,30 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onNext(ParksResult result) {
-                        dataBeans.clear();
-                        dataBeans.addAll(result.getData());
-                        mAmap.clear();
+                        if (showArea) {//如果之前是地区，则需要全部刷新
+                            showArea = false;
+                            mAmap.clear();
+                        }
+                        List<ParksResult.DataBean> dataBeans = result.getData();
                         for (int i = 0; i < dataBeans.size(); i++) {
-                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBeans.get(i).getLatitude(), dataBeans.get(i).getLongitude()));
-                            if (dataBeans.get(i).getCooperate() > 0) {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_monthly, String.valueOf(dataBeans.get(i).getValidCarCount()))));
+                            ParksResult.DataBean dataBean = dataBeans.get(i);
+                            ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongtitude(), dataBean.getLatitude());
+                            if (markerMap.containsKey(parkKey)) {
+                                ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
+                                if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
+                                    continue;
+                                }
+                            }
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
+                            if (dataBean.getCooperate() > 0) {
+                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_monthly, String.valueOf(dataBean.getValidCarCount()))));
                             } else {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_llinshi, String.valueOf(dataBeans.get(i).getValidCarCount()))));
+                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_llinshi, String.valueOf(dataBean.getValidCarCount()))));
                             }
 
                             Marker marker = mAmap.addMarker(markerOptions);
-                            marker.setObject(dataBeans.get(i).getId());
+                            marker.setObject(dataBean);
+                            markerMap.put(parkKey, marker);
                         }
                         if (animRefresh != null) {
                             ivRefresh.clearAnimation();
@@ -240,8 +305,16 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     class NetworkChangeReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isAvailableByPing() && dataBeans.size() == 0) {
-                fetchParks();
+            if (NetworkUtils.isAvailableByPing()) {
+                if (mAmap.getCameraPosition().zoom > 12) {
+                    if (markerMap.isEmpty()) {
+                        fetchParks();
+                    }
+                } else {
+                    if (areaBeans.size() == 0) {
+                        fetchAreas();
+                    }
+                }
             }
         }
     }
@@ -440,29 +513,41 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         mLocationClient.startLocation();
         //测试marker
 
+        mAmap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+
+            }
+
+            @Override
+            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                if (cameraPosition.zoom > 12) { //显示小图标
+                    fetchParks();
+                } else {//显示区域
+                    fetchAreas();
+                }
+            }
+        });
+
         mAmap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 rl_where.setVisibility(View.GONE);
-                for (int i = 0; i < dataBeans.size(); i++) {
-                    if (dataBeans.get(i).getId() == Integer.parseInt(marker.getObject().toString())) {
-                        parkid = String.valueOf(dataBeans.get(i).getId());
-                        buldParkBean = dataBeans.get(i);
-                        tv_pname.setText(dataBeans.get(i).getName());
-                        tv_adress.setText(dataBeans.get(i).getName());
-                        float distance = AMapUtils.calculateLineDistance(
-                                myLocationlatLng,
-                                new LatLng(dataBeans.get(i).getLatitude(), dataBeans.get(i).getLongitude())
-                        );
-                        int dis = (int) (distance / 1000);
-                        tv_dis.setText(dis + "km");
-                        break;
-                    }
-                }
+                ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
+                buldParkBean = dataBean;
+                parkid = String.valueOf(dataBean.getId());
+                tv_pname.setText(dataBean.getName());
+                tv_adress.setText(dataBean.getAddress());
+                float distance = AMapUtils.calculateLineDistance(
+                        myLocationlatLng,
+                        new LatLng(dataBean.getLatitude(), dataBean.getLongitude())
+                );
+                int dis = (int) (distance / 1000);
+                tv_dis.setText(dis + "km");
                 LogUtils.e(SessionManager.getInstance().getAuthorization());
                 // 获取停车场车辆列表信息
 //                showProgressDialog("正在获取信息");
-                UdriveRestClient.getClentInstance().getCarInfo("/mobile/car/getReservationList/" + marker.getObject())
+                UdriveRestClient.getClentInstance().getCarInfo("/mobile/car/getReservationList/" + dataBean.getId())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<CarInfoResult>() {
@@ -604,7 +689,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
-        fetchParks();
+        if (mAmap.getCameraPosition().zoom > 12) {
+            fetchParks();
+        } else {
+            fetchAreas();
+        }
     }
 
     @Override
@@ -631,8 +720,27 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         }
     }
 
-    //在marker上绘制文字
+    protected Bitmap getMyBitmap1(int mipMapId, String pm_val) {
+        Bitmap bitmap1 = getMyBitmap(mipMapId, "P");
+        if ("0".equals(pm_val)) {
+            return bitmap1;
+        }
+        Bitmap bitmap2 = getMyBitmap(R.mipmap.ic_cheweishu_monthly1, pm_val, 14);
+        Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8,bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(bitmap1, 0, bitmap2.getHeight() / 8, null);
+        canvas.drawBitmap(bitmap2, bitmap1.getWidth() - bitmap2.getWidth() *  7 / 8, 0, null);
+        bitmap1.recycle();
+        bitmap2.recycle();
+        return bitmap;
+    }
+
     protected Bitmap getMyBitmap(int mipMapId, String pm_val) {
+        return getMyBitmap(mipMapId, pm_val, 16);
+    }
+
+    //在marker上绘制文字
+    protected Bitmap getMyBitmap(int mipMapId, String pm_val, int textSize) {
 
         Bitmap bitmap = BitmapDescriptorFactory.fromResource(
                 mipMapId).getBitmap();
@@ -641,7 +749,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         Canvas canvas = new Canvas(bitmap);
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(SizeUtils.sp2px(getActivity(), 16));
+        textPaint.setTextSize(SizeUtils.sp2px(getActivity(), textSize));
         textPaint.setColor(getResources().getColor(R.color.white));
         canvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
         canvas.drawLine(canvas.getWidth() / 2, 0, canvas.getWidth() / 2, 0, textPaint);
