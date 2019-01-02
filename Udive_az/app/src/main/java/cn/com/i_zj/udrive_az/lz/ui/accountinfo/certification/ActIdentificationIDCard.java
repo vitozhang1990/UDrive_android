@@ -22,7 +22,6 @@ import com.bumptech.glide.Glide;
 import com.pickerview.TimePickerView;
 
 import org.apache.commons.codec.binary.Base64;
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -55,7 +54,6 @@ import cn.com.i_zj.udrive_az.lz.ui.idregister.IdBean;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
@@ -494,7 +492,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
             public void onResponse(Call call, Response response)
                     throws IOException {
                 dissmisThisProgressDialog();
-                if (response == null || response.body() == null) {
+                if (response == null || response.body() == null || response.code() != 200) {
                     showToastMsg("身份证解析失败");
                     return;
                 }
@@ -502,6 +500,10 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
                     String string = response.body().string();
                     if (front) {
                         IdBean idBean = JSONObject.parseObject(string, IdBean.class);
+                        if (idBean != null) {
+                            showToastMsg("身份证解析失败");
+                            return;
+                        }
                         showData(idBean, null, front);
                     } else {
                         ALiIDCarBean idCarBean = JSONObject.parseObject(string, ALiIDCarBean.class);
