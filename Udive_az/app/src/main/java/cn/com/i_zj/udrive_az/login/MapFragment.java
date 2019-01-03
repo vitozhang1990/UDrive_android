@@ -281,7 +281,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         List<ParksResult.DataBean> dataBeans = result.getData();
                         for (int i = 0; i < dataBeans.size(); i++) {
                             ParksResult.DataBean dataBean = dataBeans.get(i);
-                            ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongtitude(), dataBean.getLatitude());
+                            ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
                             if (markerMap.containsKey(parkKey)) {
                                 ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
                                 if (temp.getValidCarCount() == dataBean.getValidCarCount()) {

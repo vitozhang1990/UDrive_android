@@ -55,6 +55,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
+import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
@@ -68,7 +69,6 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
-import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
@@ -247,13 +247,13 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     orderNum = String.valueOf(orderBean.getData().getNumber());
                     if (orderBean.getData().getFromPark() != null) {
                         startParkPoint = new LatLonPoint(orderBean.getData().getFromPark().getLatitude(),
-                                orderBean.getData().getFromPark().getLongtitude());
+                                orderBean.getData().getFromPark().getLongitude());
                     }
                     if (orderBean.getData().getToPark() != null) {
                         toPark = orderBean.getData().getToPark();
                         tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
                         tv_address_type.setText("还车点");
-                        toParkPoint = new LatLonPoint(toPark.getLatitude(), toPark.getLongtitude());
+                        toParkPoint = new LatLonPoint(toPark.getLatitude(), toPark.getLongitude());
                     }
                     if (orderBean.getData().getCar() != null) {
                         car = orderBean.getData().getCar();
@@ -335,15 +335,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             case R.id.tv_address://更换地址提示
                 //TODO 只能更换目的地
                 if (state == 1) {//行程中才能点击
-                    ToastUtil.show(this, "点击了更换地址");
+                    Intent intent1 = new Intent(ReserveActivity.this, ChooseParkActivity.class);
+                    startActivityForResult(intent1, 101);
                 }
-//                Intent intent1 = new Intent(ReserveActivity.this, ChoosStartEndActivity.class);
-//                intent1.putExtra("startLatitude", startLatitude);
-//                intent1.putExtra("startLongitude", startLongitude);
-//                if (fromPark != null) {
-//                    intent1.putExtra("parkName", fromPark.getName());
-//                }
-//                startActivityForResult(intent1, 101);
                 break;
             case R.id.iv_na:
                 if (toParkPoint != null) {
@@ -855,22 +849,12 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 101) {
-            String name = data.getStringExtra("name");
-            Double endlong = data.getDoubleExtra("endLong", 0);
-            Double endlatin = data.getDoubleExtra("endLatin", 0);
-            String endParkId = data.getStringExtra("id");
-            if (toPark == null) {
-                toPark = new ParksResult.DataBean();
-            }
-            toPark.setId(Integer.valueOf(endParkId));
-            toPark.setName(name);
-            toPark.setLatitude(endlatin);
-            toPark.setLongitude(endlong);
+            toPark = (ParksResult.DataBean) data.getSerializableExtra("pickPark");
             if (state == 1) {
                 updateDestinationPark();
             }
 
-            toParkPoint = new LatLonPoint(endlatin, endlong);
+            toParkPoint = new LatLonPoint(toPark.getLatitude(), toPark.getLongitude());
             mRouteSearch = new RouteSearch(this);
             mRouteSearch.setRouteSearchListener(this);
 

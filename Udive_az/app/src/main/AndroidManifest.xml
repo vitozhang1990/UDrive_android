@@ -166,6 +166,9 @@
             android:name=".map.adapter.ChoosStartEndActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".map.adapter.ChooseParkActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name="com.amap.api.navi.AmapRouteActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
