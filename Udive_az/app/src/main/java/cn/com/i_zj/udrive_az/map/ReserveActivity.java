@@ -240,6 +240,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 if (orderBean != null) {
                     state = 1;
                     parkBean = orderBean.getData().getFromPark();
+                    parkBean.setId(parkBean.getParkID());
                     ivBack.setVisibility(View.INVISIBLE);
                     operateBtnLayout.setVisibility(View.VISIBLE);
                     timeDownLayout.setVisibility(View.GONE);
@@ -745,7 +746,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         dissmisProgressDialog();
                         if (retParkObj.getCode() == 1 && retParkObj.getDate() != null) {
                             //1.取消之前的终
-                            if (parkBean.getId() != toPark.getId()) {
+                            if (toPark != null && parkBean.getId() != toPark.getId()) {
                                 ParkKey parkKey = new ParkKey(toPark.getId(), toPark.getLongitude(), toPark.getLatitude());
                                 if (markerMap.containsKey(parkKey)) {
                                     markerMap.get(parkKey).remove();//清除
