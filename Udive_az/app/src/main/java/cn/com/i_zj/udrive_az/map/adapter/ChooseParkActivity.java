@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
+import com.amap.api.services.core.PoiItem;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -42,7 +44,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
-import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
@@ -62,10 +63,16 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     MapView mMapView;
     @BindView(R.id.park_pick_layout)
     LinearLayout parkPickLayout;
+    @BindView(R.id.ed_search)
+    EditText ed_search;
     @BindView(R.id.tv_name)
     TextView tv_name;
     @BindView(R.id.tv_address)
     TextView tv_address;
+    @BindView(R.id.stoped_mount)
+    TextView stoped_mount;
+    @BindView(R.id.stop_in_amount)
+    TextView stop_in_amount;
 
     private AMap mAmap;
     public AMapLocationClient mLocationClient = null;
@@ -114,14 +121,29 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 finish();
                 break;
             case R.id.ed_search:
-                startActivity(OrderActivity.class);
+                startActivityForResult(ChooseStartEndActivity.class, 102);
                 break;
             case R.id.btn_pick:
                 Intent intent = getIntent();
                 intent.putExtra("pickPark", pickPark);
-                setResult(101,intent);
+                setResult(RESULT_OK, intent);
                 finish();
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 102 && resultCode == RESULT_OK) {
+            PoiItem poiItem = data.getParcelableExtra("poiItem");
+            if (poiItem == null) {
+                return;
+            }
+            ed_search.setText(poiItem.getTitle());
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(poiItem.getLatLonPoint().getLatitude(), poiItem.getLatLonPoint().getLongitude())
+                    , 14f));
         }
     }
 
@@ -204,6 +226,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         parkPickLayout.setVisibility(View.VISIBLE);
         tv_name.setText(pickPark.getName());
         tv_address.setText(pickPark.getAddress());
+        stoped_mount.setText("" + pickPark.getStopedAmount());
+        stop_in_amount.setText("" + pickPark.getStopInAmount());
         UdriveRestClient.getClentInstance().getParkDetail(pickPark.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

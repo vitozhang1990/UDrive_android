@@ -848,7 +848,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 101) {
+        if (requestCode == 101 && resultCode == RESULT_OK) {
             toPark = (ParksResult.DataBean) data.getSerializableExtra("pickPark");
             if (state == 1) {
                 updateDestinationPark();

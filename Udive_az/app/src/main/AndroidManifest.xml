@@ -163,7 +163,7 @@
             android:value="5081139aff4c525bed870cf8cd86908a" />
 
         <activity
-            android:name=".map.adapter.ChoosStartEndActivity"
+            android:name=".map.adapter.ChooseStartEndActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".map.adapter.ChooseParkActivity"
