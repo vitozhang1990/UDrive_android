@@ -182,7 +182,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void init(Bundle savedInstanceState) {
-
         initViewstMap(savedInstanceState);
         bunldBean = new CarVosBean();
         buldParkBean = new ParksResult.DataBean();
@@ -361,7 +360,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void yuyueVerify() {
         if (SessionManager.getInstance().getAuthorization() != null) {
             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-
+            if (accountInfo == null) {
+                return;
+            }
             if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
                 if (accountInfo.data.depositState == 2) {
 //                    yuyue();

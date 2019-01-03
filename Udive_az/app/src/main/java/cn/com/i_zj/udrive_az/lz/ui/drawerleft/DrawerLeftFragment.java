@@ -216,7 +216,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         UMWeb web = new UMWeb(url);
         web.setTitle("快来和我一起使用你行你开");//标题
         web.setThumb(new UMImage(getContext(), BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));  //缩略图
-        web.setDescription("新用户注册可以获得360元超大礼包哦!");//描述
+        web.setDescription("新用户注册可以获得60元超大礼包哦!");//描述
         new ShareAction((MainActivity) getContext())
                 .withMedia(web)
                 .setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.WEIXIN_FAVORITE)
@@ -406,7 +406,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isAvailableByPing() && accountInfo == null) {
-                getUserInfo();
+//                getUserInfo();
             }
         }
     }
