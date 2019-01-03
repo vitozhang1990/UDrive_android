@@ -136,16 +136,16 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
 //
 //                        Marker marker1= mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng1)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("99"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("99"))));
 ////        localMarker.setObject(3);
 ////
 //                        Marker marker2=mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng2)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("13"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("13"))));
 //
 //                        Marker marker3=mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng3)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("5"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("5"))));
         }
 
         @Override

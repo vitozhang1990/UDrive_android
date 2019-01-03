@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.text.TextPaint;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -87,7 +84,6 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
@@ -241,7 +237,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                 continue;
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_area, areaBeans.get(i).getName())));
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithCenterText(getActivity(), R.mipmap.ic_area, areaBeans.get(i).getName())));
 
                             Marker marker = mAmap.addMarker(markerOptions);
 //                            marker.setObject(dataBeans.get(i).getId());
@@ -289,11 +285,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                 }
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-                            if (dataBean.getCooperate() > 0) {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_monthly, String.valueOf(dataBean.getValidCarCount()))));
-                            } else {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap(R.mipmap.ic_cheweishu_llinshi, String.valueOf(dataBean.getValidCarCount()))));
-                            }
+                            int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithCenterText(getActivity(), bitmapId, String.valueOf(dataBean.getValidCarCount()))));
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(dataBean);
@@ -799,45 +792,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (getActivity() != null) {
             getActivity().unregisterReceiver(networkChangeReceiver);
         }
-    }
-
-    protected Bitmap getMyBitmap1(int mipMapId, String pm_val) {
-        Bitmap bitmap1 = getMyBitmap(mipMapId, "P");
-        if ("0".equals(pm_val)) {
-            return bitmap1;
-        }
-        Bitmap bitmap2 = getMyBitmap(R.mipmap.ic_cheweishu_monthly1, pm_val, 14);
-        Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8, bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(bitmap1, 0, bitmap2.getHeight() / 8, null);
-        canvas.drawBitmap(bitmap2, bitmap1.getWidth() - bitmap2.getWidth() * 7 / 8, 0, null);
-        bitmap1.recycle();
-        bitmap2.recycle();
-        return bitmap;
-    }
-
-    protected Bitmap getMyBitmap(int mipMapId, String pm_val) {
-        return getMyBitmap(mipMapId, pm_val, 16);
-    }
-
-    //在marker上绘制文字
-    protected Bitmap getMyBitmap(int mipMapId, String pm_val, int textSize) {
-
-        Bitmap bitmap = BitmapDescriptorFactory.fromResource(
-                mipMapId).getBitmap();
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                bitmap.getHeight());
-        Canvas canvas = new Canvas(bitmap);
-        TextPaint textPaint = new TextPaint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(SizeUtils.sp2px(getActivity(), textSize));
-        textPaint.setColor(getResources().getColor(R.color.white));
-        canvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawLine(canvas.getWidth() / 2, 0, canvas.getWidth() / 2, 0, textPaint);
-        float baseLineY = Math.abs(textPaint.ascent() + textPaint.descent()) / 2;
-        float textWidth = textPaint.measureText(pm_val);
-        canvas.drawText(pm_val, -textWidth / 2, baseLineY - 5, textPaint);// 设置bitmap上面的文字位置
-        return bitmap;
     }
 
     private void showTrafficControlDialog() {

@@ -1,12 +1,9 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -50,7 +47,7 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.SizeUtils;
+import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -82,6 +79,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private Polygon polygon;
 
     private ParksResult.DataBean pickPark;
+    private ParksResult.DataBean fromPark;
 
     @Override
     protected int getLayoutResource() {
@@ -97,6 +95,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
+        fromPark = (ParksResult.DataBean) getIntent().getSerializableExtra("fromPark");
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
         mAmap = mMapView.getMap();
         UiSettings uiSettings = mAmap.getUiSettings();
@@ -169,11 +168,14 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                                 }
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-                            if (dataBean.getCooperate() > 0) {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap1(R.mipmap.ic_cheweishu_monthly, String.valueOf(dataBean.getParkCountBalance()))));
+                            int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                            StringBuilder sb = new StringBuilder();
+                            if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
+                                sb.append("起");
                             } else {
-                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap1(R.mipmap.ic_cheweishu_llinshi, String.valueOf(dataBean.getParkCountBalance()))));
+                                sb.append("P");
                             }
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()))));
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(dataBean);
@@ -315,44 +317,5 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 isFirstLoc = false;
             }
         }
-    }
-
-    protected Bitmap getMyBitmap1(int mipMapId, String pm_val) {
-        Bitmap bitmap1 = getMyBitmap(mipMapId, "P");
-        if ("0".equals(pm_val)) {
-            return bitmap1;
-        }
-        Bitmap bitmap2 = getMyBitmap(R.mipmap.ic_cheweishu_monthly1, pm_val, 14);
-        Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8, bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(bitmap1, 0, bitmap2.getHeight() / 8, null);
-        canvas.drawBitmap(bitmap2, bitmap1.getWidth() - bitmap2.getWidth() * 7 / 8, 0, null);
-        bitmap1.recycle();
-        bitmap2.recycle();
-        return bitmap;
-    }
-
-    protected Bitmap getMyBitmap(int mipMapId, String pm_val) {
-        return getMyBitmap(mipMapId, pm_val, 16);
-    }
-
-    //在marker上绘制文字
-    protected Bitmap getMyBitmap(int mipMapId, String pm_val, int textSize) {
-
-        Bitmap bitmap = BitmapDescriptorFactory.fromResource(
-                mipMapId).getBitmap();
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                bitmap.getHeight());
-        Canvas canvas = new Canvas(bitmap);
-        TextPaint textPaint = new TextPaint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(SizeUtils.sp2px(this, textSize));
-        textPaint.setColor(getResources().getColor(R.color.white));
-        canvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawLine(canvas.getWidth() / 2, 0, canvas.getWidth() / 2, 0, textPaint);
-        float baseLineY = Math.abs(textPaint.ascent() + textPaint.descent()) / 2;
-        float textWidth = textPaint.measureText(pm_val);
-        canvas.drawText(pm_val, -textWidth / 2, baseLineY - 5, textPaint);// 设置bitmap上面的文字位置
-        return bitmap;
     }
 }

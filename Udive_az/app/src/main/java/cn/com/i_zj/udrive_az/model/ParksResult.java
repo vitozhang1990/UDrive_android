@@ -69,6 +69,7 @@ public class ParksResult implements Serializable {
         private int stoped;
         private int stopedAmount;
         private int stopInAmount;
+        private int parkID;//可以忽略
 
         public int getId() {
             return id;
@@ -172,6 +173,14 @@ public class ParksResult implements Serializable {
 
         public void setStopInAmount(int stopInAmount) {
             this.stopInAmount = stopInAmount;
+        }
+
+        public int getParkID() {
+            return parkID;
+        }
+
+        public void setParkID(int parkID) {
+            this.parkID = parkID;
         }
     }
 }
