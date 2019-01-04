@@ -216,7 +216,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                         parkDetailDialog.show();
                     }
 
-
                     @Override
                     public void onFinish() {
 

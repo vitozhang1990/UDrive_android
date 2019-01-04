@@ -9,11 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 
@@ -21,11 +20,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.adapter.AdverImageAdapter;
 import cn.com.i_zj.udrive_az.adapter.ParkImageAdapter;
 import cn.com.i_zj.udrive_az.lz.bean.ParkImage;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
-import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 
@@ -35,13 +32,14 @@ import cn.com.i_zj.udrive_az.utils.ToolsUtils;
  * @Created time 2018/12/17
  */
 public class ParkDetailDialog extends Dialog {
-
     @BindView(R.id.tv_pname)
     TextView tvPname;
     @BindView(R.id.tv_add)
     TextView tvAdd;
     @BindView(R.id.vp_image)
     ViewPager vpImage;
+    @BindView(R.id.iv_image)
+    ImageView iv_image;
     @BindView(R.id.tv_close)
     TextView tvClose;
     @BindView(R.id.ll_indiactor)
@@ -51,11 +49,11 @@ public class ParkDetailDialog extends Dialog {
     private View mViewAv;
     private ParkImageAdapter parkImageAdapter;
     private ArrayList<ParkImage> arrayList;
+
     public ParkDetailDialog(Context context) {
         super(context, R.style.UpdateDialogStytle);
         mContext = context;
         initView();
-
     }
 
     private void initView() {
@@ -63,7 +61,8 @@ public class ParkDetailDialog extends Dialog {
         setContentView(view);
         ButterKnife.bind(this, view);
         imgWidth = (int) (ToolsUtils.getWindowWidth(mContext) * 0.8);
-        vpImage.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int)(imgWidth /7f * 5)));
+        iv_image.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int) (imgWidth / 7f * 5)));
+        vpImage.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int) (imgWidth / 7f * 5)));
         this.llIndiactor.removeAllViews();
         arrayList = new ArrayList<>();
     }
@@ -73,10 +72,10 @@ public class ParkDetailDialog extends Dialog {
         tvPname.setText(parkRemark.getName());
         arrayList.clear();
 
-        if(!StringUtils.isEmpty(parkRemark.getImgs())){
+        if (!StringUtils.isEmpty(parkRemark.getImgs())) {
             arrayList.addAll(parkRemark.getImgs());
-        }else {
-            ParkImage parkImage= new ParkImage();
+        } else {
+            ParkImage parkImage = new ParkImage();
             parkImage.setImgUrl("res://" +
                     mContext.getPackageName() +
                     "/" + R.mipmap.pic_defult);
@@ -84,7 +83,7 @@ public class ParkDetailDialog extends Dialog {
         }
 
         llIndiactor.removeAllViews();
-        if(arrayList.size()>1){
+        if (arrayList.size() > 1) {
             for (int i = 0; i < arrayList.size(); i++) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View mViewAv = inflater.inflate(R.layout.include_av_cursor, null);
@@ -93,10 +92,8 @@ public class ParkDetailDialog extends Dialog {
             }
         }
 
-
         parkImageAdapter = new ParkImageAdapter(mContext, arrayList);
         vpImage.setAdapter(parkImageAdapter);
-
     }
 
     @Override
@@ -109,8 +106,6 @@ public class ParkDetailDialog extends Dialog {
         p.width = (int) (display.getWidth() * 0.8); // 宽度设置为屏幕的
         window.setAttributes(p);
         window.setGravity(Gravity.CENTER); // 此处可以设置dialog显示的位置
-
-
     }
 
     @OnClick(R.id.tv_close)

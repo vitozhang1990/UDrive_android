@@ -197,7 +197,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             if (type.equals("1")) {// 预约
                 bunldBean = (CarVosBean) intent.getSerializableExtra("bunld");
                 fromPark = (ParksResult.DataBean) intent.getSerializableExtra("bunldPark");
-                fromPark.setParkID(fromPark.getId());
+                if (fromPark.getParkID() == 0) {
+                    fromPark.setParkID(fromPark.getId());
+                }
                 reservationID = intent.getStringExtra("id");
                 if (bunldBean != null && fromPark != null) {
                     tvCarnum.setText(bunldBean.getPlateNumber());
@@ -230,7 +232,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 if (orderBean != null) {
                     state = 1;
                     fromPark = orderBean.getData().getFromPark();
-                    fromPark.setId(fromPark.getParkID());
+                    if (fromPark.getId() == 0) {
+                        fromPark.setId(fromPark.getParkID());
+                    }
                     ivBack.setVisibility(View.INVISIBLE);
                     operateBtnLayout.setVisibility(View.VISIBLE);
                     timeDownLayout.setVisibility(View.GONE);
@@ -242,8 +246,12 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     orderNum = String.valueOf(orderBean.getData().getNumber());
                     if (orderBean.getData().getToPark() != null) {
                         toPark = orderBean.getData().getToPark();
-                        toPark.setId(toPark.getParkID());
-                        toPark.setLongitude(toPark.getLongtitude());
+                        if (toPark.getId() == 0) {
+                            toPark.setId(toPark.getParkID());
+                        }
+                        if (toPark.getLongitude() == 0) {
+                            toPark.setLongitude(toPark.getLongtitude());
+                        }
                         tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
                         tv_address_type.setText("还车点");
                     }
@@ -760,7 +768,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                 }
                             }
                             toPark = retParkObj.getDate();
-                            toPark.setLongitude(toPark.getLongtitude());
+                            if (toPark.getLongitude() == 0) {
+                                toPark.setLongitude(toPark.getLongtitude());
+                            }
                             //2.更新界面地址
                             tv_address.setText(toPark.getName());
                             //3.更新图标
@@ -898,6 +908,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     }
 
     private void drawRoute() {
+        if (drivingRouteOverlay != null) {
+            drivingRouteOverlay.removeFromMap();
+        }
         if (mobileLocation == null) {
             return;
         }
@@ -905,16 +918,14 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             mRouteSearch = new RouteSearch(ReserveActivity.this);
             mRouteSearch.setRouteSearchListener(ReserveActivity.this);
             final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(toPark.getLatitude(), toPark.getLongitude()));
-            // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
             RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, null, null, "");
-            mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
+            mRouteSearch.calculateDriveRouteAsyn(query);
         } else if (fromPark != null) {
             mRouteSearch = new RouteSearch(ReserveActivity.this);
             mRouteSearch.setRouteSearchListener(ReserveActivity.this);
-            final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(toPark.getLatitude(), toPark.getLongitude()));
-            // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
-            RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.WalkDefault, null, null, "");
-            mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
+            final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(fromPark.getLatitude(), fromPark.getLongitude()));
+            RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
+            mRouteSearch.calculateWalkRouteAsyn(query);
         }
     }
 }
