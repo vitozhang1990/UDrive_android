@@ -51,6 +51,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -147,7 +148,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private List<Marker> carMarkers = new ArrayList<>();//停车场小车
 
     private List<Fragment> fragments;
-    private ArrayList<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
+    private List<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
+    private List<ParksResult.DataBean> parkBeans = new ArrayList<>();
     private Map<ParkKey, Marker> markerMap = new HashMap();
 
     private CarVosBean bunldBean; //当前选中的车辆
@@ -161,6 +163,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private ParkDetailDialog parkDetailDialog;
     private NetworkChangeReceiver networkChangeReceiver;
     private boolean showArea = false;//当前是否为地区marker
+    private DecimalFormat df = new DecimalFormat("0.0");
 
     @Override
     protected int getLayoutResource() {
@@ -264,6 +267,22 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 }
                 break;
             case R.id.btn_yongche:
+                ParksResult.DataBean bestPark = null;
+                float bestDistance = 1000000;
+                for (ParksResult.DataBean dataBean : parkBeans) {
+                    float distance = AMapUtils.calculateLineDistance(mobileLocation,
+                            new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
+                    if (distance < bestDistance) {
+                        bestPark = dataBean;
+                        bestDistance = distance;
+                    }
+                }
+                if (bestPark != null) {
+                    ParkKey parkKey = new ParkKey(bestPark.getId(), bestPark.getLongitude(), bestPark.getLatitude());
+                    if (markerMap.containsKey(parkKey)) {
+                        onMarkerClick(markerMap.get(parkKey));
+                    }
+                }
                 break;
         }
     }
@@ -330,9 +349,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             showArea = false;
                             mAmap.clear();
                         }
-                        List<ParksResult.DataBean> dataBeans = result.getData();
-                        for (int i = 0; i < dataBeans.size(); i++) {
-                            ParksResult.DataBean dataBean = dataBeans.get(i);
+                        parkBeans.clear();
+                        parkBeans.addAll(result.getData());
+                        for (ParksResult.DataBean dataBean : parkBeans) {
                             ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
                             if (markerMap.containsKey(parkKey)) {
                                 ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
@@ -820,11 +839,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         tv_pname.setText(dataBean.getName());
         tv_adress.setText(dataBean.getAddress());
         float distance = AMapUtils.calculateLineDistance(
-                mobileLocation,
-                new LatLng(dataBean.getLatitude(), dataBean.getLongitude())
-        );
-        int dis = (int) (distance / 1000);
-        tv_dis.setText(dis + "km");
+                mobileLocation, new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
+        tv_dis.setText(df.format(distance / 1000) + "km");
         // 刷新停车场信息
         parkDetail(dataBean.getId());
         return false;
