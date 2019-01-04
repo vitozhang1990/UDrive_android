@@ -386,12 +386,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        if (state == 0) {
-            cancelReservationDialog();
-        } else {
-            ToastUtils.showShort("您还有未完成的订单");
-        }
-
+//        if (state == 0) {
+//            cancelReservationDialog();
+//        } else {
+//            ToastUtils.showShort("您还有未完成的订单");
+//        }
     }
 
     private void cancelReservationDialog() {

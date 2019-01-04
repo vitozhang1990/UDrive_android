@@ -102,7 +102,7 @@ public class CarsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
         CarInfoResult.DataBean result = new Gson().fromJson(bundle.getString(Constants.INTENT_KEY_CAR_DATA), CarInfoResult.DataBean.class);
-        if(result!=null){
+        if (result != null) {
             tvCarnum.setText(result.getPlateNumber());
             tvCarname.setText(result.getBrand());
             tvColor.setText(result.getCarColor());
@@ -110,14 +110,16 @@ public class CarsFragment extends Fragment {
             tvXuhang.setText(String.valueOf(result.getMaxDistance()));
             tvFenzhong.setText(deciMal(result.getTimeFee(), 100) + "");
             tvGongli.setText(deciMal(result.getMileagePrice(), 100) + "");
-            if("北汽LITE".equals(result.getBrand())){
+            if ("北汽LITE".equals(result.getBrand())) {
                 tvRanliao.setText("电动车");
+                tvGongli.setVisibility(View.GONE);
+                tv4.setVisibility(View.GONE);
             }
 
-            Glide.with(getActivity()).load( CarTypeImageUtils.getCarImageByBrand(result.getBrand(),result.getCarColor())).into(ivCar);
-            if(result.isTrafficControl()){
+            Glide.with(getActivity()).load(CarTypeImageUtils.getCarImageByBrand(result.getBrand(), result.getCarColor())).into(ivCar);
+            if (result.isTrafficControl()) {
                 mTvTrafficControl.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 mTvTrafficControl.setVisibility(View.GONE);
             }
         }

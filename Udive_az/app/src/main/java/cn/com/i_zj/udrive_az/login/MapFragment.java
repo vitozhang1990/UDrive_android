@@ -664,6 +664,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 ll_info.setVisibility(View.GONE);
                 rl_where.setVisibility(View.GONE);
                 btn_yuding.setVisibility(View.GONE);
+                btn_yongche.setVisibility(View.VISIBLE);
             }
         }
     }

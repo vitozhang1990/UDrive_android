@@ -3,7 +3,6 @@
     <string name="activity_wallet">我的钱包</string>
     <string name="activity_balance">余额</string>
 
-    <string name="activity_amount">费用说明</string>
     <string name="activity_protocol">用户协议</string>
     <string name="activity_deposit">押金</string>
     <string name="activity_recharge">充值</string>

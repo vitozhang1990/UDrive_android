@@ -40,7 +40,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
-import cn.com.i_zj.udrive_az.login.AmountActivity;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AddressInfo;
@@ -52,6 +51,7 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -136,7 +136,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 getParkRemark();
                 break;
             case R.id.amount:
-                startActivity(AmountActivity.class);
+                WebActivity.startWebActivity(ChooseParkActivity.this, "http://zzbcjj.com/costdetail", "费用说明");
                 break;
         }
     }
@@ -265,13 +265,13 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         tv_address.setText(pickPark.getAddress());
         if (pickPark.getCooperate() > 0) {
             if (pickPark.getStopedAmount() > 0) {
-                stop_amount.setText("该还车点无可用免费车位时将收取 " + pickPark.getStopedAmount() + " 元超停费");
+                stop_amount.setText("该还车点无可用免费车位时将收取 " + pickPark.getStopedAmount() / 100 + " 元超停费");
             } else {
                 stop_amount.setText("该还车点不收取停车费");
             }
         } else {
             if (pickPark.getStopInAmount() > 0) {
-                stop_amount.setText("该还车点将收取 " + pickPark.getStopInAmount() + " 元停车费");
+                stop_amount.setText("该还车点将收取 " + pickPark.getStopInAmount() / 100 + " 元停车费");
             } else {
                 stop_amount.setText("该还车点不收取停车费");
             }
