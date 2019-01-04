@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -76,8 +75,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 /**
  * 等待用车---行程中
  */
-public class ReserveActivity extends DBSBaseActivity implements AMapLocationListener
-        , RouteSearch.OnRouteSearchListener, AMap.OnMarkerClickListener {
+public class ReserveActivity extends DBSBaseActivity implements AMapLocationListener, RouteSearch.OnRouteSearchListener {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.tv_canel)
@@ -182,7 +180,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("zhangwei", "111111");
         MapUtils.statusBarColor(this);
         initViewstMap(savedInstanceState);
         initViews();
@@ -191,7 +188,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         }
         tv_time.setText("00 : " + minute + " : " + second);
         fetchParks();
-        Log.e("zhangwei", "22222");
     }
 
     private void initViews() {
@@ -258,7 +254,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         tvgonglishu.setText("" + car.getMaxDistance());
                         Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
                     }
-                    drawRoute();
                 }
             }
         }
@@ -337,20 +332,28 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 }
                 break;
             case R.id.iv_na:
-                if (toPark != null) {
-                    NavigationDialog navigationDialog = new NavigationDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("lng", String.valueOf(toPark.getLongitude()));
-                    bundle.putString("lat", String.valueOf(toPark.getLatitude()));
-                    navigationDialog.setArguments(bundle);
-                    navigationDialog.show(getSupportFragmentManager(), "navigation");
-                } else if (fromPark != null) {
-                    NavigationDialog navigationDialog = new NavigationDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("lng", String.valueOf(fromPark.getLongitude()));
-                    bundle.putString("lat", String.valueOf(fromPark.getLatitude()));
-                    navigationDialog.setArguments(bundle);
-                    navigationDialog.show(getSupportFragmentManager(), "navigation");
+                if (state == 1) {
+                    if (toPark != null) {
+                        NavigationDialog navigationDialog = new NavigationDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("lng", String.valueOf(toPark.getLongitude()));
+                        bundle.putString("lat", String.valueOf(toPark.getLatitude()));
+                        navigationDialog.setArguments(bundle);
+                        navigationDialog.show(getSupportFragmentManager(), "navigation");
+                    } else {
+                        ToastUtils.showShort("尚未选取还车点");
+                    }
+                } else {
+                    if (fromPark != null) {
+                        NavigationDialog navigationDialog = new NavigationDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("lng", String.valueOf(fromPark.getLongitude()));
+                        bundle.putString("lat", String.valueOf(fromPark.getLatitude()));
+                        navigationDialog.setArguments(bundle);
+                        navigationDialog.show(getSupportFragmentManager(), "navigation");
+                    } else {
+                        ToastUtils.showShort("尚未选取取车点");
+                    }
                 }
                 break;
         }
@@ -370,9 +373,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         mLocationClient.setLocationListener(this);
         //启动定位
         mLocationClient.startLocation();
-
-        //测试marker
-        mAmap.setOnMarkerClickListener(this);
     }
 
     @Override
@@ -708,7 +708,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             marker.setObject(dataBean);
                             markerMap.put(parkKey, marker);
                         }
-                        Log.e("zhangwei", "3333");
                     }
 
                     @Override
@@ -761,6 +760,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                 }
                             }
                             toPark = retParkObj.getDate();
+                            toPark.setLongitude(toPark.getLongtitude());
                             //2.更新界面地址
                             tv_address.setText(toPark.getName());
                             //3.更新图标
@@ -819,6 +819,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 //将地图移动到定位点
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
                 isFirstLoc = false;
+                drawRoute();
             } else {
                 mLocationClient.stopLocation();
                 mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, 17));
@@ -829,14 +830,12 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onResume() {
         super.onResume();
-        //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
         mMapView.onPause();
     }
 
@@ -849,7 +848,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
         mLocationClient.onDestroy();
 
@@ -899,18 +897,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
 
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
-        if (dataBean == null) {
-            return true;
-        }
-        if (state == 1) { //行程中
-            updateDestinationPark(dataBean);
-        }
-        return true;
-    }
-
     private void drawRoute() {
         if (mobileLocation == null) {
             return;
@@ -927,7 +913,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             mRouteSearch.setRouteSearchListener(ReserveActivity.this);
             final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(toPark.getLatitude(), toPark.getLongitude()));
             // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
-            RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, null, null, "");
+            RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.WalkDefault, null, null, "");
             mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
         }
     }

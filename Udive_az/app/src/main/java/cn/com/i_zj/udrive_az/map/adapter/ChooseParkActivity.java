@@ -41,13 +41,16 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
+import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
+import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
+import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -81,6 +84,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private ParksResult.DataBean pickPark;
     private ParksResult.DataBean fromPark;
 
+    private ParkDetailDialog parkDetailDialog;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_park;
@@ -113,7 +118,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         mAmap.setOnMarkerClickListener(this);
     }
 
-    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick})
+    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.park_detail})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -127,6 +132,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 intent.putExtra("pickPark", pickPark);
                 setResult(RESULT_OK, intent);
                 finish();
+                break;
+            case R.id.park_detail:
+                getParkRemark();
                 break;
         }
     }
@@ -191,6 +199,32 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                     @Override
                     public void onComplete() {
 
+                    }
+                });
+    }
+
+    private void getParkRemark() {
+        UdriveRestClient.getClentInstance().getParkRemark(String.valueOf(pickPark.getId()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new UObserver<ParkRemark>() {
+                    @Override
+                    public void onSuccess(ParkRemark response) {
+                        response.setName(pickPark.getName());
+                        parkDetailDialog = new ParkDetailDialog(ChooseParkActivity.this);
+                        parkDetailDialog.showData(response);
+                        parkDetailDialog.show();
+                    }
+
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+
+                    @Override
+                    public void onException(int code, String message) {
+                        showToast(message);
                     }
                 });
     }

@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -41,6 +40,7 @@ import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
@@ -93,7 +93,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("zhangwei", "zzzzzzz");
         ScreenManager.getScreenManager().pushActivity(MainActivity.this);
         checkPermission();
     }
@@ -218,7 +217,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     }
 
     private void getUnfinishedOrder() {
-        Log.e("zhangwei", "aaaaa");
         UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -270,65 +268,49 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         } catch (Exception e) {
 
         }
+        UdriveRestClient.getClentInstance().appversionCheck(version)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<RetAppversionObj>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-        if (SessionManager.getInstance().getAuthorization() != null) {
-            getReservation();
-            Log.e("zhangwei", "opwoerpoprw");
-            getUnfinishedOrder();
-        }
+                    @Override
+                    public void onNext(RetAppversionObj result) {
+                        LogUtils.e("55");
+                        if (result != null && result.getCode() == 1) {
+                            if (result.getData() != null) {// 有更新
+                                showUpdateAppDialog(result.getData());
+                            } else {
+                                if (SessionManager.getInstance().getAuthorization() != null) {
+                                    getReservation();
+                                    getUnfinishedOrder();
+                                }
 
-        if (isFirst) {
-            isFirst = false;
-            getActivity();
-        }
+                                if (isFirst) {
+                                    isFirst = false;
+                                    getActivity();
+                                }
+                            }
+                        }
+                    }
 
-        Log.e("zhangwei", "222233123");
-//        UdriveRestClient.getClentInstance().appversionCheck(version)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<RetAppversionObj>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//                    }
-//
-//                    @Override
-//                    public void onNext(RetAppversionObj result) {
-//                        LogUtils.e("55");
-//                        Log.e("zhangwei", "wwwww");
-//                        if (result != null && result.getCode() == 1) {
-//                            if (result.getData() != null) {// 有更新
-//                                showUpdateAppDialog(result.getData());
-//                            } else {
-//                                Log.e("zhangwei", "adfkjf");
-//                                if (SessionManager.getInstance().getAuthorization() != null) {
-//                                    getReservation();
-//                                    Log.e("zhangwei", "opwoerpoprw");
-//                                    getUnfinishedOrder();
-//                                }
-//
-//                                if (isFirst) {
-//                                    isFirst = false;
-//                                    getActivity();
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        e.printStackTrace();
-//                        LogUtils.e("==============>" + e.getMessage());
-//                        if (isFirst) {
-//                            isFirst = false;
-//                            getActivity();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        LogUtils.e("==============>" + e.getMessage());
+                        if (isFirst) {
+                            isFirst = false;
+                            getActivity();
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void getActivity() {
