@@ -212,6 +212,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 .subscribe(new UObserver<ParkRemark>() {
                     @Override
                     public void onSuccess(ParkRemark response) {
+                        if (parkDetailDialog != null && parkDetailDialog.isShowing()) {
+                            return;
+                        }
                         response.setName(pickPark.getName());
                         parkDetailDialog = new ParkDetailDialog(ChooseParkActivity.this);
                         parkDetailDialog.showData(response);

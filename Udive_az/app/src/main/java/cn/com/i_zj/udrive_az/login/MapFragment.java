@@ -484,8 +484,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .subscribe(new UObserver<ParkRemark>() {
                     @Override
                     public void onSuccess(ParkRemark response) {
-                        parkDetailDialog = new ParkDetailDialog(getActivity());
+                        if (parkDetailDialog != null && parkDetailDialog.isShowing()) {
+                            return;
+                        }
                         response.setName(buldParkBean.getName());// 只能这样去取
+                        parkDetailDialog = new ParkDetailDialog(getActivity());
                         parkDetailDialog.showData(response);
                         parkDetailDialog.show();
                     }
