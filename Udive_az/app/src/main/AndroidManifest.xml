@@ -69,6 +69,10 @@
             android:label="@string/activity_protocol"
             android:theme="@style/DBSActivity" />
         <activity
+            android:name=".login.AmountActivity"
+            android:label="@string/activity_amount"
+            android:theme="@style/DBSActivity" />
+        <activity
             android:name=".login.WalletActivity"
             android:label="@string/activity_wallet"
             android:theme="@style/AppTheme.NoActionBar" />

@@ -40,6 +40,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
+import cn.com.i_zj.udrive_az.login.AmountActivity;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AddressInfo;
@@ -69,10 +70,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     TextView tv_name;
     @BindView(R.id.tv_address)
     TextView tv_address;
-    @BindView(R.id.stoped_mount)
-    TextView stoped_mount;
-    @BindView(R.id.stop_in_amount)
-    TextView stop_in_amount;
+    @BindView(R.id.stop_amount)
+    TextView stop_amount;
 
     private AMap mAmap;
     public AMapLocationClient mLocationClient = null;
@@ -118,7 +117,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         mAmap.setOnMarkerClickListener(this);
     }
 
-    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.park_detail})
+    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.park_detail, R.id.amount})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -135,6 +134,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 break;
             case R.id.park_detail:
                 getParkRemark();
+                break;
+            case R.id.amount:
+                startActivity(AmountActivity.class);
                 break;
         }
     }
@@ -261,8 +263,19 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         parkPickLayout.setVisibility(View.VISIBLE);
         tv_name.setText(pickPark.getName());
         tv_address.setText(pickPark.getAddress());
-        stoped_mount.setText("" + pickPark.getStopedAmount());
-        stop_in_amount.setText("" + pickPark.getStopInAmount());
+        if (pickPark.getCooperate() > 0) {
+            if (pickPark.getStopedAmount() > 0) {
+                stop_amount.setText("该还车点无可用免费车位时将收取 " + pickPark.getStopedAmount() + " 元超停费");
+            } else {
+                stop_amount.setText("该还车点不收取停车费");
+            }
+        } else {
+            if (pickPark.getStopInAmount() > 0) {
+                stop_amount.setText("该还车点将收取 " + pickPark.getStopInAmount() + " 元停车费");
+            } else {
+                stop_amount.setText("该还车点不收取停车费");
+            }
+        }
         UdriveRestClient.getClentInstance().getParkDetail(pickPark.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

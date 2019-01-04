@@ -164,46 +164,17 @@
                 android:paddingLeft="10dp">
 
                 <TextView
+                    android:id="@+id/stop_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="超停费 "
-                    android:textColor="#AFAFAF"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/stoped_mount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textColor="#030303"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" 元，停车费 "
-                    android:textColor="#AFAFAF"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/stop_in_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textColor="#030303"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" 元"
                     android:textColor="#AFAFAF"
                     android:textSize="12sp" />
 
                 <ImageView
+                    android:id="@+id/amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
+                    android:layout_marginLeft="5dp"
                     android:src="@mipmap/ic_explain" />
             </LinearLayout>
         </LinearLayout>
