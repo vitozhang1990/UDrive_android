@@ -213,7 +213,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom > 12) { //显示小图标
+                if (cameraPosition.zoom > 13) { //显示小图标
                     fetchParks();
                 } else {//显示区域
                     fetchAreas();
@@ -672,7 +672,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (mAmap.getCameraPosition().zoom > 12) {
+        if (mAmap.getCameraPosition().zoom > 13) {
             fetchParks();
         } else {
             fetchAreas();
@@ -840,7 +840,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         tv_adress.setText(dataBean.getAddress());
         float distance = AMapUtils.calculateLineDistance(
                 mobileLocation, new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-        tv_dis.setText(df.format(distance / 1000) + "km");
+        if (distance > 1000) {
+            tv_dis.setText(df.format(distance / 1000) + "km");
+        } else {
+            tv_dis.setText(((int)distance) + "m");
+        }
         // 刷新停车场信息
         parkDetail(dataBean.getId());
         return false;
@@ -868,7 +872,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isAvailableByPing()) {
-                if (mAmap.getCameraPosition().zoom > 12) {
+                if (mAmap.getCameraPosition().zoom > 13) {
                     if (markerMap.isEmpty()) {
                         fetchParks();
                     }
