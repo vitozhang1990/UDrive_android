@@ -37,16 +37,46 @@
             android:textSize="@dimen/sp_14" />
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_history"
+    <LinearLayout
+        android:id="@+id/history_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rl_head"
-        android:visibility="gone" />
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:paddingLeft="@dimen/dp_12"
+            android:paddingRight="@dimen/dp_12">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="历史搜索"
+                android:textColor="#030303"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/trash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_trash" />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" />
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rv_history" />
+        android:layout_below="@id/history_layout" />
 </RelativeLayout>

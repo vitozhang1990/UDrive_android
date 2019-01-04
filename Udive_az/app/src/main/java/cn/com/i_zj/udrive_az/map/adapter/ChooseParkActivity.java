@@ -25,7 +25,6 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
-import com.amap.api.services.core.PoiItem;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,6 +42,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.model.AddressInfo;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
@@ -143,14 +143,14 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 102 && resultCode == RESULT_OK) {
-            PoiItem poiItem = data.getParcelableExtra("poiItem");
+            AddressInfo poiItem = (AddressInfo) data.getSerializableExtra("poiItem");
             if (poiItem == null) {
                 return;
             }
             ed_search.setText(poiItem.getTitle());
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(poiItem.getLatLonPoint().getLatitude(), poiItem.getLatLonPoint().getLongitude())
-                    , 14f));
+                    new LatLng(poiItem.getLat(), poiItem.getLng())
+                    , 16f));
         }
     }
 
