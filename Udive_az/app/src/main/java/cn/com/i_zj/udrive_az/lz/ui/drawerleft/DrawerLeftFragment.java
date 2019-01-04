@@ -278,7 +278,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                     @Override
                     public void onNext(AccountInfoResult value) {
                         if (null == value || null == value.data) {
-                            ToastUtils.showShort(R.string.lz_get_user_info_fail);
+//                            ToastUtils.showShort(R.string.lz_get_user_info_fail);
                             return;
                         }
                         accountInfo = value;
@@ -299,8 +299,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        ToastUtils.showShort(R.string.lz_get_user_info_fail);
-                        AccountInfoManager.getInstance().clearAccount();
+                        e.printStackTrace();
+//                        AccountInfoManager.getInstance().clearAccount();
                     }
 
                     @Override

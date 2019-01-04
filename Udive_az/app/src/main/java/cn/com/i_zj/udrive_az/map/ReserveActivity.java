@@ -296,6 +296,10 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             })
                             .create().show();
                 } else {// 行程中
+                    if (toPark == null) {
+                        ToastUtils.showShort("请先设置还车点");
+                        return;
+                    }
                     new AlertDialog.Builder(ReserveActivity.this)
                             .setMessage("确认要结束此次行车？")
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {

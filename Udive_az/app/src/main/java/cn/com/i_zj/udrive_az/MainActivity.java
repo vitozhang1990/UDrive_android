@@ -49,7 +49,7 @@ import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
-import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDiaog;
+import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -67,7 +67,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private AlertDialog unfinishedOrderDialog;
     private AppUpdateDialog appUpdateDialog;
-    private HomeAdvDiaog homeAdvDialog;
+    private HomeAdvDialog homeAdvDialog;
     private ActivityInfo homeNote;
 
     @Override
@@ -145,7 +145,10 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 if (result.getData().getOrderType() == 0 && result.getData().getReservationId() > 0) {
                                     long time = System.currentTimeMillis() - result.getData().getCreateTime();//
                                     if (time < 1000 * 60 * 15) {
-//                                    getUnfinishedOrder(result);
+                                        if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
+                                            homeAdvDialog.dismiss();
+                                            homeAdvDialog = null;
+                                        }
                                         Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
                                         intent.putExtra("type", "2");
                                         intent.putExtra("bunld", result);
@@ -184,6 +187,10 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                             if (result.getCode() == 1) {
                                 if (result.getData() != null && result.getData().getId() > 0) {
                                     if (result.getData().getStatus() == 0) {//行程中
+                                        if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
+                                            homeAdvDialog.dismiss();
+                                            homeAdvDialog = null;
+                                        }
                                         Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
                                         intent.putExtra("type", "3");
                                         intent.putExtra("bunld", result);
@@ -262,7 +269,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                             }
                             if (!StringUtils.isEmpty(homeActivityEntity.getActivitys())) {
                                 if (homeAdvDialog == null) {
-                                    homeAdvDialog = new HomeAdvDiaog(MainActivity.this);
+                                    homeAdvDialog = new HomeAdvDialog(MainActivity.this);
                                 }
                                 homeAdvDialog.setData(homeActivityEntity.getActivitys());
                                 if (!homeAdvDialog.isShowing()) {

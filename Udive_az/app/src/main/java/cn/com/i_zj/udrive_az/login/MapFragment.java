@@ -392,8 +392,19 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             }
             if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
                 if (accountInfo.data.depositState == 2) {
-//                    reservation();
-                    showParkOutAmountDialog(100000f);
+                    if (buldParkBean.getCooperate() > 0) {
+                        if (buldParkBean.getStopedAmount() > 0) {
+                            showParkOutAmountDialog(buldParkBean.getStopedAmount() / 100);
+                        } else {
+                            reservation();
+                        }
+                    } else {
+                        if (buldParkBean.getStopInAmount() > 0) {
+                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
+                        } else {
+                            reservation();
+                        }
+                    }
                 } else {
                     ToastUtil.show(getActivity(), "请先缴纳押金");
                 }
@@ -681,6 +692,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         } else {
             fetchAreas();
         }
+        ll_info.setVisibility(View.GONE);
+        rl_where.setVisibility(View.GONE);
+        btn_yuding.setVisibility(View.GONE);
+        btn_yongche.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -791,7 +806,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     //停车费Dialog
-    private void showParkOutAmountDialog(float cost) {
+    private void showParkOutAmountDialog(int cost) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("支付提示")
                 .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
@@ -847,7 +862,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (distance > 1000) {
             tv_dis.setText(df.format(distance / 1000) + "km");
         } else {
-            tv_dis.setText(((int)distance) + "m");
+            tv_dis.setText(((int) distance) + "m");
         }
         // 刷新停车场信息
         parkDetail(dataBean.getId());

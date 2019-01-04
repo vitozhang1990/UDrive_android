@@ -37,7 +37,7 @@ import io.reactivex.disposables.Disposable;
  * @create 2018/11/7
  * @Describe
  */
-public class HomeAdvDiaog extends Dialog {
+public class HomeAdvDialog extends Dialog {
     @BindView(R.id.vp_adv)
     ViewPager vpAdv;
     @BindView(R.id.ll_indiactor)
@@ -47,13 +47,13 @@ public class HomeAdvDiaog extends Dialog {
 
     private Context mContext;
     private AdverImageAdapter adverImageAdapter;
-    private ArrayList<View> mViewList = new ArrayList<View>();
+    private ArrayList<View> mViewList = new ArrayList<>();
     private View mViewAv;
     private int num = 0;
     private ArrayList<ActivityInfo> arrayList;
-    private  Disposable disposable;
+    private Disposable disposable;
 
-    public HomeAdvDiaog(Context context) {
+    public HomeAdvDialog(Context context) {
         super(context, R.style.UpdateDialogStytle);
         mContext = context;
         initView();
@@ -65,14 +65,12 @@ public class HomeAdvDiaog extends Dialog {
         View view = View.inflate(mContext, R.layout.dialog_home_adv, null);
         setContentView(view);
         ButterKnife.bind(this, view);
-        int  imgWidth = (int)(ToolsUtils.getWindowWidth(mContext)*0.8);
-        vpAdv.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int)(imgWidth /7f * 9)));
+        int imgWidth = (int) (ToolsUtils.getWindowWidth(mContext) * 0.8);
+        vpAdv.setLayoutParams(new RelativeLayout.LayoutParams(imgWidth, (int) (imgWidth / 7f * 9)));
         setViewPagerScrollSpeed();
         arrayList = new ArrayList<>();
         this.mLLAv.removeAllViews();
         this.mViewList = new ArrayList<View>();
-
-
     }
 
     public void setData(List<ActivityInfo> data) {
@@ -94,9 +92,7 @@ public class HomeAdvDiaog extends Dialog {
         vpAdv.setAdapter(adverImageAdapter);
         num = mViewList.size() * 500;
         vpAdv.setCurrentItem(num);
-
     }
-
 
     @Override
     public void show() {
@@ -108,10 +104,9 @@ public class HomeAdvDiaog extends Dialog {
         p.width = (int) (display.getWidth() * 0.8); // 宽度设置为屏幕的
         window.setAttributes(p);
         window.setGravity(Gravity.CENTER); // 此处可以设置dialog显示的位置
-        if(arrayList!=null&&arrayList.size()>1){
+        if (arrayList != null && arrayList.size() > 1) {
             nextImage();
         }
-
     }
 
     private void initEvent() {
@@ -119,24 +114,18 @@ public class HomeAdvDiaog extends Dialog {
 
             @Override
             public void onPageSelected(int arg0) {
-                // TODO Auto-generated method stub
                 num = arg0;
-                // Log.e("arg0->", arg0 + "");
                 int po = arg0 % arrayList.size();
                 int w = SizeUtils.dp2px(mContext, 5);
                 int bo = SizeUtils.dp2px(mContext, 10);
                 for (int i = 0; i < mViewList.size(); i++) {
                     mViewAv = mViewList.get(i);
-
                     if (po == i) {
-
                         mViewAv.setBackgroundResource(R.drawable.bg_selected);
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(SizeUtils.dp2px(mContext, 6),
                                 SizeUtils.dp2px(mContext, 6));
-
                         params.setMargins(w, 0, 0, bo);
                         mViewAv.setLayoutParams(params);
-
                     } else {
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(SizeUtils.dp2px(mContext, 6),
                                 SizeUtils.dp2px(mContext, 6));
@@ -150,7 +139,6 @@ public class HomeAdvDiaog extends Dialog {
             @Override
             public void onPageScrolled(int position, float arg1, int arg2) {
 
-
             }
 
             @Override
@@ -161,17 +149,17 @@ public class HomeAdvDiaog extends Dialog {
         mIvClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HomeAdvDiaog.this.dismiss();
+                HomeAdvDialog.this.dismiss();
             }
         });
     }
 
     private void nextImage() {
-         Observable.interval(3000, 3000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
+        Observable.interval(3000, 3000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        disposable=d;
+                        disposable = d;
                     }
 
                     @Override
@@ -195,9 +183,10 @@ public class HomeAdvDiaog extends Dialog {
                     }
                 });
     }
+
     private void setViewPagerScrollSpeed() {
         try {
-            Field mScroller = null;
+            Field mScroller;
             mScroller = ViewPager.class.getDeclaredField("mScroller");
             mScroller.setAccessible(true);
             FixedSpeedScroller scroller = new FixedSpeedScroller(vpAdv.getContext());
@@ -215,9 +204,8 @@ public class HomeAdvDiaog extends Dialog {
     @Override
     public void dismiss() {
         super.dismiss();
-        if(disposable!=null){
+        if (disposable != null) {
             disposable.dispose();
         }
-
     }
 }
