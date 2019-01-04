@@ -37,7 +37,6 @@ public class DrivingRouteOverlay extends RouteOverlay{
     private PolylineOptions mPolylineOptionscolor;
     private Context mContext;
     private boolean isColorfulline = true;
-    private float mWidth = 25;
     private List<LatLng> mLatLngsOfPath;
 
 
@@ -63,19 +62,6 @@ public class DrivingRouteOverlay extends RouteOverlay{
         this.throughPointList = throughPointList;
     }
 
-    public float getRouteWidth() {
-        return mWidth;
-    }
-
-    /**
-     * 设置路线宽度
-     *
-     * @param mWidth 路线宽度，取值范围：大于0
-     */
-    public void setRouteWidth(float mWidth) {
-        this.mWidth = mWidth;
-    }
-
     /**
      * 添加驾车路线添加到地图上显示。
      */
@@ -86,7 +72,7 @@ public class DrivingRouteOverlay extends RouteOverlay{
                 return;
             }
 
-            if (mWidth == 0 || drivePath == null) {
+            if (getRouteWidth() == 0 || drivePath == null) {
                 return;
             }
             mLatLngsOfPath = new ArrayList<LatLng>();
@@ -112,7 +98,7 @@ public class DrivingRouteOverlay extends RouteOverlay{
                 endMarker.remove();
                 endMarker = null;
             }
-            addStartAndEndMarker();
+//            addStartAndEndMarker();
             addThroughPointMarker();
             if (isColorfulline && tmcs.size()>0 ) {
             	colorWayUpdate(tmcs);
