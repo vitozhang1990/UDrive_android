@@ -83,6 +83,7 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
@@ -213,7 +214,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom > 13) { //显示小图标
+                if (cameraPosition.zoom > Constants2.AreaMarkerZoom) { //显示小图标
                     fetchParks();
                 } else {//显示区域
                     fetchAreas();
@@ -665,7 +666,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
                 //将地图移动到定位点
                 tv_centerName.setText(aMapLocation.getCity());
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
@@ -674,7 +675,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 //定位成功回调信息，设置相关消息
                 mLocationClient.stopLocation();
                 //然后可以移动到定位点,使用animateCamera就有动画效果
-                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, 17));
+                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
                 ll_info.setVisibility(View.GONE);
                 rl_where.setVisibility(View.GONE);
                 btn_yuding.setVisibility(View.GONE);
@@ -687,7 +688,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (mAmap.getCameraPosition().zoom > 13) {
+        if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
             fetchParks();
         } else {
             fetchAreas();
@@ -852,7 +853,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         carMarkers.clear();
         rl_where.setVisibility(View.GONE);
         ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
-        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()), 17f));
+        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()), Constants2.MarkerClickZoom));
         buldParkBean = dataBean;
         parkid = String.valueOf(dataBean.getId());
         tv_pname.setText(dataBean.getName());
@@ -891,7 +892,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isAvailableByPing()) {
-                if (mAmap.getCameraPosition().zoom > 13) {
+                if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
                     if (markerMap.isEmpty()) {
                         fetchParks();
                     }

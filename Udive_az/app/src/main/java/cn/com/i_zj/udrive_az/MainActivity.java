@@ -2,8 +2,11 @@ package cn.com.i_zj.udrive_az;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.umeng.socialize.UMShareAPI;
@@ -70,6 +74,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     private HomeAdvDialog homeAdvDialog;
     private ActivityInfo homeNote;
 
+    private boolean hasRequest; //网络变化后只请求一次
+    private NetworkChangeReceiver networkChangeReceiver;
+
     @Override
     protected int getLayoutResource() {
         MapUtils.setStatusBar(this);
@@ -83,6 +90,19 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         checkPermission();
         versionCheck();
         getActivity();
+
+        networkChangeReceiver = new NetworkChangeReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(networkChangeReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
     }
 
     private void checkPermission() {
@@ -140,6 +160,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                     @Override
                     public void onNext(GetReservation result) {
                         if (result != null) {
+                            hasRequest = true;
                             if (result.getCode() == 1) {
                                 // 0没有 1 有
                                 if (result.getData().getOrderType() == 0 && result.getData().getReservationId() > 0) {
@@ -184,6 +205,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                     @Override
                     public void onNext(UnFinishOrderResult result) {
                         if (result != null) {
+                            hasRequest = true;
                             if (result.getCode() == 1) {
                                 if (result.getData() != null && result.getData().getId() > 0) {
                                     if (result.getData().getStatus() == 0) {//行程中
@@ -383,6 +405,19 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         if (resultCode == 103) {
             if (SessionManager.getInstance().getAuthorization() != null) {
                 getReservation();
+            }
+        }
+    }
+
+    private class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtils.isAvailableByPing() && !hasRequest) {
+                if (SessionManager.getInstance().getAuthorization() != null) {
+                    hasRequest = true;
+                    getReservation();
+                    getUnfinishedOrder();
+                }
             }
         }
     }

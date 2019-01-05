@@ -6,12 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.text.TextPaint;
-import android.support.design.widget.TabLayout;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -44,6 +44,7 @@ import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -306,7 +307,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
         uiSettings.setZoomControlsEnabled(false);
 
         mLocationClient.stopLocation();
-        mAmap.moveCamera(CameraUpdateFactory.zoomTo(17));
+        mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
         //将地图移动到定位点
         mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
         isFirstLoc = false;

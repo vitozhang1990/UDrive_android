@@ -50,6 +50,7 @@ import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
@@ -117,7 +118,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         mAmap.setOnMarkerClickListener(this);
     }
 
-    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.park_detail, R.id.amount})
+    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.iv_mylocation, R.id.park_detail, R.id.amount})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -131,6 +132,11 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 intent.putExtra("pickPark", pickPark);
                 setResult(RESULT_OK, intent);
                 finish();
+                break;
+            case R.id.iv_mylocation:
+                if (mLocationClient != null) {
+                    mLocationClient.startLocation();
+                }
                 break;
             case R.id.park_detail:
                 getParkRemark();
@@ -152,7 +158,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
             ed_search.setText(poiItem.getTitle());
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(poiItem.getLat(), poiItem.getLng())
-                    , 16f));
+                    , Constants2.AreaShowZoom));
         }
     }
 
@@ -185,7 +191,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                             } else {
                                 sb.append("P");
                             }
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()))));
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()), true)));
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(dataBean);
@@ -262,7 +268,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
             polygon = null;
         }
         pickPark = (ParksResult.DataBean) marker.getObject();
-        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pickPark.getLatitude(), pickPark.getLongitude()), 17f));
+        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pickPark.getLatitude(), pickPark.getLongitude()), Constants2.MarkerClickZoom));
         parkPickLayout.setVisibility(View.VISIBLE);
         tv_name.setText(pickPark.getName());
         tv_address.setText(pickPark.getAddress());
@@ -347,6 +353,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null && aMapLocation.getErrorCode() == 0) {
+            LatLng mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
             if (isFirstLoc) {
 //                这段代码是修改样式去掉阴影圆圈地图的
                 MyLocationStyle myLocationStyle = new MyLocationStyle();
@@ -360,10 +367,13 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(11));
+                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
                 //将地图移动到定位点
-                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
+                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
                 isFirstLoc = false;
+            } else {
+                mLocationClient.stopLocation();
+                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
             }
         }
     }

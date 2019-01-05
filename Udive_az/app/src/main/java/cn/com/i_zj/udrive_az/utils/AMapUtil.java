@@ -251,14 +251,20 @@ public class AMapUtil {
      *
      * @param context  上下文
      * @param mipMapId 图片资源
-     * @param center 中间文字
-     * @param pm_val 角标数字
+     * @param center   中间文字
+     * @param pm_val   角标数字
      * @return
      */
-    public static Bitmap bitmapWithShortCut(Context context, int mipMapId, String center, String pm_val) {
+    public static Bitmap bitmapWithShortCut(Context context, int mipMapId, String center, String pm_val, boolean showShortCut) {
         Bitmap bitmap1 = bitmapWithCenterText(context, mipMapId, center);
-        if ("0".equals(pm_val) || !center.equals("P")) { //角标数字为0或者中间文字为[起终]则不绘制角标
-            return bitmap1;
+        if (showShortCut) {
+            if ("0".equals(pm_val)) {
+                return bitmap1;
+            }
+        } else {
+            if ("0".equals(pm_val) || !center.equals("P")) { //角标数字为0或者中间文字为[起终]则不绘制角标
+                return bitmap1;
+            }
         }
         Bitmap bitmap2 = bitmapWithCenterText(context, R.mipmap.ic_cheweishu_monthly1, pm_val, 14);
         Bitmap bitmap = Bitmap.createBitmap(bitmap1.getWidth() + bitmap2.getWidth() / 8, bitmap1.getHeight() + bitmap2.getHeight() / 8, Bitmap.Config.ARGB_8888);
@@ -268,6 +274,19 @@ public class AMapUtil {
         bitmap1.recycle();
         bitmap2.recycle();
         return bitmap;
+    }
+
+    /**
+     * 绘制带有角标的图标
+     *
+     * @param context  上下文
+     * @param mipMapId 图片资源
+     * @param center   中间文字
+     * @param pm_val   角标数字
+     * @return
+     */
+    public static Bitmap bitmapWithShortCut(Context context, int mipMapId, String center, String pm_val) {
+        return bitmapWithShortCut(context, mipMapId, center, pm_val, false);
     }
 
     public static Bitmap bitmapWithCenterText(Context context, int mipMapId, String pm_val) {

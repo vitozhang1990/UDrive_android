@@ -65,6 +65,7 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.DrivingRouteOverlay;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -828,14 +829,14 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
                 //将地图移动到定位点
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
                 isFirstLoc = false;
                 drawRoute();
             } else {
                 mLocationClient.stopLocation();
-                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, 17));
+                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
             }
         }
     }
