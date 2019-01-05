@@ -44,6 +44,12 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.RideRouteResult;
+import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.WalkRouteResult;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
@@ -82,6 +88,7 @@ import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
@@ -99,7 +106,7 @@ import static android.widget.Toast.makeText;
 /**
  * 地图MapFragment
  */
-public class MapFragment extends DBSBaseFragment implements AMapLocationListener,
+public class MapFragment extends DBSBaseFragment implements AMapLocationListener, RouteSearch.OnRouteSearchListener,
         EasyPermissions.PermissionCallbacks, AMap.OnMarkerClickListener, ViewPager.OnPageChangeListener {
 
 
@@ -143,6 +150,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private AMap mAmap;
     private AMapLocationClient mLocationClient;
+    private RouteSearch mRouteSearch;
+    private WalkRouteOverlay walkRouteOverlay;
     private boolean isFirstLoc = true;
 
     private Circle circle;//停车场范围圆
@@ -250,13 +259,23 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 if (animRefresh != null) {
                     ivRefresh.startAnimation(animRefresh);
                 }
-
+                buldParkBean = null;
+                if (clickMarker != null) {
+                    clickMarker.setVisible(true);
+                }
+                removeAllOtherMarker();
                 fetchParks();
                 if (mLocationClient != null) {
                     mLocationClient.startLocation();
                 }
                 break;
             case R.id.iv_mylocation:
+                buldParkBean = null;
+                if (clickMarker != null) {
+                    clickMarker.setVisible(true);
+                }
+                removeAllOtherMarker();
+                fetchParks();
                 if (mLocationClient != null) {
                     mLocationClient.startLocation();
                 }
@@ -530,6 +549,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void parkDetail(int parkId) {
+        showProgressDialog("正在查询");
         UdriveRestClient.getClentInstance().getParkDetail(parkId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -541,6 +561,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onNext(ParkDetailResult parkDetailResult) {
+                        dissmisProgressDialog();
                         if (parkDetailResult.getCode() != 1) {
                             return;
                         }
@@ -649,10 +670,16 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             btn_yuding.setText("暂无车辆");
                             btn_yuding.setEnabled(false);
                         }
+                        float distance = AMapUtils.calculateLineDistance(
+                                mobileLocation, new LatLng(buldParkBean.getLatitude(), buldParkBean.getLongitude()));
+                        if (distance < 3000) {
+                            drawRoute();
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        dissmisProgressDialog();
                         e.printStackTrace();
                     }
 
@@ -692,7 +719,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 ll_info.setVisibility(View.GONE);
                 rl_where.setVisibility(View.GONE);
                 btn_yuding.setVisibility(View.GONE);
-                btn_yongche.startAnimation(showAnim);
                 btn_yongche.setVisibility(View.VISIBLE);
             }
         }
@@ -846,6 +872,41 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .create().show();
     }
 
+    private void drawRoute() {
+        if (walkRouteOverlay != null) {
+            walkRouteOverlay.removeFromMap();
+        }
+        if (mobileLocation == null) {
+            return;
+        }
+        if (buldParkBean != null) {
+            mRouteSearch = new RouteSearch(getActivity());
+            mRouteSearch.setRouteSearchListener(this);
+            final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(
+                    AMapUtil.convertToLatLonPoint(mobileLocation),
+                    new LatLonPoint(buldParkBean.getLatitude(), buldParkBean.getLongitude()));
+            RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
+            mRouteSearch.calculateWalkRouteAsyn(query);
+        }
+    }
+
+    private void removeAllOtherMarker() {
+        if (circle != null) {
+            circle.remove();
+            circle = null;
+        }
+        if (polygon != null) {
+            polygon.remove();
+            polygon = null;
+        }
+        if (walkRouteOverlay != null) {
+            walkRouteOverlay.removeFromMap();
+            walkRouteOverlay = null;
+        }
+        for (Marker marker : carMarkers) {
+            marker.remove();
+        }
+    }
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
@@ -859,17 +920,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (circle != null) {
-            circle.remove();
-            circle = null;
-        }
-        if (polygon != null) {
-            polygon.remove();
-            polygon = null;
-        }
-        for (Marker marke : carMarkers) {
-            marke.remove();
-        }
+        removeAllOtherMarker();
         if (clickMarker != null && !clickMarker.equals(marker)) {
             clickMarker.setVisible(true);
         }
@@ -916,6 +967,36 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     @Override
     public void onPageScrollStateChanged(int i) {
+
+    }
+
+    @Override
+    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+        if (i == 1000) {
+            if (walkRouteOverlay != null) {
+                walkRouteOverlay.removeFromMap();
+                walkRouteOverlay = null;
+            }
+            walkRouteOverlay = new WalkRouteOverlay(getActivity(), mAmap, walkRouteResult.getPaths().get(0),
+                    walkRouteResult.getStartPos(), walkRouteResult.getTargetPos(), null);
+            walkRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
+            walkRouteOverlay.addToMap();
+            walkRouteOverlay.zoomToSpan();
+        }
+    }
+
+    @Override
+    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
 
     }
 

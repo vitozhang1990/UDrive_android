@@ -177,8 +177,8 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             @Override
             public void onFinish() {
                 if (null != tv_time) {
-                    startActivity(new Intent(ReserveActivity.this, MainActivity.class));
                     finish();// 预约时间结束
+                    startActivity(new Intent(ReserveActivity.this, MainActivity.class));
                 }
             }
         };
