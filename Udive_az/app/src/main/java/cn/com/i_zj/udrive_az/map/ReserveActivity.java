@@ -22,11 +22,13 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
@@ -73,6 +75,7 @@ import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.DrivingRouteOverlay;
+import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants2;
@@ -84,7 +87,22 @@ import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
- * 等待用车---行程中
+ * 预约中&行程中
+ *
+ * 通过type来区分不同的进入本页面方式
+ * 预约中显示停车场范围及预约车辆
+ *
+ * Marker类：
+ * 停车场Marker不用变化，仅可能更加状态转为【终】
+ * 预约中->行程中，停车场范围需要remove
+ *
+ * 导航：
+ * 1。预定中，需要Walk导航到起始点
+ * 2。行程中，需要Drive导航到终点
+ *
+ *
+ * ⚠️
+ * 创建订单的时候使用起始停车场作为目的地停车场
  */
 public class ReserveActivity extends DBSBaseActivity implements AMapLocationListener, RouteSearch.OnRouteSearchListener {
     @BindView(R.id.tv_title)
@@ -123,6 +141,10 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     private Map<ParkKey, Marker> markerMap = new HashMap();
     private LatLng mobileLocation;
     private DrivingRouteOverlay drivingRouteOverlay;
+    private WalkRouteOverlay walkRouteOverlay;
+    private Circle circle;//停车场范围圆
+    private Polygon polygon;//停车场范围多边形
+    private Marker carMarker;
 
     //判断从那个界面进来
     private String type; //1：预约  2：重新进入APP 进入预约界面  3：行程中
@@ -508,7 +530,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                         return;
                                     }
                                     LatLng latLng = new LatLng(Double.parseDouble(center.split(",")[1]), Double.parseDouble(center.split(",")[0]));
-                                    mAmap.addCircle(new CircleOptions()
+                                    circle = mAmap.addCircle(new CircleOptions()
                                             .center(latLng)
                                             .radius(circleObject.get("radius").getAsInt())
                                             .fillColor(Color.parseColor("#FFCBE2FF"))
@@ -526,7 +548,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                     for (AreaInfo info : areaInfos) {
                                         latLngs.add(new LatLng(info.getLat(), info.getLng()));
                                     }
-                                    mAmap.addPolygon(new PolygonOptions()
+                                    polygon = mAmap.addPolygon(new PolygonOptions()
                                             .addAll(latLngs)
                                             .fillColor(Color.parseColor("#FFCBE2FF"))
                                             .strokeColor(Color.parseColor("#FF0075FF"))
@@ -538,10 +560,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         if (bunldBean != null) {
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bunldBean.getLatitude(), bunldBean.getLongitude()));
                             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_bora));
-                            Marker carMarker = mAmap.addMarker(markerOptions);
+                            carMarker = mAmap.addMarker(markerOptions);
                             carMarker.setClickable(false);
                             carMarker.setRotateAngle(bunldBean.getDirection());
                         }
+                        drawRoute();
                     }
 
                     @Override
@@ -581,17 +604,32 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         if (bean != null) {
                             if (bean.getCode() == 1) {
                                 state = 1;
+                                carId = String.valueOf(bean.getData().getCarId());
+                                oderId = String.valueOf(bean.getData().getId());
+                                orderNum = String.valueOf(bean.getData().getNumber());
+                                //1.改变UI
                                 timeDownLayout.setVisibility(View.GONE);
                                 operateBtnLayout.setVisibility(View.VISIBLE);
                                 tvTitle.setText("行程中");
                                 tvCanel.setVisibility(View.GONE);
                                 btnYuding.setText("结束行程");
-                                carId = String.valueOf(bean.getData().getCarId());
-                                oderId = String.valueOf(bean.getData().getId());
-                                orderNum = String.valueOf(bean.getData().getNumber());
-                                ivBack.setVisibility(View.INVISIBLE);
                                 tv_address.setText("");
                                 tv_address_type.setText("还车点");
+                                ivBack.setVisibility(View.INVISIBLE);
+                                //2.移除起始停车场范围
+                                if (circle != null) {
+                                    circle.remove();
+                                    circle = null;
+                                }
+                                if (polygon != null) {
+                                    polygon.remove();
+                                    polygon = null;
+                                }
+                                if (carMarker != null) {
+                                    carMarker.remove();
+                                    carMarker = null;
+                                }
+                                //3.画到目的地的导航线路
                                 drawRoute();
                             }
                         }
@@ -804,8 +842,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                             StringBuilder sb = new StringBuilder();
                             if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
-                                sb.append("起");
-                                continue;
+                                if (toPark != null && fromPark.getParkID() == toPark.getParkID()) {
+                                    sb.append("终");
+                                } else {
+                                    sb.append("起");
+                                }
                             } else if (toPark != null && dataBean.getId() == toPark.getParkID()) {
                                 sb.append("终");
                             } else {
@@ -853,19 +894,37 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         dissmisProgressDialog();
                         if (retParkObj.getCode() == 1 && retParkObj.getDate() != null) {
                             //1.取消之前的终
-                            if (toPark != null && fromPark.getId() != toPark.getId()) {
-                                ParkKey parkKey = new ParkKey(toPark.getId(), toPark.getLongitude(), toPark.getLatitude());
-                                if (markerMap.containsKey(parkKey)) {
-                                    markerMap.get(parkKey).remove();//清除
-                                    markerMap.remove(parkKey);
+                            if (toPark != null) {
+                                if (fromPark.getId() != toPark.getId()) { //起点终点不是同一个地方则恢复终点为P
+                                    ParkKey parkKey = new ParkKey(toPark.getId(), toPark.getLongitude(), toPark.getLatitude());
+                                    if (markerMap.containsKey(parkKey)) {
+                                        markerMap.get(parkKey).remove();//清除
+                                        markerMap.remove(parkKey);
 
-                                    MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
-                                    int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
-                                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
-                                            ReserveActivity.this, bitmapId, "P", String.valueOf(toPark.getValidCarCount()))));
-                                    Marker marker = mAmap.addMarker(markerOptions);
-                                    marker.setObject(toPark);
-                                    markerMap.put(parkKey, marker);
+                                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
+                                        int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
+                                                ReserveActivity.this, bitmapId, "P", String.valueOf(toPark.getValidCarCount()))));
+                                        Marker marker = mAmap.addMarker(markerOptions);
+                                        marker.setObject(toPark);
+                                        markerMap.put(parkKey, marker);
+                                    }
+                                } else {
+                                    if (toPark.getId() != retParkObj.getDate().getId()) { //相同则判断是否新点同终点一样
+                                        ParkKey parkKey = new ParkKey(toPark.getId(), toPark.getLongitude(), toPark.getLatitude());
+                                        if (markerMap.containsKey(parkKey)) {
+                                            markerMap.get(parkKey).remove();//清除
+                                            markerMap.remove(parkKey);
+
+                                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
+                                            int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
+                                                    ReserveActivity.this, bitmapId, "起", String.valueOf(toPark.getValidCarCount()))));
+                                            Marker marker = mAmap.addMarker(markerOptions);
+                                            marker.setObject(toPark);
+                                            markerMap.put(parkKey, marker);
+                                        }
+                                    }
                                 }
                             }
                             toPark = retParkObj.getDate();
@@ -890,6 +949,8 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             }
                             //4.更新路线
                             drawRoute();
+                            ToastUtils.showShort(retParkObj.getMessage());
+                        } else {
                             ToastUtils.showShort(retParkObj.getMessage());
                         }
                     }
@@ -997,7 +1058,17 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
 
     @Override
     public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
-
+        if (i == 1000) {
+            if (walkRouteOverlay != null) {
+                walkRouteOverlay.removeFromMap();
+                walkRouteOverlay = null;
+            }
+            walkRouteOverlay = new WalkRouteOverlay(this, mAmap, walkRouteResult.getPaths().get(0),
+                    walkRouteResult.getStartPos(), walkRouteResult.getTargetPos(), null);
+            walkRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
+            walkRouteOverlay.addToMap();
+            walkRouteOverlay.zoomToSpan();
+        }
     }
 
     @Override
@@ -1008,22 +1079,31 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     private void drawRoute() {
         if (drivingRouteOverlay != null) {
             drivingRouteOverlay.removeFromMap();
+            drivingRouteOverlay = null;
+        }
+        if (walkRouteOverlay != null) {
+            walkRouteOverlay.removeFromMap();
+            walkRouteOverlay = null;
         }
         if (mobileLocation == null) {
             return;
         }
-        if (toPark != null) {
-            mRouteSearch = new RouteSearch(ReserveActivity.this);
-            mRouteSearch.setRouteSearchListener(ReserveActivity.this);
-            final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(toPark.getLatitude(), toPark.getLongitude()));
-            RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, null, null, "");
-            mRouteSearch.calculateDriveRouteAsyn(query);
-        } else if (fromPark != null) {
-            mRouteSearch = new RouteSearch(ReserveActivity.this);
-            mRouteSearch.setRouteSearchListener(ReserveActivity.this);
-            final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(fromPark.getLatitude(), fromPark.getLongitude()));
-            RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
-            mRouteSearch.calculateWalkRouteAsyn(query);
+        if (state == 1) {
+            if (toPark != null) {
+                mRouteSearch = new RouteSearch(ReserveActivity.this);
+                mRouteSearch.setRouteSearchListener(ReserveActivity.this);
+                final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(toPark.getLatitude(), toPark.getLongitude()));
+                RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, null, null, "");
+                mRouteSearch.calculateDriveRouteAsyn(query);
+            }
+        } else {
+            if (fromPark != null) {
+                mRouteSearch = new RouteSearch(ReserveActivity.this);
+                mRouteSearch.setRouteSearchListener(ReserveActivity.this);
+                final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(AMapUtil.convertToLatLonPoint(mobileLocation), new LatLonPoint(fromPark.getLatitude(), fromPark.getLongitude()));
+                RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
+                mRouteSearch.calculateWalkRouteAsyn(query);
+            }
         }
     }
 }

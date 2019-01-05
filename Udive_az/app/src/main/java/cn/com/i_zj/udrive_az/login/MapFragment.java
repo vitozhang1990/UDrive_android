@@ -728,6 +728,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        removeAllOtherMarker();
+        ll_info.setVisibility(View.GONE);
+        rl_where.setVisibility(View.GONE);
+        btn_yuding.setVisibility(View.GONE);
+
         if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
             fetchParks();
             if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
@@ -740,9 +745,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 btn_yongche.setVisibility(View.GONE);
             }
         }
-        ll_info.setVisibility(View.GONE);
-        rl_where.setVisibility(View.GONE);
-        btn_yuding.setVisibility(View.GONE);
+        if (clickMarker != null) {
+            clickMarker.setVisible(true);
+        }
     }
 
     @Override
