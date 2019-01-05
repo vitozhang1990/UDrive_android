@@ -106,6 +106,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(this, mAmap);
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
@@ -362,9 +363,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
                 mAmap.setMyLocationStyle(myLocationStyle);
                 mAmap.setMyLocationEnabled(true);
-                //去掉放大缩小 增加回到当前位置
-                UiSettings uiSettings = mAmap.getUiSettings();
-                uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
                 mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));

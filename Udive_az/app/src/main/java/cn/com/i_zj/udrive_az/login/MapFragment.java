@@ -151,6 +151,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private List<Fragment> fragments;
     private List<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
     private List<ParksResult.DataBean> parkBeans = new ArrayList<>();
+    private Marker clickMarker;//选中的marker
     private Map<ParkKey, Marker> markerMap = new HashMap();
 
     private CarVosBean bunldBean; //当前选中的车辆
@@ -202,6 +203,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(getContext(), mAmap);
         mLocationClient = new AMapLocationClient(getActivity().getApplicationContext());
         mLocationClient.setLocationListener(this);
@@ -533,6 +535,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         if (parkDetailResult.getCode() != 1) {
                             return;
                         }
+                        //隐藏停车场marker
+                        clickMarker.setVisible(false);
                         //画区域
                         ParkAreaBean parkAreaBean = parkDetailResult.getData().getParkArea();
                         if (parkAreaBean != null) {
@@ -622,7 +626,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             for (CarVosBean bean : carVosBeans) {
                                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bean.getLatitude(), bean.getLongitude()));
                                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_lite));
-                                carMarkers.add(mAmap.addMarker(markerOptions));
+                                Marker carMarker = mAmap.addMarker(markerOptions);
+                                carMarker.setClickable(false);
+                                carMarkers.add(carMarker);
                             }
                         } else {
                             ll_info.setVisibility(View.VISIBLE);
@@ -661,9 +667,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
                 mAmap.setMyLocationStyle(myLocationStyle);
                 mAmap.setMyLocationEnabled(true);
-                //去掉放大缩小 增加回到当前位置
-                UiSettings uiSettings = mAmap.getUiSettings();
-                uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
                 mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
@@ -850,6 +853,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         for (Marker marke : carMarkers) {
             marke.remove();
         }
+        if (clickMarker != null && !clickMarker.equals(marker)) {
+            clickMarker.setVisible(true);
+        }
+        clickMarker = marker;
         carMarkers.clear();
         rl_where.setVisibility(View.GONE);
         ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();

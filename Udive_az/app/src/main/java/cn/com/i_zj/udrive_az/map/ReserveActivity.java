@@ -22,10 +22,12 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.PolygonOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DriveRouteResult;
@@ -35,6 +37,10 @@ import com.amap.api.services.route.WalkRouteResult;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,15 +53,18 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.constant.ParkType;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
+import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
@@ -189,6 +198,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         }
         tv_time.setText("00 : " + minute + " : " + second);
         fetchParks();
+        if (state == 0) { //预约中显示停车场范围及预约车辆
+            parkDetail();
+        }
     }
 
     private void initViews() {
@@ -379,6 +391,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(this, mAmap);
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
@@ -456,6 +469,85 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     @Override
                     public void onComplete() {
                         dissmisProgressDialog();
+                    }
+                });
+    }
+
+    private void parkDetail() {
+        if (fromPark == null) {
+            return;
+        }
+        UdriveRestClient.getClentInstance().getParkDetail(fromPark.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ParkDetailResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(ParkDetailResult parkDetailResult) {
+                        if (parkDetailResult.getCode() != 1) {
+                            return;
+                        }
+                        //画区域
+                        ParkDetailResult.DataBean.ParkAreaBean parkAreaBean = parkDetailResult.getData().getParkArea();
+                        if (parkAreaBean != null) {
+                            switch (parkAreaBean.getParkType()) {
+                                case ParkType.Circle:
+                                    JsonObject circleObject = (JsonObject) new JsonParser().parse(parkAreaBean.getArea());
+                                    String center = circleObject.get("center").getAsString();
+                                    if (center.isEmpty()) {
+                                        return;
+                                    }
+                                    LatLng latLng = new LatLng(Double.parseDouble(center.split(",")[1]), Double.parseDouble(center.split(",")[0]));
+                                    mAmap.addCircle(new CircleOptions()
+                                            .center(latLng)
+                                            .radius(circleObject.get("radius").getAsInt())
+                                            .fillColor(Color.parseColor("#FFCBE2FF"))
+                                            .strokeColor(Color.parseColor("#FF0075FF"))
+                                            .strokeWidth(1));
+                                    break;
+                                case ParkType.Polygon:
+                                case ParkType.Rectangle:
+                                    List<AreaInfo> areaInfos = new Gson().fromJson(parkAreaBean.getArea(), new TypeToken<List<AreaInfo>>() {
+                                    }.getType());
+                                    if (areaInfos == null || areaInfos.size() == 0) {
+                                        return;
+                                    }
+                                    List<LatLng> latLngs = new ArrayList<>();
+                                    for (AreaInfo info : areaInfos) {
+                                        latLngs.add(new LatLng(info.getLat(), info.getLng()));
+                                    }
+                                    mAmap.addPolygon(new PolygonOptions()
+                                            .addAll(latLngs)
+                                            .fillColor(Color.parseColor("#FFCBE2FF"))
+                                            .strokeColor(Color.parseColor("#FF0075FF"))
+                                            .strokeWidth(1));
+                                    break;
+                            }
+                        }
+                        //TODO 画小车
+//                        List<CarVosBean> carVosBeans = parkDetailResult.getData().getCarVos();
+//                        if (carVosBeans != null && carVosBeans.size() > 0) {
+//                            for (CarVosBean bean : carVosBeans) {
+//                                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bean.getLatitude(), bean.getLongitude()));
+//                                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_lite));
+//                                Marker carMarker = mAmap.addMarker(markerOptions);
+//                                carMarker.setClickable(false);
+//                            }
+//                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
@@ -709,6 +801,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             StringBuilder sb = new StringBuilder();
                             if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
                                 sb.append("起");
+                                continue;
                             } else if (toPark != null && dataBean.getId() == toPark.getParkID()) {
                                 sb.append("终");
                             } else {
@@ -824,9 +917,6 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
                 mAmap.setMyLocationStyle(myLocationStyle);
                 mAmap.setMyLocationEnabled(true);
-                //去掉放大缩小 增加回到当前位置
-                UiSettings uiSettings = mAmap.getUiSettings();
-                uiSettings.setZoomControlsEnabled(false);
 
                 mLocationClient.stopLocation();
                 mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
