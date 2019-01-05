@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -161,6 +162,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private String parkid;
     private String carid;
 
+    private TranslateAnimation showAnim;
     private Animation animRefresh;
     private ParkDetailDialog parkDetailDialog;
     private NetworkChangeReceiver networkChangeReceiver;
@@ -185,7 +187,14 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private void init() {
         bunldBean = new CarVosBean();
-        buldParkBean = new ParksResult.DataBean();
+
+        showAnim = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 1.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        showAnim.setDuration(500);
+
+
         animRefresh = AnimationUtils.loadAnimation(getActivity(), R.anim.anim_home_refresh);
         animRefresh.setInterpolator(new LinearInterpolator());//设置动画匀速运动
 
@@ -218,8 +227,15 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
                 if (cameraPosition.zoom > Constants2.AreaMarkerZoom) { //显示小图标
                     fetchParks();
+                    if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                        btn_yongche.startAnimation(showAnim);
+                        btn_yongche.setVisibility(View.VISIBLE);
+                    }
                 } else {//显示区域
-                    fetchAreas();
+                    if (buldParkBean == null) {
+                        fetchAreas();
+                        btn_yongche.setVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -318,7 +334,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithCenterText(getActivity(), R.mipmap.ic_area, areaBeans.get(i).getName())));
 
                             Marker marker = mAmap.addMarker(markerOptions);
-//                            marker.setObject(dataBeans.get(i).getId());
+                            marker.setObject(latLng);
                         }
                         if (animRefresh != null) {
                             ivRefresh.clearAnimation();
@@ -395,18 +411,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             }
             if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
                 if (accountInfo.data.depositState == 2) {
-                    if (buldParkBean.getCooperate() > 0) {
-                        if (buldParkBean.getStopedAmount() > 0) {
-                            showParkOutAmountDialog(buldParkBean.getStopedAmount() / 100);
-                        } else {
-                            reservation();
-                        }
+                    if (buldParkBean != null && buldParkBean.getCooperate() == 0
+                            && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                        showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
                     } else {
-                        if (buldParkBean.getStopInAmount() > 0) {
-                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
-                        } else {
-                            reservation();
-                        }
+                        reservation();
                     }
                 } else {
                     ToastUtil.show(getActivity(), "请先缴纳押金");
@@ -625,9 +634,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                             for (CarVosBean bean : carVosBeans) {
                                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bean.getLatitude(), bean.getLongitude()));
-                                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_lite));
+                                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_bora));
                                 Marker carMarker = mAmap.addMarker(markerOptions);
                                 carMarker.setClickable(false);
+                                carMarker.setRotateAngle(bean.getDirection());
                                 carMarkers.add(carMarker);
                             }
                         } else {
@@ -682,6 +692,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 ll_info.setVisibility(View.GONE);
                 rl_where.setVisibility(View.GONE);
                 btn_yuding.setVisibility(View.GONE);
+                btn_yongche.startAnimation(showAnim);
                 btn_yongche.setVisibility(View.VISIBLE);
             }
         }
@@ -693,13 +704,19 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         mMapView.onResume();
         if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
             fetchParks();
+            if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                btn_yongche.startAnimation(showAnim);
+                btn_yongche.setVisibility(View.VISIBLE);
+            }
         } else {
-            fetchAreas();
+            if (buldParkBean == null) {
+                fetchAreas();
+                btn_yongche.setVisibility(View.GONE);
+            }
         }
         ll_info.setVisibility(View.GONE);
         rl_where.setVisibility(View.GONE);
         btn_yuding.setVisibility(View.GONE);
-        btn_yongche.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -856,10 +873,17 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (clickMarker != null && !clickMarker.equals(marker)) {
             clickMarker.setVisible(true);
         }
+        if (marker.getObject() != null) {
+            if (marker.getObject() instanceof LatLng) {
+                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom((LatLng) marker.getObject(), Constants2.AreaClincZoom));
+                return false;
+            }
+        }
+        ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
         clickMarker = marker;
         carMarkers.clear();
         rl_where.setVisibility(View.GONE);
-        ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
+
         mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()), Constants2.MarkerClickZoom));
         buldParkBean = dataBean;
         parkid = String.valueOf(dataBean.getId());
@@ -902,10 +926,15 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
                     if (markerMap.isEmpty()) {
                         fetchParks();
+                        if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                            btn_yongche.startAnimation(showAnim);
+                            btn_yongche.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
-                    if (areaBeans.size() == 0) {
+                    if (buldParkBean == null && areaBeans.size() == 0) {
                         fetchAreas();
+                        btn_yongche.setVisibility(View.GONE);
                     }
                 }
             }

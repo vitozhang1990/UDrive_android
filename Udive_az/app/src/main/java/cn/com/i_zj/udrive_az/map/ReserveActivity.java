@@ -52,6 +52,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
 import cn.com.i_zj.udrive_az.login.SessionManager;
@@ -158,6 +159,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         long time = System.currentTimeMillis() - startTime;
         if (time > 1000 * 60 * 15) {
             ToastUtils.showShort("预约结束");
+            startActivity(new Intent(ReserveActivity.this, MainActivity.class));
             finish();
             return;
         }
@@ -175,6 +177,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             @Override
             public void onFinish() {
                 if (null != tv_time) {
+                    startActivity(new Intent(ReserveActivity.this, MainActivity.class));
                     finish();// 预约时间结束
                 }
             }
@@ -277,6 +280,8 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     }
                 }
             }
+
+            drawRoute();
         }
     }
 
@@ -450,6 +455,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         if (bean != null) {
                             if (bean.getCode() == 1) {
                                 ToastUtils.showShort("取消订单成功");
+                                startActivity(new Intent(ReserveActivity.this, MainActivity.class));
                                 finish();
                             } else {
                                 ToastUtils.showShort(bean.getMessage());
@@ -528,16 +534,14 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                     break;
                             }
                         }
-                        //TODO 画小车
-//                        List<CarVosBean> carVosBeans = parkDetailResult.getData().getCarVos();
-//                        if (carVosBeans != null && carVosBeans.size() > 0) {
-//                            for (CarVosBean bean : carVosBeans) {
-//                                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bean.getLatitude(), bean.getLongitude()));
-//                                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_lite));
-//                                Marker carMarker = mAmap.addMarker(markerOptions);
-//                                carMarker.setClickable(false);
-//                            }
-//                        }
+                        //画小车
+                        if (bunldBean != null) {
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(bunldBean.getLatitude(), bunldBean.getLongitude()));
+                            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pic_bora));
+                            Marker carMarker = mAmap.addMarker(markerOptions);
+                            carMarker.setClickable(false);
+                            carMarker.setRotateAngle(bunldBean.getDirection());
+                        }
                     }
 
                     @Override

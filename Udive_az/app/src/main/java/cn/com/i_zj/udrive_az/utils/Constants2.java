@@ -32,6 +32,7 @@ public class Constants2 {
 	public static final LatLng ZHENGZHOU = new LatLng(34.7466, 113.625367);// 郑州市经纬度
 
 	public static final float AreaMarkerZoom = 13f;
+	public static final float AreaClincZoom = 14.5f;
 	public static final float LocationZoom = 17f;
 	public static final float MarkerClickZoom = 17f;
 	public static final float AreaShowZoom = 16f;
