@@ -2,15 +2,10 @@ package cn.com.i_zj.udrive_az.lz.ui.drawerleft;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareAPI;
@@ -95,7 +89,6 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @BindView(R.id.rl_head)
     RelativeLayout mRlHead;
 
-    private NetworkChangeReceiver networkChangeReceiver;
     private AccountInfoResult accountInfo;
 
     @Override
@@ -129,23 +122,6 @@ public class DrawerLeftFragment extends DBSBaseFragment {
             mTvAccountType.setText("未认证用户");
             mDiMoney.setRightText("");
             mDiDeposit.setRightText("");
-        }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        networkChangeReceiver = new NetworkChangeReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (getActivity() != null) {
-            getActivity().unregisterReceiver(networkChangeReceiver);
         }
     }
 
@@ -351,7 +327,6 @@ public class DrawerLeftFragment extends DBSBaseFragment {
      */
     private void getUnfinishedOrder() {
 
-
         UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -400,14 +375,5 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         UMShareAPI.get(getContext()).onActivityResult(requestCode, resultCode, data);
-    }
-
-    class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isAvailableByPing() && accountInfo == null) {
-//                getUserInfo();
-            }
-        }
     }
 }

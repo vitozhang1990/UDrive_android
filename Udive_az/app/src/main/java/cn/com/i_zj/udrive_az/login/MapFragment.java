@@ -2,11 +2,8 @@ package cn.com.i_zj.udrive_az.login;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -50,13 +47,15 @@ import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
-import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -69,6 +68,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
+import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
@@ -174,7 +174,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private TranslateAnimation showAnim;
     private Animation animRefresh;
     private ParkDetailDialog parkDetailDialog;
-    private NetworkChangeReceiver networkChangeReceiver;
     private boolean showArea = false;//当前是否为地区marker
     private DecimalFormat df = new DecimalFormat("0.0");
 
@@ -208,11 +207,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         animRefresh.setInterpolator(new LinearInterpolator());//设置动画匀速运动
 
         mViewPager.addOnPageChangeListener(this);
-
-        networkChangeReceiver = new NetworkChangeReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -322,6 +316,24 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     }
                 }
                 break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NetWorkEvent netWorkEvent) {
+        if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
+            if (markerMap.isEmpty()) {
+                fetchParks();
+                if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                    btn_yongche.startAnimation(showAnim);
+                    btn_yongche.setVisibility(View.VISIBLE);
+                }
+            }
+        } else {
+            if (buldParkBean == null && areaBeans.size() == 0) {
+                fetchAreas();
+                btn_yongche.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -767,9 +779,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         super.onDestroy();
         mMapView.onDestroy();
         mLocationClient.onDestroy();
-        if (getActivity() != null) {
-            getActivity().unregisterReceiver(networkChangeReceiver);
-        }
     }
 
     //驾照Dialog
@@ -1003,28 +1012,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @Override
     public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
 
-    }
-
-    private class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isAvailableByPing()) {
-                if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
-                    if (markerMap.isEmpty()) {
-                        fetchParks();
-                        if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
-                            btn_yongche.startAnimation(showAnim);
-                            btn_yongche.setVisibility(View.VISIBLE);
-                        }
-                    }
-                } else {
-                    if (buldParkBean == null && areaBeans.size() == 0) {
-                        fetchAreas();
-                        btn_yongche.setVisibility(View.GONE);
-                    }
-                }
-            }
-        }
     }
 }
 

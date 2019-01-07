@@ -2,11 +2,10 @@ package cn.com.i_zj.udrive_az;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.umeng.socialize.UMShareAPI;
@@ -32,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
+import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
@@ -49,6 +48,7 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
+import cn.com.i_zj.udrive_az.utils.NetworkChangeReceiver;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
@@ -91,10 +91,12 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         versionCheck();
         getActivity();
 
-        networkChangeReceiver = new NetworkChangeReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        registerReceiver(networkChangeReceiver, intentFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+            networkChangeReceiver = new NetworkChangeReceiver();
+            registerReceiver(networkChangeReceiver, filter);
+        }
     }
 
     @Override
@@ -146,6 +148,17 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         }
         LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
         loginDialogFragment.show(getSupportFragmentManager(), "login");
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(NetWorkEvent netWorkEvent) {
+        if (!hasRequest) {
+            if (SessionManager.getInstance().getAuthorization() != null) {
+                hasRequest = true;
+                getReservation();
+                getUnfinishedOrder();
+            }
+        }
     }
 
     private void getReservation() {
@@ -405,19 +418,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         if (resultCode == 103) {
             if (SessionManager.getInstance().getAuthorization() != null) {
                 getReservation();
-            }
-        }
-    }
-
-    private class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isAvailableByPing() && !hasRequest) {
-                if (SessionManager.getInstance().getAuthorization() != null) {
-                    hasRequest = true;
-                    getReservation();
-                    getUnfinishedOrder();
-                }
             }
         }
     }
