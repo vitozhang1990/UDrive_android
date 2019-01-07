@@ -616,6 +616,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                                 tv_address.setText("");
                                 tv_address_type.setText("还车点");
                                 ivBack.setVisibility(View.INVISIBLE);
+                                for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+                                    entry.getValue().setVisible(true);
+                                }
                                 //2.移除起始停车场范围
                                 if (circle != null) {
                                     circle.remove();
@@ -841,11 +844,13 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
                             int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                             StringBuilder sb = new StringBuilder();
+                            boolean showMaker = false;
                             if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
                                 if (toPark != null && fromPark.getParkID() == toPark.getParkID()) {
                                     sb.append("终");
                                 } else {
                                     sb.append("起");
+                                    showMaker = true;
                                 }
                             } else if (toPark != null && dataBean.getId() == toPark.getParkID()) {
                                 sb.append("终");
@@ -856,6 +861,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(dataBean);
+                            if (state == 0) {
+                                marker.setVisible(showMaker);
+                            }
                             markerMap.put(parkKey, marker);
                         }
                     }

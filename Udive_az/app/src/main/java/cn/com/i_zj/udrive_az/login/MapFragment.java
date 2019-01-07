@@ -500,19 +500,17 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                     if (result.getData().getOrderType() != 0) {
                                         showUnfinshOrder();
                                     } else {
+                                        reset();
                                         Intent intent = new Intent(getActivity(), ReserveActivity.class);
                                         intent.putExtra("type", "1");
                                         intent.putExtra("bunld", bunldBean);
                                         intent.putExtra("bunldPark", buldParkBean);
                                         intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
-                                        ll_info.setVisibility(View.GONE);
-                                        rl_where.setVisibility(View.GONE);
-                                        btn_yuding.setVisibility(View.GONE);
                                     }
-
                                 }
-
+                            } else {
+                                ToastUtils.showShort(result.getMessage());
                             }
                         }
                     }
@@ -740,11 +738,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        removeAllOtherMarker();
-        ll_info.setVisibility(View.GONE);
-        rl_where.setVisibility(View.GONE);
-        btn_yuding.setVisibility(View.GONE);
-
         if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
             fetchParks();
             if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
@@ -760,6 +753,13 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (clickMarker != null) {
             clickMarker.setVisible(true);
         }
+    }
+
+    private void reset() {
+        removeAllOtherMarker();
+        ll_info.setVisibility(View.GONE);
+        rl_where.setVisibility(View.GONE);
+        btn_yuding.setVisibility(View.GONE);
     }
 
     @Override
