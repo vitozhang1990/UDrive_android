@@ -305,7 +305,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 for (ParksResult.DataBean dataBean : parkBeans) {
                     float distance = AMapUtils.calculateLineDistance(mobileLocation,
                             new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-                    if (distance < bestDistance) {
+                    if (dataBean.getValidCarCount() > 0 && distance < bestDistance) {
                         bestPark = dataBean;
                         bestDistance = distance;
                     }
@@ -315,6 +315,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     if (markerMap.containsKey(parkKey)) {
                         onMarkerClick(markerMap.get(parkKey));
                     }
+                } else {
+                    ToastUtils.showShort("尚未找到可用车辆");
                 }
                 break;
         }
