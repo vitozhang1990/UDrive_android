@@ -44,6 +44,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -384,6 +385,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 }
                 break;
             case R.id.iv_na:
+                if (!new File("/data/data/com.baidu.BaiduMap").exists()
+                        && !new File("/data/data/com.autonavi.minimap").exists()) {
+                    ToastUtils.showShort("尚未安装高德或百度地图");
+                    return;
+                }
                 if (state == 1) {
                     if (toPark != null) {
                         NavigationDialog navigationDialog = new NavigationDialog();

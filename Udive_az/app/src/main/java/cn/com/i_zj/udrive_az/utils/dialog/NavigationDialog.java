@@ -56,7 +56,7 @@ public class NavigationDialog extends BottomSheetDialogFragment {
             llBaidu.setVisibility(View.GONE);
         }
         if (!isInstallByread("com.autonavi.minimap")) {
-            llBaidu.setVisibility(View.GONE);
+            llGaode.setVisibility(View.GONE);
         }
     }
 
