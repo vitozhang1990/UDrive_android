@@ -217,6 +217,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         uiSettings.setTiltGesturesEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(getContext(), mAmap);
+        mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.AreaClickZoom));
         mLocationClient = new AMapLocationClient(getActivity().getApplicationContext());
         mLocationClient.setLocationListener(this);
         mLocationClient.startLocation();
@@ -940,7 +941,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         }
         if (marker.getObject() != null) {
             if (marker.getObject() instanceof LatLng) {
-                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom((LatLng) marker.getObject(), Constants2.AreaClincZoom));
+                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom((LatLng) marker.getObject(), Constants2.AreaClickZoom));
                 return false;
             }
         }
