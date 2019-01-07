@@ -22,6 +22,13 @@ public class LocalCacheUtils {
     editor.apply();
   }
 
+  public static void removePersistentSetting(String name, String key) {
+    SharedPreferences settings = App.appContext.getSharedPreferences(name, 0);
+    SharedPreferences.Editor editor = settings.edit();
+    editor.remove(key);
+    editor.apply();
+  }
+
   public static boolean getPersistentSettingBoolean(String name, String key) {
     return getPersistentSettingBoolean(name, key, false);
   }

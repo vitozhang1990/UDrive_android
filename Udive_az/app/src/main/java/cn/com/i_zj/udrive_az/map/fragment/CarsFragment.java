@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
@@ -101,7 +102,7 @@ public class CarsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
         CarInfoResult.DataBean result = new Gson().fromJson(bundle.getString(Constants.INTENT_KEY_CAR_DATA), CarInfoResult.DataBean.class);
-        if(result!=null){
+        if (result != null) {
             tvCarnum.setText(result.getPlateNumber());
             tvCarname.setText(result.getBrand());
             tvColor.setText(result.getCarColor());
@@ -109,14 +110,16 @@ public class CarsFragment extends Fragment {
             tvXuhang.setText(String.valueOf(result.getMaxDistance()));
             tvFenzhong.setText(deciMal(result.getTimeFee(), 100) + "");
             tvGongli.setText(deciMal(result.getMileagePrice(), 100) + "");
-            if("北汽LITE".equals(result.getBrand())){
+            if ("北汽LITE".equals(result.getBrand())) {
                 tvRanliao.setText("电动车");
+                tvGongli.setVisibility(View.GONE);
+                tv4.setVisibility(View.GONE);
             }
 
-            Glide.with(getActivity()).load( CarTypeImageUtils.getCarImageByBrand(result.getBrand(),result.getCarColor())).into(ivCar);
-            if(result.isTrafficControl()){
+            Glide.with(getActivity()).load(CarTypeImageUtils.getCarImageByBrand(result.getBrand(), result.getCarColor())).into(ivCar);
+            if (result.isTrafficControl()) {
                 mTvTrafficControl.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 mTvTrafficControl.setVisibility(View.GONE);
             }
         }
@@ -143,7 +146,7 @@ public class CarsFragment extends Fragment {
      * @param carItem s
      * @return fragment
      */
-    public static CarsFragment newInstance(int carItem, CarInfoResult.DataBean result) {
+    public static CarsFragment newInstance(int carItem, ParkDetailResult.DataBean.CarVosBean result) {
         //0, 单位名称, 单位Id, parent_current
         CarsFragment myFragment = new CarsFragment();
         Bundle bundle = new Bundle();
@@ -154,7 +157,7 @@ public class CarsFragment extends Fragment {
         return myFragment;
     }
 
-    public void refresh(CarInfoResult.DataBean result) {
+    public void refresh(ParkDetailResult.DataBean.CarVosBean result) {
         if (result.getBrand() != null && !result.getBrand().equals("")) {
 
         }

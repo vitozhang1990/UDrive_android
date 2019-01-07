@@ -191,7 +191,7 @@ public class RouteOverlay {
 	}
 	
 	protected float getRouteWidth() {
-		return 18f;
+		return 13f;
 	}
 
 	protected int getWalkColor() {
@@ -208,7 +208,7 @@ public class RouteOverlay {
 	}
 
 	protected int getDriveColor() {
-		return Color.parseColor("#537edc");
+		return Color.parseColor("#707070");
 	}
 
 	// protected int getShowRouteZoom() {

@@ -11,8 +11,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 
 /**
  * @author JayQiu
@@ -47,7 +45,6 @@ public class ActPaySucc extends DBSBaseActivity {
 
     @OnClick(R.id.tv_to_home)
     public void onClick() {
-        ScreenManager.getScreenManager().popAllActivityExceptOne(OrderActivity.class);
         startActivity(new Intent(ActPaySucc.this,MainActivity.class));
         finish();
     }

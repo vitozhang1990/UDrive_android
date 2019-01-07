@@ -4,20 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -34,12 +34,13 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     WebView webView;
     @BindView(R.id.progress_bar)
     SeekBar progressBar;
+    @BindView(R.id.tv_title)
+    TextView tv_title;
     private Disposable disposable;
     private UWebChromeClient uWebChromeClient;
     private UWebViewClient uWebViewClient;
     private String url;
     private String title;
-    Toolbar toolbar;
     private int index = 10;
 
     public static void startWebActivity(Context context, String url, String title) {
@@ -57,17 +58,9 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        toolbar = findViewById(R.id.toolbar);
+        MapUtils.statusBarColor(this);
         title = getIntent().getStringExtra("title");
-        toolbar.setTitle(title);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        tv_title.setText(title);
         url = getIntent().getStringExtra("url");
         if (!StringUtils.isEmpty(url)) {
             if (!url.startsWith("http")) {
@@ -75,6 +68,11 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
             }
         }
         initView();
+    }
+
+    @OnClick(R.id.iv_back)
+    void back(View view) {
+        finish();
     }
 
     private void initView() {
@@ -116,7 +114,7 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     public void loadFinish(String titleStr) {
         nextPor(100);
         if (StringUtils.isEmpty(title)) {
-            toolbar.setTitle(titleStr);
+            tv_title.setText(titleStr);
         }
     }
 

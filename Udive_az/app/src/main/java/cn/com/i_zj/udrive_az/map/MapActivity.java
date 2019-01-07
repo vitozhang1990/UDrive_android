@@ -6,12 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.text.TextPaint;
-import android.support.design.widget.TabLayout;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -44,6 +44,7 @@ import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -103,7 +104,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
 //                }
         bunldBean = carBeans.get(position);
         CarsFragment carsFragment = (CarsFragment) fragments.get(position);
-        carsFragment.refresh(carBeans.get(position));
+//        carsFragment.refresh(carBeans.get(position));
         tv_pname.setText(carBeans.get(position).getParkName());
         tv_adress.setText(carBeans.get(position).getParkAddress());
       }
@@ -136,16 +137,16 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
 //
 //                        Marker marker1= mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng1)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("99"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("99"))));
 ////        localMarker.setObject(3);
 ////
 //                        Marker marker2=mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng2)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("13"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("13"))));
 //
 //                        Marker marker3=mAmap.addMarker(new MarkerOptions()
 //                                .position(latLng3)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMyBitmap("5"))));
+//                                .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithCenterText("5"))));
         }
 
         @Override
@@ -245,8 +246,8 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
                 ArrayList<Integer> imgs = new ArrayList<>();
                 //for循环给list增加fragment
                 for (int i = 0; i < result.getData().size(); i++) {
-                  CarsFragment carsFragment = CarsFragment.newInstance(i, result.getData().get(i));
-                  fragments.add(carsFragment);
+//                  CarsFragment carsFragment = CarsFragment.newInstance(i, result.getData().get(i));
+//                  fragments.add(carsFragment);
                   imgs.add(R.drawable.view_selector);
 
                 }
@@ -306,7 +307,7 @@ public class MapActivity extends BaseActivity implements AMapLocationListener, E
         uiSettings.setZoomControlsEnabled(false);
 
         mLocationClient.stopLocation();
-        mAmap.moveCamera(CameraUpdateFactory.zoomTo(17));
+        mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
         //将地图移动到定位点
         mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
         isFirstLoc = false;

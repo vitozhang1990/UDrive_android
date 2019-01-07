@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.umeng.socialize.UMShareAPI;
@@ -24,10 +25,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
+import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
@@ -45,11 +48,12 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
+import cn.com.i_zj.udrive_az.utils.NetworkChangeReceiver;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
-import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDiaog;
+import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -57,23 +61,21 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
 
-
 public class MainActivity extends DBSBaseActivity implements EasyPermissions.PermissionCallbacks {
-
     @BindView(R.id.drawer_layout)
-    DrawerLayout personalDarwLayout;
-
-    AlertDialog unfinishedOrderDialog;
-    AppUpdateDialog appUpdateDialog;
+    DrawerLayout personalDrawerLayout;
     @BindView(R.id.tv_msg)
     TextView tvMsg;
     @BindView(R.id.rl_note)
     RelativeLayout rlNote;
 
+    private AlertDialog unfinishedOrderDialog;
+    private AppUpdateDialog appUpdateDialog;
+    private HomeAdvDialog homeAdvDialog;
     private ActivityInfo homeNote;
-    private HomeAdvDiaog homeAdvDilog;
 
-    private boolean isFirst = true;
+    private boolean hasRequest; //网络变化后只请求一次
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected int getLayoutResource() {
@@ -82,24 +84,29 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     }
 
     @Override
-    public void onBackPressed() {
-        if (personalDarwLayout.isDrawerOpen(GravityCompat.START)) {
-            personalDarwLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ScreenManager.getScreenManager().pushActivity(MainActivity.this);
         checkPermission();
+        versionCheck();
+        getActivity();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+            networkChangeReceiver = new NetworkChangeReceiver();
+            registerReceiver(networkChangeReceiver, filter);
+        }
     }
 
-    /**
-     * 检测权限
-     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
+    }
+
     private void checkPermission() {
         boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
 
@@ -109,39 +116,15 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        if (perms.size() > 0) {
-            ToastUtils.showShort(R.string.permission_success);
-        } else {
-            ToastUtils.showShort(R.string.permission_file);
-        }
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        ToastUtils.showShort(R.string.permission_request_fail);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        appversionCheck();
+        if (SessionManager.getInstance().getAuthorization() != null) {
+            getReservation();
+            getUnfinishedOrder();
+        }
     }
 
-    @OnClick(R.id.main_tv_personal_info)
-    public void onPersonalInfoClick(View view) {
-        personalDarwLayout.openDrawer(Gravity.START);
-    }
-
-    @OnClick({R.id.main_tv_msg, R.id.rl_note})
+    @OnClick({R.id.main_tv_msg, R.id.rl_note, R.id.main_tv_personal_info})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_tv_msg:
@@ -152,23 +135,32 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                     WebActivity.startWebActivity(MainActivity.this, homeNote.getHref(), homeNote.getTitle());
                 }
                 break;
+            case R.id.main_tv_personal_info:
+                personalDrawerLayout.openDrawer(Gravity.START);
+                break;
         }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(GotoLoginDialogEvent loginEvent) {
-        if (personalDarwLayout.isDrawerOpen(GravityCompat.START)) {
-            personalDarwLayout.closeDrawer(GravityCompat.START);
+        if (personalDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            personalDrawerLayout.closeDrawer(GravityCompat.START);
         }
         LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
         loginDialogFragment.show(getSupportFragmentManager(), "login");
     }
 
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(NetWorkEvent netWorkEvent) {
+        if (!hasRequest) {
+            if (SessionManager.getInstance().getAuthorization() != null) {
+                hasRequest = true;
+                getReservation();
+                getUnfinishedOrder();
+            }
+        }
+    }
 
-    /**
-     * 获取预约状态
-     */
     private void getReservation() {
         UdriveRestClient.getClentInstance().getReservation(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
@@ -180,28 +172,26 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
                     @Override
                     public void onNext(GetReservation result) {
-                        LogUtils.e("11");
                         if (result != null) {
-                            LogUtils.e("22");
+                            hasRequest = true;
                             if (result.getCode() == 1) {
-                                LogUtils.e("333");
                                 // 0没有 1 有
                                 if (result.getData().getOrderType() == 0 && result.getData().getReservationId() > 0) {
                                     long time = System.currentTimeMillis() - result.getData().getCreateTime();//
                                     if (time < 1000 * 60 * 15) {
-                                        LogUtils.e("44");
-//                                    getUnfinishedOrder(result);
+                                        if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
+                                            homeAdvDialog.dismiss();
+                                            homeAdvDialog = null;
+                                        }
                                         Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
                                         intent.putExtra("type", "2");
                                         intent.putExtra("bunld", result);
                                         intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
                                     }
-
                                 }
                             }
                         }
-
                     }
 
                     @Override
@@ -227,14 +217,15 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
                     @Override
                     public void onNext(UnFinishOrderResult result) {
-                        LogUtils.e("55");
                         if (result != null) {
-                            LogUtils.e("66");
+                            hasRequest = true;
                             if (result.getCode() == 1) {
-                                LogUtils.e("77");
                                 if (result.getData() != null && result.getData().getId() > 0) {
                                     if (result.getData().getStatus() == 0) {//行程中
-                                        LogUtils.e("88");
+                                        if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
+                                            homeAdvDialog.dismiss();
+                                            homeAdvDialog = null;
+                                        }
                                         Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
                                         intent.putExtra("type", "3");
                                         intent.putExtra("bunld", result);
@@ -245,13 +236,11 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 }
                             }
                         }
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        LogUtils.e("==============>" + e.getMessage());
                     }
 
                     @Override
@@ -261,69 +250,50 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 });
     }
 
-    private void appversionCheck() {
-        String version = "";
+    private void versionCheck() {
         try {
-            version = ToolsUtils.getVersionName(MainActivity.this);
-        } catch (Exception e) {
+            String version = ToolsUtils.getVersionName(MainActivity.this);
+            UdriveRestClient.getClentInstance().appversionCheck(version)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<RetAppversionObj>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                        }
 
-        }
-
-        UdriveRestClient.getClentInstance().appversionCheck(version)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<RetAppversionObj>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(RetAppversionObj result) {
-                        LogUtils.e("55");
-                        if (result != null && result.getCode() == 1) {
-                            if (result.getData() != null) {// 有更新
-                                showUpdateAppDialog(result.getData());
-                            } else {
-                                if (SessionManager.getInstance().getAuthorization() != null) {
-                                    getReservation();
-                                    getUnfinishedOrder();
-                                }
-
-                                if (isFirst) {
-                                    isFirst = false;
-                                    getActivity();
+                        @Override
+                        public void onNext(RetAppversionObj result) {
+                            if (result != null && result.getCode() == 1) {
+                                if (result.getData() != null) {// 有更新
+                                    showUpdateAppDialog(result.getData());
                                 }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        LogUtils.e("==============>" + e.getMessage());
-                        if (isFirst) {
-                            isFirst = false;
-                            getActivity();
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void onComplete() {
+                        @Override
+                        public void onComplete() {
 
-                    }
-                });
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getActivity() {
-
         UdriveRestClient.getClentInstance().activity()
+                .delay(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<BaseRetObj<HomeActivityEntity>>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new UObserver<HomeActivityEntity>() {
                     @Override
                     public void onSuccess(HomeActivityEntity homeActivityEntity) {
-
                         if (homeActivityEntity != null) {
                             homeNote = homeActivityEntity.getNote();
                             if (homeNote != null) {
@@ -333,12 +303,12 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 rlNote.setVisibility(View.GONE);
                             }
                             if (!StringUtils.isEmpty(homeActivityEntity.getActivitys())) {
-                                if (homeAdvDilog == null) {
-                                    homeAdvDilog = new HomeAdvDiaog(MainActivity.this);
+                                if (homeAdvDialog == null) {
+                                    homeAdvDialog = new HomeAdvDialog(MainActivity.this);
                                 }
-                                homeAdvDilog.setData(homeActivityEntity.getActivitys());
-                                if (!homeAdvDilog.isShowing()) {
-                                    homeAdvDilog.show();
+                                homeAdvDialog.setData(homeActivityEntity.getActivitys());
+                                if (!homeAdvDialog.isShowing()) {
+                                    homeAdvDialog.show();
                                 }
                             }
 
@@ -412,7 +382,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(MainActivity.this, OrderActivity.class);
                             startActivityForResult(intent, 103);
-                            LogUtils.e("111");
                         }
                     }).setCancelable(false)
                     .create();
@@ -420,7 +389,26 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         if (!unfinishedOrderDialog.isShowing()) {
             unfinishedOrderDialog.show();
         }
+    }
 
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showShort(R.string.permission_request_fail);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (perms.size() > 0) {
+            ToastUtils.showShort(R.string.permission_success);
+        } else {
+            ToastUtils.showShort(R.string.permission_file);
+        }
     }
 
     @Override
@@ -429,15 +417,20 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
         if (resultCode == 103) {
             if (SessionManager.getInstance().getAuthorization() != null) {
-                LogUtils.e("0.1");
                 getReservation();
             }
         }
     }
 
-    /**
-     * 菜单、返回键响应
-     */
+    @Override
+    public void onBackPressed() {
+        if (personalDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            personalDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -447,6 +440,4 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         }
         return false;
     }
-
-
 }

@@ -65,6 +65,7 @@ public class GetReservation implements Serializable {
          */
 
         private int id;
+        private int parkId;
         private String plateNumber;
         private String brand;
         private int power;
@@ -89,6 +90,14 @@ public class GetReservation implements Serializable {
 
         public void setId(int id) {
             this.id = id;
+        }
+
+        public int getParkId() {
+            return parkId;
+        }
+
+        public void setParkId(int parkId) {
+            this.parkId = parkId;
         }
 
         public String getPlateNumber() {

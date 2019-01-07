@@ -33,7 +33,10 @@ public class MapUtils {
             filePath = context.getFilesDir().getAbsolutePath();
             File file = new File(filePath + "/" + styleName);
             if (file.exists()) {
-                file.delete();
+                aMap.setCustomMapStylePath(filePath + "/" + styleName);
+                aMap.setMapCustomEnable(true);
+                aMap.showMapText(true);
+                return;
             }
             file.createNewFile();
             outputStream = new FileOutputStream(file);
