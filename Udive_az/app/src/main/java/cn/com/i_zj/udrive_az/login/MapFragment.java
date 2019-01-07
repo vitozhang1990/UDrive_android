@@ -544,13 +544,13 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                     if (result.getData().getOrderType() != 0) {
                                         showUnfinshOrder();
                                     } else {
-                                        reset();
                                         Intent intent = new Intent(getActivity(), ReserveActivity.class);
                                         intent.putExtra("type", "1");
                                         intent.putExtra("bunld", bunldBean);
                                         intent.putExtra("bunldPark", buldParkBean);
                                         intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
+                                        reset();
                                     }
                                 }
                             } else {
@@ -806,8 +806,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void reset() {
-        bunldBean = null;
         removeAllOtherMarker();
+        clickMarker = null;
+        buldParkBean = null;
         ll_info.setVisibility(View.GONE);
         rl_where.setVisibility(View.GONE);
         btn_yuding.setVisibility(View.GONE);
