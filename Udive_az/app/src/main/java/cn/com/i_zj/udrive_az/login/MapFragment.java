@@ -156,13 +156,15 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private Circle circle;//停车场范围圆
     private Polygon polygon;//停车场范围多边形
+    private Disposable disposable;
     private List<Marker> carMarkers = new ArrayList<>();//停车场小车
 
     private List<Fragment> fragments;
     private List<AreaTagsResult.DataBean> areaBeans = new ArrayList<>();
     private List<ParksResult.DataBean> parkBeans = new ArrayList<>();
     private Marker clickMarker;//选中的marker
-    private Map<ParkKey, Marker> markerMap = new HashMap();
+    private Map<ParkKey, Marker> markerMap = new HashMap(); //所有停车场
+    private List<Marker> areaMarkers = new ArrayList<>();//所有区域
 
     private CarVosBean bunldBean; //当前选中的车辆
     private ParksResult.DataBean buldParkBean; //选中的停车场
@@ -174,8 +176,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private TranslateAnimation showAnim;
     private Animation animRefresh;
     private ParkDetailDialog parkDetailDialog;
-    private boolean showArea = false;//当前是否为地区marker
     private DecimalFormat df = new DecimalFormat("0.0");
+    private boolean first = true;
 
     @Override
     protected int getLayoutResource() {
@@ -231,19 +233,47 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
                 if (cameraPosition.zoom > Constants2.AreaMarkerZoom) { //显示小图标
                     fetchParks();
+                    showArea(false);
                     if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
                         btn_yongche.startAnimation(showAnim);
                         btn_yongche.setVisibility(View.VISIBLE);
                     }
                 } else {//显示区域
                     if (buldParkBean == null) {
-                        fetchAreas();
+                        showArea(true);
                         btn_yongche.setVisibility(View.GONE);
+                        if (areaMarkers.size() == 0) {
+                            fetchAreas();
+                        }
                     }
                 }
             }
         });
         mAmap.setOnMarkerClickListener(this);
+    }
+
+    private void showArea(boolean show) {
+        if (show) {
+            for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+                entry.getValue().setVisible(!show);
+            }
+            for (Marker marker : areaMarkers) {
+                marker.setVisible(show);
+            }
+        } else {
+            for (Marker marker : areaMarkers) {
+                marker.setVisible(show);
+            }
+            for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+                entry.getValue().setVisible(!show);
+            }
+            if (buldParkBean != null) {
+                ParkKey parkKey = new ParkKey(buldParkBean.getId(), buldParkBean.getLongitude(), buldParkBean.getLatitude());
+                if (markerMap.containsKey(parkKey)) {
+                    markerMap.get(parkKey).setVisible(false);
+                }
+            }
+        }
     }
 
     @OnClick({R.id.iv_refresh, R.id.iv_mylocation, R.id.tv_park_detail, R.id.rl1,
@@ -255,11 +285,16 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     ivRefresh.startAnimation(animRefresh);
                 }
                 buldParkBean = null;
+                for (Marker marker : areaMarkers) {
+                    marker.remove();
+                }
+                areaMarkers.clear();
                 if (clickMarker != null) {
                     clickMarker.setVisible(true);
                 }
                 removeAllOtherMarker();
                 fetchParks();
+                showArea(false);
                 if (mLocationClient != null) {
                     mLocationClient.startLocation();
                 }
@@ -271,6 +306,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 }
                 removeAllOtherMarker();
                 fetchParks();
+                showArea(false);
                 if (mLocationClient != null) {
                     mLocationClient.startLocation();
                 }
@@ -310,13 +346,13 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         bestDistance = distance;
                     }
                 }
-                if (bestPark != null) {
+                if (bestPark != null && bestDistance < 3000) {
                     ParkKey parkKey = new ParkKey(bestPark.getId(), bestPark.getLongitude(), bestPark.getLatitude());
                     if (markerMap.containsKey(parkKey)) {
                         onMarkerClick(markerMap.get(parkKey));
                     }
                 } else {
-                    ToastUtils.showShort("尚未找到可用车辆");
+                    ToastUtils.showShort("3公里内无可用车辆");
                 }
                 break;
         }
@@ -327,6 +363,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
             if (markerMap.isEmpty()) {
                 fetchParks();
+                showArea(false);
                 if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
                     btn_yongche.startAnimation(showAnim);
                     btn_yongche.setVisibility(View.VISIBLE);
@@ -334,15 +371,19 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             }
         } else {
             if (buldParkBean == null && areaBeans.size() == 0) {
-                fetchAreas();
+                showArea(true);
                 btn_yongche.setVisibility(View.GONE);
+                if (areaMarkers.size() == 0) {
+                    fetchAreas();
+                }
             }
         }
     }
 
     private void fetchAreas() {
-        if (showArea) {
-            return;
+        if (disposable != null) {
+            disposable.isDisposed();
+            disposable = null;
         }
         UdriveRestClient.getClentInstance().getAreaTags()
                 .subscribeOn(Schedulers.io())
@@ -350,25 +391,24 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .subscribe(new Observer<AreaTagsResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        disposable = d;
                     }
 
                     @Override
                     public void onNext(AreaTagsResult result) {
-                        showArea = true;
-                        markerMap.clear();
                         areaBeans.clear();
                         areaBeans.addAll(result.getData());
-                        mAmap.clear();
                         for (int i = 0; i < areaBeans.size(); i++) {
                             LatLng latLng = new LatLng(areaBeans.get(i).getLatitude(), areaBeans.get(i).getLongitude());
                             if (!AMapUtil.isLatLngValid(latLng)) {
                                 continue;
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithCenterText(getActivity(), R.mipmap.ic_area, areaBeans.get(i).getName())));
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithCenterText(getActivity(), R.mipmap.ic_area, areaBeans.get(i).getName(), 13)));
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(latLng);
+                            areaMarkers.add(marker);
                         }
                         if (animRefresh != null) {
                             ivRefresh.clearAnimation();
@@ -388,20 +428,21 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void fetchParks() {
+        if (disposable != null) {
+            disposable.isDisposed();
+            disposable = null;
+        }
         UdriveRestClient.getClentInstance().getParks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ParksResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        disposable = d;
                     }
 
                     @Override
                     public void onNext(ParksResult result) {
-                        if (showArea) {//如果之前是地区，则需要全部刷新
-                            showArea = false;
-                            mAmap.clear();
-                        }
                         parkBeans.clear();
                         parkBeans.addAll(result.getData());
                         for (ParksResult.DataBean dataBean : parkBeans) {
@@ -579,6 +620,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             return;
                         }
                         //隐藏停车场marker
+
                         clickMarker.setVisible(false);
                         //画区域
                         ParkAreaBean parkAreaBean = parkDetailResult.getData().getParkArea();
@@ -741,24 +783,30 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
+        if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom || first) {
             fetchParks();
+            showArea(false);
             if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
                 btn_yongche.startAnimation(showAnim);
                 btn_yongche.setVisibility(View.VISIBLE);
             }
         } else {
             if (buldParkBean == null) {
-                fetchAreas();
+                showArea(true);
                 btn_yongche.setVisibility(View.GONE);
+                if (areaMarkers.size() == 0) {
+                    fetchAreas();
+                }
             }
         }
         if (clickMarker != null) {
             clickMarker.setVisible(true);
         }
+        first = false;
     }
 
     private void reset() {
+        bunldBean = null;
         removeAllOtherMarker();
         ll_info.setVisibility(View.GONE);
         rl_where.setVisibility(View.GONE);

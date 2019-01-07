@@ -6,7 +6,6 @@ import android.support.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.Utils;
 import com.bugtags.library.Bugtags;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.squareup.leakcanary.LeakCanary;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 
@@ -36,9 +35,9 @@ public class App extends MultiDexApplication {
 //        PlatformConfig.setWeixin("wx573f46942b7cffbf", "2cae5e3a7044b8185faa2c37e37e27b3");
         PlatformConfig.setWeixin("wx573f46942b7cffbf", "2cae5e3a7044b8185faa2c37e37e27b3");
 //        PlatformConfig.setWeixin("wxb94b5f6267204d83", "812f019cfa82d289cf38a1f1a8f3c323");
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
-        }
-        LeakCanary.install(this);
+//        if (LeakCanary.isInAnalyzerProcess(this)) {
+//            return;
+//        }
+//        LeakCanary.install(this);
     }
 }

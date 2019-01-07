@@ -258,7 +258,7 @@ public class AMapUtil {
     public static Bitmap bitmapWithShortCut(Context context, int mipMapId, String center, String pm_val, boolean showShortCut) {
         Bitmap bitmap1 = bitmapWithCenterText(context, mipMapId, center);
         if (showShortCut) {
-            if ("0".equals(pm_val)) {
+            if ("0".equals(pm_val)) { //角标数字为0则不绘制角标
                 return bitmap1;
             }
         } else {

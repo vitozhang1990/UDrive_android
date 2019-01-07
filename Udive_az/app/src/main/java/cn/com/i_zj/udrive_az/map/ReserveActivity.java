@@ -863,7 +863,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             } else {
                                 sb.append("P");
                             }
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ReserveActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getValidCarCount()))));
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ReserveActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()))));
 
                             Marker marker = mAmap.addMarker(markerOptions);
                             marker.setObject(dataBean);
