@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -32,18 +31,20 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_left"
+        android:button="@drawable/pic_left"
+        android:clickable="false"
         app:layout_constraintRight_toLeftOf="@id/guideline1" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_right"
+        android:button="@drawable/pic_right"
+        android:clickable="false"
         app:layout_constraintLeft_toRightOf="@id/guideline1" />
 
     <android.support.constraint.Guideline
@@ -53,43 +54,48 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.57" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/left_before"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_left_before"
+        android:button="@drawable/pic_left_before"
+        android:clickable="false"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintLeft_toLeftOf="@id/down" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/left_after"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_left_after"
+        android:button="@drawable/pic_left_after"
+        android:clickable="false"
         app:layout_constraintLeft_toLeftOf="@id/down"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/right_before"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_right_before"
+        android:button="@drawable/pic_right_before"
+        android:clickable="false"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintRight_toRightOf="@id/down" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/right_after"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_right_after"
+        android:button="@drawable/pic_right_after"
+        android:clickable="false"
         app:layout_constraintRight_toRightOf="@id/down"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-    <ImageButton
+    <CheckBox
         android:id="@+id/after"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/pic_after"
+        android:button="@drawable/pic_after"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="@id/down"
         app:layout_constraintLeft_toLeftOf="@id/down"
         app:layout_constraintRight_toRightOf="@id/down" />
