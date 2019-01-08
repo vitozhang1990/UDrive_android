@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_lz_item_press"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingBottom="25dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="50dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/default_avatar" />
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/iv_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/iv_icon"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_account_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/iv_icon"
+            android:layout_below="@id/tv_user_name"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/shape_lz_drawer_tv_account_type"
+            android:maxLines="1"
+            android:padding="3dp"
+            android:textColor="@color/gray" />
+
+    </RelativeLayout>
+
+
+    <View
+        style="@style/line_horizontal"
+         />
+
+    <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
+        android:id="@+id/di_my_type"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_drawer_left_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:item_image_left_margin="20dp"
+        app:item_image_src="@mipmap/ic_dingdan"
+        app:item_tv_mid_left_margin="10dp"
+        app:item_tv_mid_text="我的订单"
+        app:item_tv_mid_text_color="@color/black"
+        app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
+        app:item_tv_right_text_color="@color/right_text_color" />
+
+    <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
+        android:id="@+id/di_deposit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_drawer_left_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:item_image_left_margin="20dp"
+        app:item_image_src="@mipmap/ic_yajin"
+        app:item_tv_mid_left_margin="10dp"
+        app:item_tv_mid_text="@string/lz_my_deposit"
+        app:item_tv_mid_text_color="@color/black"
+        app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
+        app:item_tv_right_text_color="@color/right_text_color" />
+
+
+
+
+    <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
+        android:id="@+id/di_money"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_drawer_left_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:item_image_left_margin="20dp"
+        app:item_image_src="@mipmap/ic_wallet"
+        app:item_tv_mid_left_margin="10dp"
+        app:item_tv_mid_text="@string/lz_my_money"
+        app:item_tv_mid_text_color="@color/black"
+        app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
+        app:item_tv_right_text_color="@color/right_text_color" />
+
+
+
+    <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
+        android:id="@+id/di_about"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_drawer_left_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:item_image_left_margin="20dp"
+        app:item_image_src="@mipmap/ic_about"
+        app:item_tv_mid_left_margin="10dp"
+        app:item_tv_mid_text="@string/lz_about_title"
+        app:item_tv_mid_text_color="@color/black" />
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/share"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_share" />
+
+</LinearLayout>

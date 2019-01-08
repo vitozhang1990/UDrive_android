@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.com.i_zj.udrive_az">
+    <!-- Required -->
+    <permission
+        android:name="cn.com.i_zj.udrive_az.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="cn.com.i_zj.udrive_az.permission.JPUSH_MESSAGE" />
+    <!-- 照相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <!-- 允许程序打开网络套接字 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 允许程序设置内置sd卡的写权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 允许程序获取网络状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 允许程序访问WiFi网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 允许程序读写手机状态和身份 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 用于申请调用A-GPS模块 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!-- 用于申请获取蓝牙信息进行室内定位 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- 用于开启 debug 版本的应用在 6.0 系统上的层叠窗口权限 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".login.LaunchActivity"
+            android:theme="@style/DBSActivity.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MapTheme" />
+        <activity
+            android:name=".login.ProtocolActivity"
+            android:label="@string/activity_protocol"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".login.WalletActivity"
+            android:label="@string/activity_wallet"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".login.BalanceActivity"
+            android:label="@string/activity_balance"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".lz.ui.deposit.DepositActivity"
+            android:label="@string/activity_deposit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".login.RechargeActivity"
+            android:label="@string/activity_recharge"
+            android:theme="@style/DBSActivity" />
+        <activity
+            android:name=".lz.ui.share.ShareActivity"
+            android:label="@string/activity_share"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!--用户-->
+        <activity
+            android:name=".lz.ui.accountinfo.AccountInfoActivity"
+            android:label="@string/activity_account_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActIdentificationIDCard"
+            android:hardwareAccelerated="false"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.accountinfo.ActIdentificationCameraTwo"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="landscape"
+
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActIdentificationDrivingLicense"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name=".lz.ui.accountinfo.certification.ActBioassay"
+            android:label="@string/activity_account_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleFullscreen" />
+        <activity
+            android:name="com.zjcx.face.camera.CameraActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/NoTitleFullscreen" />
+
+        <activity
+            android:name=".lz.ui.about.AboutActivity"
+            android:label="@string/activity_about"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.payment.ActOrderPayment"
+            android:label="@string/activity_about"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".lz.ui.camera.CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.idregister.IDRegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.order.OrderActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.mycar.MyCarActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.payment.PaymentActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".map.ReserveActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.payment.ActConfirmOrder"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!--优惠券-->
+        <activity
+            android:name=".lz.ui.coupons.CouponsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- 高德定位 -->
+        <service android:name="com.amap.api.location.APSService" />
+        <!-- 高德key -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="5081139aff4c525bed870cf8cd86908a" />
+
+        <activity
+            android:name=".map.adapter.ChooseStartEndActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".map.adapter.ChooseParkActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.amap.api.navi.AmapRouteActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".lz.ui.idpost.IDPostActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.usecar.ActOverparking"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cn.com.i_zj.udrive_az"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/images" />
+        </provider>
+
+        <!-- ********************** 支付宝 ********************** -->
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <!-- ********************** 微信 ********************** -->
+        <activity
+            android:name="cn.com.i_zj.udrive_az.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="wx573f46942b7cffbf" />
+            </intent-filter>
+        </activity>
+
+        <!-- 微信分享 -->
+        <activity
+            android:name="cn.com.i_zj.udrive_az.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".lz.ui.wallet.MyWalletActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|stateUnchanged" />
+        <activity
+            android:name=".lz.ui.coupon.CouponListActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".web.WebActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".lz.ui.payment.ActPaySucc"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".lz.ui.msg.ActMsg"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+
+        <!--推送-->
+
+        <!-- Required SDK 核心功能-->
+
+        <!-- Required SDK 核心功能-->
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="cn.com.i_zj.udrive_az" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="cn.jpush.android.ui.PopWinActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:theme="@style/UpdateDialogStytle">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="cn.com.i_zj.udrive_az" />
+            </intent-filter>
+        </activity>
+        <!-- 可配置android:process参数将PushService放在其他进程中 -->
+        <service
+            android:name="cn.jpush.android.service.PushService"
+            android:exported="false"
+            android:process=":pushcore">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTER" />
+                <action android:name="cn.jpush.android.intent.REPORT" />
+                <action android:name="cn.jpush.android.intent.PushService" />
+                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+            </intent-filter>
+        </service>
+        <!-- since 3.0.9 Required SDK 核心功能-->
+        <provider
+            android:name="cn.jpush.android.service.DataProvider"
+            android:authorities="cn.com.i_zj.udrive_az.DataProvider"
+            android:exported="false"
+            android:process=":pushcore" />
+
+        <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
+        <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
+        <service
+            android:name="cn.jpush.android.service.DaemonService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.DaemonService" />
+                <category android:name="cn.com.i_zj.udrive_az" />
+            </intent-filter>
+
+        </service>
+        <!-- since 3.1.0 Required SDK 核心功能-->
+        <provider
+            android:name="cn.jpush.android.service.DownloadProvider"
+            android:authorities="cn.com.i_zj.udrive_az.DownloadProvider"
+            android:exported="true" />
+        <service
+            android:name="cn.jpush.android.service.DownloadService"
+            android:enabled="true"
+            android:exported="false"></service>
+        <!-- Required SDK核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.PushReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />   <!--Required  显示通知栏 -->
+                <category android:name="cn.com.i_zj.udrive_az" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <!-- Optional -->
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <!-- User defined.  For test only  用户自定义的广播接收器-->
+        <receiver
+            android:name=".push.JPushReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!--Required  用户注册SDK的intent-->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!--Required  用户接收SDK消息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!--Required  用户接收SDK通知栏信息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!--Required  用户打开自定义通知栏的intent-->
+                <action android:name="cn.jpush.android.intent.CONNECTION" /><!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <category android:name="cn.com.i_zj.udrive_az" />
+            </intent-filter>
+        </receiver>
+        <!-- User defined.  For test only  用户自定义接收消息器,3.0.7开始支持,目前新tag/alias接口设置结果会在该广播接收器对应的方法中回调-->
+        <receiver android:name="cn.com.i_zj.udrive_az.push.UJPushMessageReceiver">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="cn.com.i_zj.udrive_az"></category>
+            </intent-filter>
+        </receiver>
+        <!-- Required SDK核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.AlarmReceiver"
+            android:exported="false" />
+        <receiver android:name=".utils.NetworkChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="JPUSH_CHANNEL"
+            android:value="developer-default" />
+        <meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="bdefc59d7f4c2834e01d8a11" /><!--  </>值来自开发者平台取得的正式;-->
+        <!--<meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="39891243bf9f574780550bf3" />--> <!--  </>值来自开发者平台取得的AppKey 测试-->
+    </application>
+
+</manifest>

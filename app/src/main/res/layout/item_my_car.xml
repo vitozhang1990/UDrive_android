@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentView="@+id/content"
+    app:rightMenuView="@+id/right">
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View style="@style/line_horizontal" />
+
+        <TextView
+            android:id="@+id/tv_car_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="川A 888888"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_car_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_car_number"
+            android:layout_below="@id/tv_car_number"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/shape_lz_order_car_type"
+            android:paddingBottom="1dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="1dp"
+            android:text="白色"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_car_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_car_number"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_car_color"
+            android:text="大众~朗逸" />
+
+        <FrameLayout
+            android:id="@+id/fm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_car_color"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_stop"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_location"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_move"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="行程中 |"
+                android:textColor="#ff0000" />
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/tv_part_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_car_color"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/fm"
+            android:paddingBottom="10dp"
+            android:text="益州国际停车场" />
+
+        <View
+            android:id="@+id/view_center"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true" />
+
+        <ImageView
+            android:id="@+id/iv_forma"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/tv_move_km"
+            android:src="@mipmap/gas" />
+
+        <TextView
+            android:id="@+id/tv_move_km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@id/view_center"
+            android:layout_marginBottom="-6dp"
+            android:layout_marginRight="20dp"
+
+            android:text="350KM" />
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="5dp"
+            android:layout_alignLeft="@id/tv_move_km"
+            android:layout_alignRight="@id/tv_move_km"
+            android:layout_below="@id/tv_move_km"
+            android:layout_marginTop="6dp"
+            android:background="@color/gray" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="#ff0000"
+            android:gravity="center"
+            android:text="删除"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout>

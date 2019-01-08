@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <com.zjcx.face.camera.CameraView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/rl_action" />
+
+    <com.zjcx.face.crop.CropView
+        android:id="@+id/crop_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/rl_action" />
+
+    <com.zjcx.face.crop.FrameOverlayView
+        android:id="@+id/overlay_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/rl_action" />
+
+    <com.zjcx.face.camera.MaskView
+        android:id="@+id/crop_mask_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/rl_action" />
+
+    <ImageView
+        android:id="@+id/display_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/margin_4"
+        android:layout_toLeftOf="@+id/rl_action" />
+
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="@dimen/margin_eight"
+            android:src="@mipmap/ic_back" />
+
+        <ImageView
+            android:id="@+id/iv_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/margin_eight"
+            android:src="@mipmap/ic_lightoff" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_action"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@color/white"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:padding="@dimen/margin_sixteen"
+            android:src="@mipmap/ic_camera"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingLeft="@dimen/margin_sixteen"
+            android:paddingTop="@dimen/margin_sixteen"
+            android:paddingRight="@dimen/margin_sixteen"
+            android:paddingBottom="32dp"
+            android:text="@string/ok"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_sixteen"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_remake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/margin_sixteen"
+            android:padding="@dimen/margin_sixteen"
+            android:text="@string/remake"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_sixteen"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

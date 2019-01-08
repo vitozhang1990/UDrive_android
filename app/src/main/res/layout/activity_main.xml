@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:behavior_hideable="false">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:openDrawer="start">
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <fragment
+                    android:id="@+id/main_fragment_map"
+                    android:name="cn.com.i_zj.udrive_az.login.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <cn.com.i_zj.udrive_az.map.CompatToolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:fitsSystemWindows="true"
+                    android:minHeight="45dp"
+                    android:padding="0dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/main_tv_personal_info"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:scaleX="0.7"
+                            android:scaleY="0.7"
+                            android:src="@mipmap/toolbar_personal_icon" />
+
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/main_tv_msg"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentRight="true"
+                            android:scaleX="0.7"
+                            android:scaleY="0.7"
+                            android:src="@drawable/ic_notice_new" />
+                    </RelativeLayout>
+
+                </cn.com.i_zj.udrive_az.map.CompatToolbar>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/margin_48"
+                    android:layout_marginTop="66dp"
+                    android:id="@+id/rl_note"
+                    android:layout_marginLeft="@dimen/margin_sixteen"
+                    android:layout_marginRight="@dimen/margin_sixteen"
+                    android:visibility="gone"
+                    android:paddingLeft="@dimen/margin_eight"
+                    android:paddingRight="@dimen/margin_eight"
+                    android:background="@drawable/btg_bg_dialog">
+
+                    <TextView
+                        android:id="@+id/tv_msg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@color/gray_text"
+                        android:layout_centerVertical="true"
+                        android:gravity="center|left"
+                        android:layout_toRightOf="@+id/iv_arrow_home"
+                        android:drawableLeft="@mipmap/ic_notice" />
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_home"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/ic_arrow_home" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+
+
+        <fragment
+            android:id="@+id/fragment"
+            android:name="cn.com.i_zj.udrive_az.lz.ui.drawerleft.DrawerLeftFragment"
+            android:layout_width="260dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true" />
+    </android.support.v4.widget.DrawerLayout>
+</android.support.constraint.ConstraintLayout>

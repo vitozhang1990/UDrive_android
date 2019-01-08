@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:src="@mipmap/pic_defult" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_image"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_indiactor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/vp_image"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="horizontal" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/margin_sixteen">
+
+        <ImageView
+            android:id="@+id/iv_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_three"
+            android:layout_marginRight="@dimen/margin_eight"
+            android:src="@mipmap/ic_add" />
+
+        <TextView
+            android:id="@+id/tv_pname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/iv_add"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_sixteen" />
+
+        <TextView
+            android:id="@+id/tv_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_pname"
+            android:layout_marginTop="@dimen/margin_eight"
+            android:layout_toRightOf="@+id/iv_add"
+            android:text=""
+            android:textSize="@dimen/text_size_fourteen" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_close"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_48"
+        android:background="@drawable/bg_bottom_radius_black"
+        android:gravity="center"
+        android:text="我知道了"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_sixteen" />
+</LinearLayout>
