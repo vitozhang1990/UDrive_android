@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_circle_gray" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="1dp"
+        android:layout_height="34dp"
+        android:background="#AFAFAF" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="60dp"
+        android:layout_height="26dp"
+        android:background="@drawable/bg_gray_stroke"
+        android:gravity="center"
+        android:text="后保险杠" />
+</LinearLayout>

@@ -16,6 +16,7 @@
     <string name="bad_network">网络连接失败</string>
     <string name="parse_error">数据解析出错</string>
     <string name="unknown_error">未知的错误</string>
+    <string name="car_protocol"><u>《用车协议》</u></string>
     <string-array name="vehicle_type">　　
         <item>A1</item>
         <item>A2</item>

@@ -33,10 +33,10 @@ import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
-import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
 import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AppversionEntity;
 import cn.com.i_zj.udrive_az.model.GetReservation;
@@ -128,7 +128,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_tv_msg:
-                startActivity(ActMsg.class);
+                startActivity(PictureBeforeActivity.class);
                 break;
             case R.id.rl_note:
                 if (homeNote != null) {

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <ImageView
+        android:id="@+id/down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/down"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/top"
+        app:layout_constraintBottom_toBottomOf="@id/down"
+        app:layout_constraintLeft_toLeftOf="@id/down"
+        app:layout_constraintRight_toRightOf="@id/down"
+        app:layout_constraintTop_toTopOf="@id/down" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageButton
+        android:id="@+id/left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_left"
+        app:layout_constraintRight_toLeftOf="@id/guideline1" />
+
+    <ImageButton
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_right"
+        app:layout_constraintLeft_toRightOf="@id/guideline1" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.57" />
+
+    <ImageButton
+        android:id="@+id/left_before"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_left_before"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintLeft_toLeftOf="@id/down" />
+
+    <ImageButton
+        android:id="@+id/left_after"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_left_after"
+        app:layout_constraintLeft_toLeftOf="@id/down"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <ImageButton
+        android:id="@+id/right_before"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_right_before"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/down" />
+
+    <ImageButton
+        android:id="@+id/right_after"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_right_after"
+        app:layout_constraintRight_toRightOf="@id/down"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <ImageButton
+        android:id="@+id/after"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pic_after"
+        app:layout_constraintBottom_toBottomOf="@id/down"
+        app:layout_constraintLeft_toLeftOf="@id/down"
+        app:layout_constraintRight_toRightOf="@id/down" />
+</android.support.constraint.ConstraintLayout>

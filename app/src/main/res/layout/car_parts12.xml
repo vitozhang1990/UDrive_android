@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="56dp"
+        android:layout_height="26dp"
+        android:background="@drawable/bg_gray_stroke"
+        android:gravity="center"
+        android:text="右前杠"
+        app:layout_constraintLeft_toRightOf="@id/view1" />
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="14dp"
+        android:layout_height="1dp"
+        android:background="#AFAFAF"
+        app:layout_constraintBottom_toBottomOf="@id/text"
+        app:layout_constraintStart_toEndOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="@id/text" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="1dp"
+        android:layout_height="26dp"
+        android:background="#AFAFAF"
+        app:layout_constraintLeft_toLeftOf="@id/view3"
+        app:layout_constraintRight_toRightOf="@id/view3"
+        app:layout_constraintTop_toTopOf="@id/view1" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_circle_gray"
+        app:layout_constraintTop_toBottomOf="@id/view2" />
+</android.support.constraint.ConstraintLayout>
