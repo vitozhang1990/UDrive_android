@@ -1,6 +1,7 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -10,6 +11,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +25,14 @@ import cn.com.i_zj.udrive_az.utils.CameraUtil;
 
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback, View.OnClickListener {
 
-    @BindView(R.id.image_photo)
-    ImageView imagePhoto;
     @BindView(R.id.flash_light)
     ImageView flash_light;
     @BindView(R.id.surfaceView)
     SurfaceView surfaceView;
+    @BindView(R.id.take_photo_layout)
+    RelativeLayout takePhotoLayout;
+    @BindView(R.id.sure_layout)
+    RelativeLayout sureLayout;
 
     private Context context;
     private Camera mCamera;
@@ -37,6 +41,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     //闪光灯模式 0:关闭 1: 开启
     private int light_num = 0;
     private boolean isView = false;
+    private String img_path;
 
     @Override
     protected int getLayoutResource() {
@@ -51,17 +56,17 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         mHolder.addCallback(this);
     }
 
-    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light})
+    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_camera:
                 if (isView) {
                     switch (light_num) {
                         case 0:
-                            CameraUtil.getInstance().turnLightOn(mCamera);
+                            CameraUtil.getInstance().turnLightOff(mCamera);
                             break;
                         case 1:
-                            CameraUtil.getInstance().turnLightOff(mCamera);
+                            CameraUtil.getInstance().turnLightOn(mCamera);
                             break;
                     }
                     capture();
@@ -91,6 +96,17 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                         flash_light.setImageResource(R.drawable.ic_off_flashlight);
                         break;
                 }
+                break;
+            case R.id.retake_picture:
+                startPreview(mCamera, mHolder);
+                takePhotoLayout.setVisibility(View.VISIBLE);
+                sureLayout.setVisibility(View.GONE);
+                break;
+            case R.id.sure:
+                Intent intent = getIntent();
+                intent.putExtra("picPath", img_path);
+                setResult(RESULT_OK, intent);
+                finish();
                 break;
         }
     }
@@ -152,37 +168,26 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 Bitmap saveBitmap = CameraUtil.getInstance().setTakePicktrueOrientation(mCameraId, bitmap);
 
-                String img_path = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath() +
+                img_path = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath() +
                         File.separator + System.currentTimeMillis() + ".jpeg";
-
-                imagePhoto.setVisibility(View.VISIBLE);
-                imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                imagePhoto.setImageBitmap(saveBitmap);
 
                 BitmapUtils.saveJPGE_After(context, saveBitmap, img_path, 100);
 
-//                if (!bitmap.isRecycled()) {
-//                    bitmap.recycle();
-//                }
+                if (!bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
 
-//                if (!saveBitmap.isRecycled()) {
-//                    saveBitmap.recycle();
-//                }
+                if (!saveBitmap.isRecycled()) {
+                    saveBitmap.recycle();
+                }
 
-
-//                Intent intent = new Intent();
-//                intent.putExtra(AppConstant.KEY.IMG_PATH, img_path);
-//                intent.putExtra(AppConstant.KEY.PIC_WIDTH, screenWidth);
-//                intent.putExtra(AppConstant.KEY.PIC_HEIGHT, picHeight);
-//                setResult(AppConstant.RESULT_CODE.RESULT_OK, intent);
-//                finish();
+                mCamera.stopPreview();
+                takePhotoLayout.setVisibility(View.GONE);
+                sureLayout.setVisibility(View.VISIBLE);
             }
         });
     }
 
-    /**
-     * 设置
-     */
     private void setupCamera(Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
 

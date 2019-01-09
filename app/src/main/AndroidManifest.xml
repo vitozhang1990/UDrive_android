@@ -152,7 +152,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".map.adapter.CameraActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".lz.ui.payment.ActConfirmOrder"

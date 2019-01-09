@@ -21,7 +21,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
-
+        buildConfigField 'String', 'AccessKey', '"EIgygDTwX89mAfwEKc3xoy_hrDZGtSQDqWg-NvJy"'
+        buildConfigField 'String', 'SecretKey', '"FjX9_AhS_Bu31o-YueSLITEElP5P4wYtOpFO6KeZ"'
         ndk {
             // 设置支持的 SO 库构架，一般而言，取你所有的库支持的构架的`交集`。
             abiFilters 'armeabi-v7a'
@@ -147,6 +148,7 @@ dependencies {
 
     //utils
     implementation 'com.blankj:utilcode:1.9.8'
+    implementation 'com.qiniu:qiniu-android-sdk:7.3.13'
 
     // fix 65k error
     implementation 'com.android.support:multidex:1.0.3'
@@ -167,7 +169,8 @@ dependencies {
     //adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.jaeger.statusbarutil:library:1.5.1'
-    implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
+    implementation 'com.qiniu:qiniu-android-sdk:7.3.13'
+    implementation 'com.qiniu:happy-dns:0.2.13'
 
     //微信支付
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
@@ -183,12 +186,10 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
 
-
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
     implementation project(':pickerview')
     implementation files('libs/jpush-android-3.1.7.jar')
-
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
     debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2'
