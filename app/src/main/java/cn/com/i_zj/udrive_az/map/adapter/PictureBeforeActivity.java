@@ -99,6 +99,7 @@ public class PictureBeforeActivity extends DBSBaseActivity {
     public void onClick(View view) {
         Intent intent = new Intent();
         intent.setClass(this, CameraActivity.class);
+        intent.putExtra("state", 0);
         switch (view.getId()) {
             case R.id.iv_back:
                 finish();

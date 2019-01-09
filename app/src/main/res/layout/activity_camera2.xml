@@ -16,9 +16,9 @@
 
         <ImageView
             android:id="@+id/photo_view"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <cn.com.i_zj.udrive_az.widget.MaskPierceView
             android:id="@+id/mask_pierce"
@@ -32,6 +32,163 @@
             android:layout_alignParentRight="true"
             android:padding="12dp"
             android:src="@drawable/ic_back_white" />
+
+        <LinearLayout
+            android:id="@+id/finishLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/backPhoto_layout"
+                android:layout_width="45dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="26dp"
+                android:background="@drawable/bg_gray1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:rotation="90"
+                    android:text="车尾"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="4dp"
+                    android:src="@drawable/pic_tail" />
+
+                <ImageView
+                    android:id="@+id/backPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/backPhoto_layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_gray_stroke2"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rightFrontPhoto_layout"
+                android:layout_width="45dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="26dp"
+                android:background="@drawable/bg_gray1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-3dp"
+                    android:rotation="90"
+                    android:text="右前身"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="4dp"
+                    android:src="@drawable/pic_right_small" />
+
+                <ImageView
+                    android:id="@+id/rightFrontPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/rightFrontPhoto_layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_gray_stroke2"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/leftFrontPhoto_layout"
+                android:layout_width="45dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="26dp"
+                android:background="@drawable/bg_gray1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-3dp"
+                    android:rotation="90"
+                    android:text="左前身"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="4dp"
+                    android:src="@drawable/pic_left_small" />
+
+                <ImageView
+                    android:id="@+id/leftFrontPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/leftFrontPhoto_layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_gray_stroke2"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/innerPhoto_layout"
+                android:layout_width="45dp"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_gray1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:rotation="90"
+                    android:text="内饰"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="4dp"
+                    android:src="@drawable/pic_neishi" />
+
+                <ImageView
+                    android:id="@+id/innerPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/innerPhoto_layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_gray_stroke2" />
+            </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout

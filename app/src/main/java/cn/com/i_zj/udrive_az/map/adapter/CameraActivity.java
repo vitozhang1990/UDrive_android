@@ -12,7 +12,9 @@ import android.text.TextUtils;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.io.File;
@@ -39,8 +41,29 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     RelativeLayout takePhotoLayout;
     @BindView(R.id.sure_layout)
     RelativeLayout sureLayout;
+    @BindView(R.id.finishLayout)
+    LinearLayout finishLayout;
     @BindView(R.id.mask_pierce)
     MaskPierceView maskPierceView;
+
+
+    @BindView(R.id.backPhoto)
+    ImageView backPhoto;
+    @BindView(R.id.rightFrontPhoto)
+    ImageView rightFrontPhoto;
+    @BindView(R.id.leftFrontPhoto)
+    ImageView leftFrontPhoto;
+    @BindView(R.id.innerPhoto)
+    ImageView innerPhoto;
+    
+    @BindView(R.id.backPhoto_layout1)
+    ImageView backPhotoLayout;
+    @BindView(R.id.rightFrontPhoto_layout1)
+    ImageView rightFrontPhotoLayout;
+    @BindView(R.id.leftFrontPhoto_layout1)
+    ImageView leftFrontPhotoLayout;
+    @BindView(R.id.innerPhoto_layout1)
+    ImageView innerPhotoLayout;
 
     private Context context;
     private Camera mCamera;
@@ -51,8 +74,10 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private boolean isView = false;
     private String img_path;
 
-    private int state; //0:正常拍照   1：查看图片
+    private int state; //0:正常拍照   1：查看图片   2: 后拍照
+    private int currentPosition = 0; //state=2时使用
     private CarPartPicture carPart;
+    private String backPath, rightFrontPath, leftFrontPath, innerPath;
 
     @Override
     protected int getLayoutResource() {
@@ -62,22 +87,29 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         context = this;
         mHolder = surfaceView.getHolder();
         mHolder.addCallback(this);
 
-        carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
-        if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
-            state = 1;
-            takePhotoLayout.setVisibility(View.GONE);
-            sureLayout.setVisibility(View.VISIBLE);
+        state = getIntent().getIntExtra("state", 0);
+        if (state != 2) {
+            carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
+            if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
+                state = 1;
+                takePhotoLayout.setVisibility(View.GONE);
+                sureLayout.setVisibility(View.VISIBLE);
+                finishLayout.setVisibility(View.GONE);
 
 
-            Uri uri = Uri.fromFile(new File(carPart.getPhotoPath()));
-            imagePhoto.setVisibility(View.VISIBLE);
-            imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-            imagePhoto.setImageURI(uri);
-            maskPierceView.black(true);
+                Uri uri = Uri.fromFile(new File(carPart.getPhotoPath()));
+                imagePhoto.setVisibility(View.VISIBLE);
+                imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+                imagePhoto.setImageURI(uri);
+                maskPierceView.black(true);
+            }
+        } else {
+            finishLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -145,7 +177,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         super.onResume();
         if (mCamera == null) {
             mCamera = getCamera(mCameraId);
-            if (mHolder != null && state == 0) {
+            if (mHolder != null && state != 1) {
                 startPreview(mCamera, mHolder);
             }
         }
@@ -210,12 +242,63 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                     saveBitmap.recycle();
                 }
 
-                mCamera.stopPreview();
-                maskPierceView.black(true);
-                takePhotoLayout.setVisibility(View.GONE);
-                sureLayout.setVisibility(View.VISIBLE);
+                if (state == 2) {
+                    updateImage(img_path);
+                    mCamera.stopPreview();
+                    startPreview(mCamera, mHolder);
+                } else {
+                    mCamera.stopPreview();
+                    maskPierceView.black(true);
+                    takePhotoLayout.setVisibility(View.GONE);
+                    sureLayout.setVisibility(View.VISIBLE);
+                }
             }
         });
+    }
+
+    private void updateImage(String imgPath) {
+        switch (currentPosition) {
+            case 0:
+                innerPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                innerPhotoLayout.setVisibility(View.GONE);
+                leftFrontPhotoLayout.setVisibility(View.VISIBLE);
+                rightFrontPhotoLayout.setVisibility(View.GONE);
+                backPhotoLayout.setVisibility(View.GONE);
+
+                innerPath = imgPath;
+                currentPosition++;
+                break;
+            case 1:
+                leftFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                innerPhotoLayout.setVisibility(View.GONE);
+                leftFrontPhotoLayout.setVisibility(View.GONE);
+                rightFrontPhotoLayout.setVisibility(View.VISIBLE);
+                backPhotoLayout.setVisibility(View.GONE);
+
+                leftFrontPath = imgPath;
+                currentPosition++;
+                break;
+            case 2:
+                rightFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                innerPhotoLayout.setVisibility(View.GONE);
+                leftFrontPhotoLayout.setVisibility(View.GONE);
+                rightFrontPhotoLayout.setVisibility(View.GONE);
+                backPhotoLayout.setVisibility(View.VISIBLE);
+
+                rightFrontPath = imgPath;
+                currentPosition++;
+                break;
+            case 3:
+                backPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                innerPhotoLayout.setVisibility(View.VISIBLE);
+                leftFrontPhotoLayout.setVisibility(View.GONE);
+                rightFrontPhotoLayout.setVisibility(View.GONE);
+                backPhotoLayout.setVisibility(View.GONE);
+
+                backPath = imgPath;
+                currentPosition = 0;
+                break;
+        }
     }
 
     private void setupCamera(Camera camera) {
