@@ -14,7 +14,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <ImageView
+            android:id="@+id/photo_view"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <cn.com.i_zj.udrive_az.widget.MaskPierceView
+            android:id="@+id/mask_pierce"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -23,9 +25,12 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.utils.BitmapUtils;
 import cn.com.i_zj.udrive_az.utils.CameraUtil;
+import cn.com.i_zj.udrive_az.widget.MaskPierceView;
 
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback, View.OnClickListener {
 
+    @BindView(R.id.photo_view)
+    ImageView imagePhoto;
     @BindView(R.id.flash_light)
     ImageView flash_light;
     @BindView(R.id.surfaceView)
@@ -34,6 +39,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     RelativeLayout takePhotoLayout;
     @BindView(R.id.sure_layout)
     RelativeLayout sureLayout;
+    @BindView(R.id.mask_pierce)
+    MaskPierceView maskPierceView;
 
     private Context context;
     private Camera mCamera;
@@ -44,6 +51,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private boolean isView = false;
     private String img_path;
 
+    private int state; //0:正常拍照   1：查看图片
     private CarPartPicture carPart;
 
     @Override
@@ -59,6 +67,18 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         mHolder.addCallback(this);
 
         carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
+        if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
+            state = 1;
+            takePhotoLayout.setVisibility(View.GONE);
+            sureLayout.setVisibility(View.VISIBLE);
+
+
+            Uri uri = Uri.fromFile(new File(carPart.getPhotoPath()));
+            imagePhoto.setVisibility(View.VISIBLE);
+            imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+            imagePhoto.setImageURI(uri);
+            maskPierceView.black(true);
+        }
     }
 
     @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure})
@@ -103,9 +123,11 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.retake_picture:
-                startPreview(mCamera, mHolder);
                 takePhotoLayout.setVisibility(View.VISIBLE);
                 sureLayout.setVisibility(View.GONE);
+                imagePhoto.setVisibility(View.GONE);
+                maskPierceView.black(false);
+                startPreview(mCamera, mHolder);
                 break;
             case R.id.sure:
                 carPart.setPhotoPath(img_path);
@@ -123,7 +145,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         super.onResume();
         if (mCamera == null) {
             mCamera = getCamera(mCameraId);
-            if (mHolder != null) {
+            if (mHolder != null && state == 0) {
                 startPreview(mCamera, mHolder);
             }
         }
@@ -189,6 +211,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
 
                 mCamera.stopPreview();
+                maskPierceView.black(true);
                 takePhotoLayout.setVisibility(View.GONE);
                 sureLayout.setVisibility(View.VISIBLE);
             }

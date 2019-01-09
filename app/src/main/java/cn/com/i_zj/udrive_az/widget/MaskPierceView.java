@@ -26,6 +26,7 @@ public class MaskPierceView extends View {
     private float endY = 0;
 
     private RectF rectF;
+    private int color = Color.BLACK;
 
     public MaskPierceView(Context context) {
         this(context, null);
@@ -49,6 +50,7 @@ public class MaskPierceView extends View {
         mDstPaint.setColor(Color.YELLOW);
         mSrcPaint.setColor(Color.BLUE);
         mSrcPaint.setAlpha(160);
+        mSrcPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
@@ -66,16 +68,24 @@ public class MaskPierceView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawRoundRect(rectF, 50, 50, mDstPaint);
-        mSrcPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
-        canvas.drawBitmap(makeSrcRect(), 0, 0, mSrcPaint);
+        //构建遮罩
+        Bitmap bm = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas1 = new Canvas(bm);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(color);
+        canvas1.drawRect(new RectF(0, 0, mScreenWidth, mScreenHeight), paint);
+
+        canvas.drawBitmap(bm, 0, 0, mSrcPaint);
     }
 
-    private Bitmap makeSrcRect() {
-        Bitmap bm = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bm);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(new RectF(0, 0, mScreenWidth, mScreenHeight), paint);
-        return bm;
+    public void black(boolean black) {
+        if (black) {
+            mSrcPaint.setAlpha(255);
+            color = Color.parseColor("#1C1C1C");
+        } else {
+            mSrcPaint.setAlpha(160);
+            color = Color.BLACK;
+        }
+        invalidate();
     }
 }
