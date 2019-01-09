@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/text_right"
         android:layout_width="56dp"
         android:layout_height="26dp"
         android:background="@drawable/bg_gray_stroke"
@@ -18,9 +18,9 @@
         android:layout_width="14dp"
         android:layout_height="1dp"
         android:background="#AFAFAF"
-        app:layout_constraintBottom_toBottomOf="@id/text"
+        app:layout_constraintBottom_toBottomOf="@id/text_right"
         app:layout_constraintStart_toEndOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@id/text" />
+        app:layout_constraintTop_toTopOf="@id/text_right" />
 
     <View
         android:id="@+id/view2"

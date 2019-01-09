@@ -18,7 +18,7 @@
         android:background="#AFAFAF" />
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/text_after"
         android:layout_width="60dp"
         android:layout_height="26dp"
         android:background="@drawable/bg_gray_stroke"

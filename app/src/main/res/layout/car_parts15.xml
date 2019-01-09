@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="@id/text" />
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/text_right_before"
         android:layout_width="56dp"
         android:layout_height="26dp"
         android:background="@drawable/bg_gray_stroke"
