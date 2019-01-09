@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.utils.BitmapUtils;
 import cn.com.i_zj.udrive_az.utils.CameraUtil;
 
@@ -43,6 +44,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private boolean isView = false;
     private String img_path;
 
+    private CarPartPicture carPart;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_camera2;
@@ -54,6 +57,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         context = this;
         mHolder = surfaceView.getHolder();
         mHolder.addCallback(this);
+
+        carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
     }
 
     @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure})
@@ -103,8 +108,10 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 sureLayout.setVisibility(View.GONE);
                 break;
             case R.id.sure:
+                carPart.setPhotoPath(img_path);
+                carPart.setHasPhoto(true);
                 Intent intent = getIntent();
-                intent.putExtra("picPath", img_path);
+                intent.putExtra("part", carPart);
                 setResult(RESULT_OK, intent);
                 finish();
                 break;
