@@ -61,10 +61,11 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <ImageView
+            <CheckBox
+                android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_normal_hook" />
+                android:button="@drawable/ic_hook" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -62,6 +62,7 @@ import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
+import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
@@ -320,22 +321,10 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 break;
             case R.id.btn_yuding:
                 if (state == 0) {// 预定界面
-                    new AlertDialog.Builder(ReserveActivity.this)
-                            .setTitle("不计免赔")
-                            .setMessage("出现车辆故障或者碰撞免赔偿")
-                            .setNegativeButton("不需要", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    createOder("0");
-                                }
-                            })
-                            .setPositiveButton("购买", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    createOder("1");
-                                }
-                            })
-                            .create().show();
+                    Intent intent1 = new Intent();
+                    intent1.setClass(this, PictureBeforeActivity.class);
+                    intent1.putExtra("destinationParkId", String.valueOf(fromPark.getId()));
+                    startActivityForResult(intent1, 102);
                 } else {// 行程中
                     if (toPark == null) {
                         ToastUtils.showShort("请先设置还车点");
@@ -1042,11 +1031,54 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 101 && resultCode == RESULT_OK) {
-            ParksResult.DataBean toPark = (ParksResult.DataBean) data.getSerializableExtra("pickPark");
-            if (state == 1) {
-                updateDestinationPark(toPark);
-            }
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case 101:
+                ParksResult.DataBean toPark = (ParksResult.DataBean) data.getSerializableExtra("pickPark");
+                if (state == 1) {
+                    updateDestinationPark(toPark);
+                }
+                break;
+            case 102:
+                CreateOderBean createOderBean = (CreateOderBean) data.getSerializableExtra("createOderBean");
+                if (createOderBean != null) {
+                    if (createOderBean.getCode() == 1) {
+                        state = 1;
+                        carId = String.valueOf(createOderBean.getData().getCarId());
+                        oderId = String.valueOf(createOderBean.getData().getId());
+                        orderNum = String.valueOf(createOderBean.getData().getNumber());
+                        //1.改变UI
+                        timeDownLayout.setVisibility(View.GONE);
+                        operateBtnLayout.setVisibility(View.VISIBLE);
+                        tvTitle.setText("行程中");
+                        tvCanel.setVisibility(View.GONE);
+                        btnYuding.setText("结束行程");
+                        tv_address.setText("");
+                        tv_address_type.setText("还车点");
+                        ivBack.setVisibility(View.INVISIBLE);
+                        for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+                            entry.getValue().setVisible(true);
+                        }
+                        //2.移除起始停车场范围
+                        if (circle != null) {
+                            circle.remove();
+                            circle = null;
+                        }
+                        if (polygon != null) {
+                            polygon.remove();
+                            polygon = null;
+                        }
+                        if (carMarker != null) {
+                            carMarker.remove();
+                            carMarker = null;
+                        }
+                        //3.画到目的地的导航线路
+                        drawRoute();
+                    }
+                }
+                break;
         }
     }
 

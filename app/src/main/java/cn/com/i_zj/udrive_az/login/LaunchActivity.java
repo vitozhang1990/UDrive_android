@@ -7,8 +7,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.map.adapter.PictureAfterActivity;
 
 /**
  * 启动页面
@@ -27,7 +27,7 @@ public class LaunchActivity extends DBSBaseActivity {
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
-        startActivity(PictureAfterActivity.class);
+        startActivity(MainActivity.class);
         finish();
       }
     }, 800);

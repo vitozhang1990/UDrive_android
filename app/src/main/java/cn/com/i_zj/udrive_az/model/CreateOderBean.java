@@ -1,10 +1,12 @@
 package cn.com.i_zj.udrive_az.model;
 
+import java.io.Serializable;
+
 /**
  * Created by liuwei on 2018/8/20.
  */
 
-public class CreateOderBean {
+public class CreateOderBean implements Serializable {
 
 
     /**
@@ -41,7 +43,7 @@ public class CreateOderBean {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable {
         /**
          * id : 14
          * number : 637338

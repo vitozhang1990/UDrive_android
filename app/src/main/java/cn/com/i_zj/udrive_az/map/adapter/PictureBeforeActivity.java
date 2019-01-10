@@ -1,12 +1,16 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
@@ -29,7 +33,8 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
-import cn.com.i_zj.udrive_az.model.DriverResult;
+import cn.com.i_zj.udrive_az.model.CreateOderBean;
+import cn.com.i_zj.udrive_az.model.PhotoBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
@@ -38,7 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class PictureBeforeActivity extends DBSBaseActivity {
+public class PictureBeforeActivity extends DBSBaseActivity implements CompoundButton.OnCheckedChangeListener {
 
     @BindView(R.id.left)
     CheckBox checkBoxLeft;
@@ -71,8 +76,14 @@ public class PictureBeforeActivity extends DBSBaseActivity {
     @BindView(R.id.text_after)
     TextView textViewAfter;
 
+    @BindView(R.id.checkbox)
+    CheckBox checkbox;
+    @BindView(R.id.btnSubmit)
+    Button btnSubmit;
+
     private Context mContext;
     private int REQUEST_CODE = 1000;
+    private String destinationParkId;
     private Map<String, CarPartPicture> mCarParts = new HashMap<>();
 
     @Override
@@ -85,6 +96,8 @@ public class PictureBeforeActivity extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
         this.mContext = this;
+        destinationParkId = getIntent().getStringExtra("destinationParkId");
+
         mCarParts.put("leftFrontBumper", new CarPartPicture("leftFrontBumper", 1001));
         mCarParts.put("rightFrontBumper", new CarPartPicture("rightFrontBumper", 1002));
         mCarParts.put("leftFrontDoor", new CarPartPicture("leftFrontDoor", 1003));
@@ -92,6 +105,8 @@ public class PictureBeforeActivity extends DBSBaseActivity {
         mCarParts.put("leftBackDoor", new CarPartPicture("leftBackDoor", 1005));
         mCarParts.put("rightBackDoor", new CarPartPicture("rightBackDoor", 1006));
         mCarParts.put("backBumper", new CarPartPicture("backBumper", 1007));
+
+        checkbox.setOnCheckedChangeListener(this);
     }
 
     @OnClick({R.id.iv_back, R.id.text_left, R.id.text_right, R.id.text_left_before, R.id.text_left_after,
@@ -133,34 +148,92 @@ public class PictureBeforeActivity extends DBSBaseActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
-                createTripOrder();
+                new AlertDialog.Builder(PictureBeforeActivity.this)
+                        .setTitle("不计免赔")
+                        .setMessage("出现车辆故障或者碰撞免赔偿")
+                        .setNegativeButton("不需要", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                createTripOrder("0");
+                            }
+                        })
+                        .setPositiveButton("购买", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                createTripOrder("1");
+                            }
+                        })
+                        .create().show();
                 break;
         }
     }
 
-    private void createTripOrder() {
-        Map<String, String> map = new HashMap<>();
+    private void createTripOrder(String type) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("destinationParkId", destinationParkId);
+        map.put("deductibleStatus", type);
+        boolean hasPhoto = false;
+        PhotoBean photoBean = new PhotoBean();
+        for (Map.Entry<String, CarPartPicture> entry : mCarParts.entrySet()) {
+            if (entry.getValue().hasPhoto()) {
+                hasPhoto = true;
+                switch (entry.getKey()) {
+                    case "leftFrontBumper":
+                        photoBean.setLeftFrontBumper(entry.getValue().getPhotoName());
+                        break;
+                    case "rightFrontBumper":
+                        photoBean.setRightFrontBumper(entry.getValue().getPhotoName());
+                        break;
+                    case "leftFrontDoor":
+                        photoBean.setLeftFrontDoor(entry.getValue().getPhotoName());
+                        break;
+                    case "rightFrontDoor":
+                        photoBean.setRightFrontDoor(entry.getValue().getPhotoName());
+                        break;
+                    case "leftBackDoor":
+                        photoBean.setLeftBackDoor(entry.getValue().getPhotoName());
+                        break;
+                    case "rightBackDoor":
+                        photoBean.setRightBackDoor(entry.getValue().getPhotoName());
+                        break;
+                    case "backBumper":
+                        photoBean.setBackBumper(entry.getValue().getPhotoName());
+                        break;
+                }
+            }
+        }
+        if (hasPhoto) {
+            map.put("protocol", "1");
+            map.put("photo", photoBean);
+        } else {
+            map.put("protocol", "2");
+        }
         showProgressDialog("正在提交");
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().createTripOrder(token, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<DriverResult>() {
+                .subscribe(new Observer<CreateOderBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(DriverResult driverResult) {
+                    public void onNext(CreateOderBean createOderBean) {
                         dissmisProgressDialog();
-                        if (driverResult == null) {
+                        if (createOderBean == null) {
                             return;
                         }
-                        if (driverResult.getCode() == 1) {
-
+                        if (createOderBean.getCode() == 1) {
+                            Intent intent = getIntent();
+                            intent.putExtra("createOderBean", createOderBean);
+                            setResult(RESULT_OK, intent);
+                            finish();
                         } else {
-                            ToastUtils.showShort(driverResult.getMessage());
+                            if (!TextUtils.isEmpty(createOderBean.getMessage())) {
+                                ToastUtils.showShort(createOderBean.getMessage());
+                            }
                         }
                     }
 
@@ -253,5 +326,10 @@ public class PictureBeforeActivity extends DBSBaseActivity {
                 }
             }
         }, null);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        btnSubmit.setEnabled(isChecked);
     }
 }
