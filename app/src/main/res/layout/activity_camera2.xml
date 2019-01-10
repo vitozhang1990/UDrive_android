@@ -212,7 +212,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@drawable/img_homepage_camera5" />
+            android:src="@drawable/btn_picture" />
     </RelativeLayout>
 
     <RelativeLayout
