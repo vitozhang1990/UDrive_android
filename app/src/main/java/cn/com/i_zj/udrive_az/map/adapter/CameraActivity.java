@@ -27,6 +27,9 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.utils.BitmapUtils;
 import cn.com.i_zj.udrive_az.utils.CameraUtil;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.PictureTipDialog;
 import cn.com.i_zj.udrive_az.widget.MaskPierceView;
 
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback, View.OnClickListener {
@@ -130,6 +133,10 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 innerPhoto.setImageURI(Uri.fromFile(new File(innerPath)));
             }
             finishLayout.setVisibility(View.VISIBLE);
+
+            if (!LocalCacheUtils.getPersistentSettingBoolean(Constants.SP_GLOBAL_NAME, Constants.SP_NOT_SHOW_PICTURE, false)) {
+                new PictureTipDialog(this).show();
+            }
         }
     }
 

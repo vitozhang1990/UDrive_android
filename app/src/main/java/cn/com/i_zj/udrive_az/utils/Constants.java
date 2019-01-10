@@ -14,6 +14,7 @@ public class Constants {
   public static final String SP_SESSION_MANAGER = "sp_session_manager";
   public static final String SP_ACCOUNT_INFO_MANAGER = "sp_account_info_manager";
   public static final String SP_ADDRESS = "sp_address";
+  public static final String SP_NOT_SHOW_PICTURE = "sp_not_show_picture";
 
   public static final String INTENT_KET_COMMENT_DATA = "intent_key_comment_data";
 
