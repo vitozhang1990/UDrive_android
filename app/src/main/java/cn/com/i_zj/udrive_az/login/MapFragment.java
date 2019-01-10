@@ -396,6 +396,12 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onNext(AreaTagsResult result) {
+                        if (result == null) {
+                            return;
+                        }
+                        if (result.getCode() != 1) {
+                            return;
+                        }
                         areaBeans.clear();
                         areaBeans.addAll(result.getData());
                         for (int i = 0; i < areaBeans.size(); i++) {
@@ -411,13 +417,26 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             areaMarkers.add(marker);
                         }
                         if (animRefresh != null) {
-                            ivRefresh.clearAnimation();
+                            ivRefresh.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivRefresh.clearAnimation();
+                                }
+                            }, 1000);
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        if (animRefresh != null) {
+                            ivRefresh.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivRefresh.clearAnimation();
+                                }
+                            }, 1000);
+                        }
                     }
 
                     @Override
@@ -443,6 +462,12 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onNext(ParksResult result) {
+                        if (result == null) {
+                            return;
+                        }
+                        if (result.getCode() != 1) {
+                            return;
+                        }
                         parkBeans.clear();
                         parkBeans.addAll(result.getData());
                         for (ParksResult.DataBean dataBean : parkBeans) {
@@ -462,13 +487,26 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             markerMap.put(parkKey, marker);
                         }
                         if (animRefresh != null) {
-                            ivRefresh.clearAnimation();
+                            ivRefresh.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivRefresh.clearAnimation();
+                                }
+                            }, 1000);
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        if (animRefresh != null) {
+                            ivRefresh.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivRefresh.clearAnimation();
+                                }
+                            }, 1000);
+                        }
                     }
 
                     @Override

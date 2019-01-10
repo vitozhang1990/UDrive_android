@@ -56,38 +56,14 @@
         android:layout_margin="12dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <CheckBox
-                android:id="@+id/checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/ic_hook" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="如无车损，同意"
-                android:textColor="#373737"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/car_protocol"
-                android:textColor="#373737"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="即可立即用车"
-                android:textColor="#373737"
-                android:textSize="12sp" />
-        </LinearLayout>
+            android:button="@drawable/ic_hook"
+            android:text="该车身无明显损伤部位，若遗漏车损部位拍照需承担相应责任"
+            android:textColor="#373737"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnSubmit"

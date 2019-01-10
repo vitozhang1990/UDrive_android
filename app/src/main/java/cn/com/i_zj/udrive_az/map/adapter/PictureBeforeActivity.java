@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -120,30 +121,51 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                 finish();
                 break;
             case R.id.text_left:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("leftFrontBumper"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_right:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("rightFrontBumper"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_left_before:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("leftFrontDoor"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_left_after:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("leftBackDoor"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_right_before:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("rightFrontDoor"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_right_after:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("rightBackDoor"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.text_after:
+                if (checkbox.isChecked()) {
+                    return;
+                }
                 intent.putExtra("part", mCarParts.get("backBumper"));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
@@ -260,49 +282,49 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
             switch (carPart.getRequestCode()) {
                 case 1001:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxLeft.setChecked(true);
+                        updateUI(checkBoxLeft, textViewLeft);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1002:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxRight.setChecked(true);
+                        updateUI(checkBoxRight, textViewRight);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1003:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxLeftBefore.setChecked(true);
+                        updateUI(checkBoxLeftBefore, textViewLeftBefore);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1004:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxRightBefore.setChecked(true);
+                        updateUI(checkBoxRightBefore, textViewRightBefore);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1005:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxLeftAfter.setChecked(true);
+                        updateUI(checkBoxLeftAfter, textViewLeftAfter);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1006:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxRightAfter.setChecked(true);
+                        updateUI(checkBoxRightAfter, textViewRightAfter);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
                     break;
                 case 1007:
                     if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        checkBoxAfter.setChecked(true);
+                        updateUI(checkBoxAfter, textViewAfter);
                         mCarParts.put(carPart.getKey(), carPart); //更新map
                         uploadImg2QiNiu(carPart);
                     }
@@ -311,7 +333,15 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
         }
     }
 
+    private void updateUI(CheckBox checkBox, TextView textView) {
+        checkBox.setChecked(true);
+        textView.setTextColor(Color.WHITE);
+        textView.setBackgroundResource(R.drawable.bg_gray_stroke1);
+    }
+
     private void uploadImg2QiNiu(final CarPartPicture carPart) {
+        btnSubmit.setEnabled(true);
+        checkbox.setEnabled(false);
         showProgressDialog("上传中...", true);
         UploadManager uploadManager = new UploadManager();
         // 设置图片名字
@@ -330,6 +360,8 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        btnSubmit.setEnabled(isChecked);
+        if (isChecked) {
+            btnSubmit.setEnabled(isChecked);
+        }
     }
 }
