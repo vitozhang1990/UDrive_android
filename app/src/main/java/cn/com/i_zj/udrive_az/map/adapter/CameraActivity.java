@@ -35,6 +35,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     ImageView imagePhoto;
     @BindView(R.id.flash_light)
     ImageView flash_light;
+    @BindView(R.id.camera_back)
+    ImageView camera_back;
     @BindView(R.id.surfaceView)
     SurfaceView surfaceView;
     @BindView(R.id.take_photo_layout)
@@ -55,7 +57,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     ImageView leftFrontPhoto;
     @BindView(R.id.innerPhoto)
     ImageView innerPhoto;
-    
+
     @BindView(R.id.backPhoto_layout1)
     ImageView backPhotoLayout;
     @BindView(R.id.rightFrontPhoto_layout1)
@@ -97,6 +99,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
             carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
             if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
                 state = 1;
+                camera_back.setVisibility(View.INVISIBLE);
+                finishLayout.setVisibility(View.GONE);
                 takePhotoLayout.setVisibility(View.GONE);
                 sureLayout.setVisibility(View.VISIBLE);
                 finishLayout.setVisibility(View.GONE);
@@ -109,6 +113,22 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 maskPierceView.black(true);
             }
         } else {
+            if (!TextUtils.isEmpty(getIntent().getStringExtra("backPath"))) {
+                backPath = getIntent().getStringExtra("backPath");
+                backPhoto.setImageURI(Uri.fromFile(new File(backPath)));
+            }
+            if (!TextUtils.isEmpty(getIntent().getStringExtra("rightFrontPath"))) {
+                rightFrontPath = getIntent().getStringExtra("rightFrontPath");
+                rightFrontPhoto.setImageURI(Uri.fromFile(new File(rightFrontPath)));
+            }
+            if (!TextUtils.isEmpty(getIntent().getStringExtra("leftFrontPath"))) {
+                leftFrontPath = getIntent().getStringExtra("leftFrontPath");
+                leftFrontPhoto.setImageURI(Uri.fromFile(new File(leftFrontPath)));
+            }
+            if (!TextUtils.isEmpty(getIntent().getStringExtra("innerPath"))) {
+                innerPath = getIntent().getStringExtra("innerPath");
+                innerPhoto.setImageURI(Uri.fromFile(new File(innerPath)));
+            }
             finishLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -132,6 +152,14 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             //退出相机界面 释放资源
             case R.id.camera_back:
+                if (state == 2) {
+                    Intent intent = getIntent();//backPath, rightFrontPath, leftFrontPath, innerPath
+                    intent.putExtra("backPath", backPath);
+                    intent.putExtra("rightFrontPath", rightFrontPath);
+                    intent.putExtra("leftFrontPath", leftFrontPath);
+                    intent.putExtra("innerPath", innerPath);
+                    setResult(RESULT_OK, intent);
+                }
                 finish();
                 break;
             //闪光灯
@@ -156,18 +184,21 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             case R.id.retake_picture:
                 takePhotoLayout.setVisibility(View.VISIBLE);
+                camera_back.setVisibility(View.VISIBLE);
                 sureLayout.setVisibility(View.GONE);
                 imagePhoto.setVisibility(View.GONE);
                 maskPierceView.black(false);
                 startPreview(mCamera, mHolder);
                 break;
             case R.id.sure:
-                carPart.setPhotoPath(img_path);
-                carPart.setHasPhoto(true);
-                Intent intent = getIntent();
-                intent.putExtra("part", carPart);
-                setResult(RESULT_OK, intent);
-                finish();
+                if (state == 0) {
+                    carPart.setPhotoPath(img_path);
+                    carPart.setHasPhoto(true);
+                    Intent intent = getIntent();
+                    intent.putExtra("part", carPart);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
                 break;
         }
     }
@@ -249,6 +280,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 } else {
                     mCamera.stopPreview();
                     maskPierceView.black(true);
+                    camera_back.setVisibility(View.GONE);
+                    finishLayout.setVisibility(View.GONE);
                     takePhotoLayout.setVisibility(View.GONE);
                     sureLayout.setVisibility(View.VISIBLE);
                 }

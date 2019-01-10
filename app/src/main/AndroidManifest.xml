@@ -151,6 +151,9 @@
             android:name=".map.adapter.PictureBeforeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".map.adapter.PictureAfterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".map.adapter.CameraActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

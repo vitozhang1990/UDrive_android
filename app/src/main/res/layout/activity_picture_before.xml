@@ -92,7 +92,8 @@
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/bg_gray_4"
+            android:background="@drawable/bg_bottom_radius"
+            android:enabled="false"
             android:text="检查完毕"
             android:textColor="@color/white"
             android:textSize="16sp" />
