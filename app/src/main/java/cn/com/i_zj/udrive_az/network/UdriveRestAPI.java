@@ -219,6 +219,10 @@ public interface UdriveRestAPI {
     @POST("mobile/v1/order")
     Observable<CreateOderBean> createTripOrder(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
 
+    @Headers("Content-Type: application/json")
+    @PUT("mobile/v1/order/finish")
+    Observable<OrderDetailResult> finishTripOrder(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+
     //创建订单接口
     @Headers("Content-Type: application/json")
     @POST("mobile/tripOrder/create")

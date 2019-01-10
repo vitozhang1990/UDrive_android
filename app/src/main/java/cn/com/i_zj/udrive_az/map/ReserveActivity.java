@@ -62,6 +62,7 @@ import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
+import cn.com.i_zj.udrive_az.map.adapter.PictureAfterActivity;
 import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
@@ -81,6 +82,7 @@ import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants2;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -217,6 +219,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ScreenManager.getScreenManager().pushActivity(this);
         MapUtils.statusBarColor(this);
         initViewstMap(savedInstanceState);
         initViews();
@@ -330,21 +333,10 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         ToastUtils.showShort("请先设置还车点");
                         return;
                     }
-                    new AlertDialog.Builder(ReserveActivity.this)
-                            .setMessage("确认要结束此次行车？")
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishOder();
-                                }
-                            })
-                            .create().show();
+                    Intent intent2 = new Intent();
+                    intent2.setClass(this, PictureAfterActivity.class);
+                    intent2.putExtra("orderNum", orderNum);
+                    startActivity(intent2);
                 }
                 break;
             case R.id.iv_back:

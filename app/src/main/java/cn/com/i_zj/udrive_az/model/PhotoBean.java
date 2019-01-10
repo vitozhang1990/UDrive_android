@@ -11,6 +11,11 @@ public class PhotoBean implements Serializable {
     private String rightBackDoor;
     private String backBumper;
 
+    private String backPhoto;
+    private String innerPhoto;
+    private String leftFrontPhoto;
+    private String rightFrontPhoto;
+
     public String getLeftFrontBumper() {
         return leftFrontBumper;
     }
@@ -65,5 +70,37 @@ public class PhotoBean implements Serializable {
 
     public void setBackBumper(String backBumper) {
         this.backBumper = backBumper;
+    }
+
+    public String getBackPhoto() {
+        return backPhoto;
+    }
+
+    public void setBackPhoto(String backPhoto) {
+        this.backPhoto = backPhoto;
+    }
+
+    public String getInnerPhoto() {
+        return innerPhoto;
+    }
+
+    public void setInnerPhoto(String innerPhoto) {
+        this.innerPhoto = innerPhoto;
+    }
+
+    public String getLeftFrontPhoto() {
+        return leftFrontPhoto;
+    }
+
+    public void setLeftFrontPhoto(String leftFrontPhoto) {
+        this.leftFrontPhoto = leftFrontPhoto;
+    }
+
+    public String getRightFrontPhoto() {
+        return rightFrontPhoto;
+    }
+
+    public void setRightFrontPhoto(String rightFrontPhoto) {
+        this.rightFrontPhoto = rightFrontPhoto;
     }
 }

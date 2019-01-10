@@ -1,6 +1,8 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -31,9 +34,21 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
+import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.model.OrderDetailResult;
+import cn.com.i_zj.udrive_az.model.PhotoBean;
+import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class PictureAfterActivity extends DBSBaseActivity {
 
@@ -50,6 +65,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
     Button btnSubmit;
 
     private Context mContext;
+    private String orderNum;
     private int REQUEST_CODE = 1002;
     private String backPath, rightFrontPath, leftFrontPath, innerPath;
     private Handler mHandler = new Handler() {
@@ -70,6 +86,13 @@ public class PictureAfterActivity extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
         this.mContext = this;
+
+        orderNum = getIntent().getStringExtra("orderNum");
+
+        Intent intent = new Intent();
+        intent.setClass(this, CameraActivity.class);
+        intent.putExtra("state", 2);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @OnClick({R.id.iv_back, R.id.btn_neishi, R.id.btn_left, R.id.btn_right, R.id.btn_tail, R.id.btnSubmit})
@@ -98,8 +121,85 @@ public class PictureAfterActivity extends DBSBaseActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
+                new AlertDialog.Builder(PictureAfterActivity.this)
+                        .setMessage("确认要结束此次行车？")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finishOder();
+                            }
+                        })
+                        .create().show();
                 break;
         }
+    }
+
+    private void finishOder() {
+        PhotoBean photoBean = new PhotoBean();
+        if (picMap.containsKey("backPath")) {
+            photoBean.setBackPhoto(picMap.get("backPath"));
+        }
+        if (picMap.containsKey("rightFrontPath")) {
+            photoBean.setRightFrontPhoto(picMap.get("rightFrontPath"));
+        }
+        if (picMap.containsKey("leftFrontPath")) {
+            photoBean.setLeftFrontPhoto(picMap.get("leftFrontPath"));
+        }
+        if (picMap.containsKey("innerPath")) {
+            photoBean.setInnerPhoto(picMap.get("innerPath"));
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNum", orderNum);
+        map.put("photo", photoBean);
+        showProgressDialog("正在还车");
+        String token = SessionManager.getInstance().getAuthorization();
+        UdriveRestClient.getClentInstance().finishTripOrder(token, map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<OrderDetailResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(OrderDetailResult bean) {
+                        dissmisProgressDialog();
+                        if (bean != null) {
+                            if (bean.code == 1) {
+                                ToastUtils.showShort("还车成功");
+                                Intent intent1 = new Intent(PictureAfterActivity.this, ActConfirmOrder.class);
+                                intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
+                                startActivity(intent1);
+                                ScreenManager.getScreenManager().popActivity(ReserveActivity.class);
+                                finish();
+                            } else if (bean.code == 1002) {
+                                ToastUtils.showShort(bean.message);
+                            } else {
+                                ToastUtils.showShort(bean.message);
+                            }
+                        } else {
+                            ToastUtils.showShort("还车失败");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dissmisProgressDialog();
+                        e.printStackTrace();
+                        ToastUtils.showShort("还车失败了");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dissmisProgressDialog();
+                    }
+                });
     }
 
     private void updateUI() {
