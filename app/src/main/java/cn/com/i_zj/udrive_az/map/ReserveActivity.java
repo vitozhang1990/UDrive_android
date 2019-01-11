@@ -45,6 +45,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,12 +61,15 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
+import cn.com.i_zj.udrive_az.event.WebSocketEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
 import cn.com.i_zj.udrive_az.map.adapter.PictureAfterActivity;
 import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
+import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.CheckCarResult;
@@ -188,6 +193,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         if (time > 1000 * 60 * 15) {
             ToastUtils.showShort("预约结束");
             startActivity(new Intent(ReserveActivity.this, MainActivity.class));
+            EventBus.getDefault().post(new WebSocketEvent());
             finish();
             return;
         }
@@ -206,6 +212,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             public void onFinish() {
                 if (null != tv_time) {
                     finish();// 预约时间结束
+                    EventBus.getDefault().post(new WebSocketEvent());
                     startActivity(new Intent(ReserveActivity.this, MainActivity.class));
                 }
             }
@@ -233,6 +240,9 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         if (state == 0) { //预约中显示停车场范围及预约车辆
             parkDetail();
         }
+
+        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
+        EventBus.getDefault().post(new WebSocketEvent(accountInfo.data.userId));
     }
 
     private void initViews() {
@@ -465,6 +475,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                             if (bean.getCode() == 1) {
                                 ToastUtils.showShort("取消订单成功");
                                 startActivity(new Intent(ReserveActivity.this, MainActivity.class));
+                                EventBus.getDefault().post(new WebSocketEvent());
                                 finish();
                             } else {
                                 ToastUtils.showShort(bean.getMessage());

@@ -248,6 +248,8 @@
             android:name=".lz.ui.msg.ActMsg"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
+        <service android:name=".service.BackService" />
+
 
         <!--推送-->
 

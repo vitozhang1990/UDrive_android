@@ -20,6 +20,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +36,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
@@ -164,6 +166,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
                                 intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
                                 startActivity(intent1);
                                 ScreenManager.getScreenManager().popActivity(ReserveActivity.class);
+                                EventBus.getDefault().post(new WebSocketEvent());
                                 finish();
                             } else if (bean.code == 1002) {
                                 ToastUtils.showShort(bean.message);
