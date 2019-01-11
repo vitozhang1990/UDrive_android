@@ -16,6 +16,21 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <style name="Theme.SoundRecorder" parent="@android:style/Theme.Holo.DialogWhenLarge">
+        <item name="android:background">#00000000</item>
+        <!--全透明可以去掉dialog的角的颜色-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <!--去掉title-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <!--去掉多余的背景颜色-->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+      
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="NoTitleFullscreen" parent="Theme.AppCompat.Light.NoActionBar">

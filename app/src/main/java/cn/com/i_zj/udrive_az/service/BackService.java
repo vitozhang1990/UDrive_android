@@ -25,6 +25,8 @@ import cn.com.i_zj.udrive_az.model.WebSocketLocation;
 import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.model.WebSocketPrice;
 import cn.com.i_zj.udrive_az.model.WebSocketResult;
+import cn.com.i_zj.udrive_az.utils.dialog.OffPowerDialogActivity;
+import cn.com.i_zj.udrive_az.utils.dialog.RechargeDialogActivity;
 import okhttp3.WebSocket;
 
 public class BackService extends BaseService {
@@ -76,19 +78,20 @@ public class BackService extends BaseService {
             if (result == null || result.getCode() == null || !result.getSuccess()) {
                 return;
             }
+            Intent dialogIntent = new Intent();
             switch (result.getCode()) {
                 case 1000://推送停车场信息
-                    Type parkType = new TypeToken<WebSocketResult<Integer>>() {
+                    Type parkType = new TypeToken<WebSocketResult<WebSocketPark>>() {
                     }.getType();
                     WebSocketResult<WebSocketPark> park = gson.fromJson(text, parkType);
                     break;
                 case 2000://推送车辆定位信息
-                    Type locationType = new TypeToken<WebSocketResult<Integer>>() {
+                    Type locationType = new TypeToken<WebSocketResult<WebSocketLocation>>() {
                     }.getType();
                     WebSocketResult<WebSocketLocation> location = gson.fromJson(text, locationType);
                     break;
                 case 3000://推送实时价格信息
-                    Type priceType = new TypeToken<WebSocketResult<Integer>>() {
+                    Type priceType = new TypeToken<WebSocketResult<WebSocketPrice>>() {
                     }.getType();
                     WebSocketResult<WebSocketPrice> price = gson.fromJson(text, priceType);
                     break;
@@ -96,11 +99,23 @@ public class BackService extends BaseService {
                     Type chaoeType = new TypeToken<WebSocketResult<Integer>>() {
                     }.getType();
                     WebSocketResult<Integer> chaoe = gson.fromJson(text, chaoeType);
+
+                    if (chaoe.getData() > 0) {
+                        dialogIntent.setClass(BackService.this, RechargeDialogActivity.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(dialogIntent);
+                    }
                     break;
                 case 5000://推送订单是否断电信息
                     Type duandianType = new TypeToken<WebSocketResult<Integer>>() {
                     }.getType();
                     WebSocketResult<Integer> duandian = gson.fromJson(text, duandianType);
+
+                    if (duandian.getData() > 0) {
+                        dialogIntent.setClass(BackService.this, OffPowerDialogActivity.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(dialogIntent);
+                    }
                     break;
                 case 6000://推送强制结束订单信息
                     Type finishType = new TypeToken<WebSocketResult<Integer>>() {
