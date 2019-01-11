@@ -86,6 +86,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private int currentPosition = 0; //state=2时使用
     private CarPartPicture carPart;
     private String backPath, rightFrontPath, leftFrontPath, innerPath;
+    private int qipa; //奇葩，为了兼容四图连拍时更改之前的
 
     @Override
     protected int getLayoutResource() {
@@ -151,7 +152,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
 
         Uri uri = Uri.fromFile(new File(imagePath));
         imagePhoto.setVisibility(View.VISIBLE);
-        imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+        imagePhoto.setScaleType(ImageView.ScaleType.CENTER);
         imagePhoto.setImageURI(uri);
         maskPierceView.black(true);
     }
@@ -159,6 +160,15 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private void showSingle() {
         imagePhoto.setVisibility(View.GONE);
         camera_back.setVisibility(View.VISIBLE);
+        takePhotoLayout.setVisibility(View.VISIBLE);
+        finishLayout.setVisibility(View.GONE);
+        sureLayout.setVisibility(View.GONE);
+        maskPierceView.black(false);
+    }
+
+    private void showSingle1() {
+        imagePhoto.setVisibility(View.GONE);
+        camera_back.setVisibility(View.GONE);
         takePhotoLayout.setVisibility(View.VISIBLE);
         finishLayout.setVisibility(View.GONE);
         sureLayout.setVisibility(View.GONE);
@@ -174,7 +184,8 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         maskPierceView.black(false);
     }
 
-    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure})
+    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure
+    ,R.id.rightFrontPhoto_layout, R.id.leftFrontPhoto_layout, R.id.innerPhoto_layout})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_camera:
@@ -216,11 +227,64 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.retake_picture:
-                showSingle();
+                if (state == 1) {
+                    showSingle1();
+                } else {
+                    showSingle();
+                }
                 startPreview(mCamera, mHolder);
                 break;
             case R.id.sure:
-                returnLastPage();
+                if (qipa > 0) {
+                    switch (qipa) {
+                        case 1:
+                            innerPath = imagePath;
+                            innerPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+                            innerPhoto.setImageURI(Uri.fromFile(new File(innerPath)));
+                            break;
+                        case 2:
+                            leftFrontPath = imagePath;
+                            leftFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+                            leftFrontPhoto.setImageURI(Uri.fromFile(new File(leftFrontPath)));
+                            leftFrontPath = imagePath;
+                            break;
+                        case 3:
+                            rightFrontPath = imagePath;
+                            rightFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+                            rightFrontPhoto.setImageURI(Uri.fromFile(new File(rightFrontPath)));
+                            rightFrontPath = imagePath;
+                            break;
+                    }
+                    qipa = 0;
+                    showFour();
+                    startPreview(mCamera, mHolder);
+                } else {
+                    returnLastPage();
+                }
+                break;
+            case R.id.innerPhoto_layout:
+                if (currentPosition > 0) {
+                    qipa = 1;
+                    mCamera.stopPreview();
+                    imagePath = innerPath;
+                    showImageModel();
+                }
+                break;
+            case R.id.leftFrontPhoto_layout:
+                if (currentPosition > 1) {
+                    qipa = 2;
+                    mCamera.stopPreview();
+                    imagePath = leftFrontPath;
+                    showImageModel();
+                }
+                break;
+            case R.id.rightFrontPhoto_layout:
+                if (currentPosition  == 3) {
+                    qipa = 3;
+                    mCamera.stopPreview();
+                    imagePath = rightFrontPath;
+                    showImageModel();
+                }
                 break;
         }
     }
@@ -334,9 +398,15 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                         }
                         mCamera.stopPreview();
                     } else {
-                        updateImage(img_path);
-                        mCamera.stopPreview();
-                        startPreview(mCamera, mHolder);
+                        if (qipa > 0) {
+                            imagePath = img_path;
+                            showImageModel();
+                            mCamera.stopPreview();
+                        } else {
+                            updateImage(img_path);
+                            mCamera.stopPreview();
+                            startPreview(mCamera, mHolder);
+                        }
                     }
                 } else {
                     imagePath = img_path;
