@@ -76,10 +76,13 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private int mCameraId = 0;
     //闪光灯模式 0:关闭 1: 开启
     private int light_num = 0;
-    private boolean isView = false;
+    private boolean isCameraUseful = false;
     private String img_path;
 
-    private int state; //0:正常拍照   1：查看图片   2: 后拍照
+    private int state; //0:正常拍照 1: 后拍照
+    private boolean imageModel;
+    private String imagePath;
+
     private int currentPosition = 0; //state=2时使用
     private CarPartPicture carPart;
     private String backPath, rightFrontPath, leftFrontPath, innerPath;
@@ -98,53 +101,84 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         mHolder.addCallback(this);
 
         state = getIntent().getIntExtra("state", 0);
-        if (state != 2) {
+        if (state == 0) {
             carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
             if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
-                state = 1;
-                camera_back.setVisibility(View.INVISIBLE);
-                finishLayout.setVisibility(View.GONE);
-                takePhotoLayout.setVisibility(View.GONE);
-                sureLayout.setVisibility(View.VISIBLE);
-                finishLayout.setVisibility(View.GONE);
-
-
-                Uri uri = Uri.fromFile(new File(carPart.getPhotoPath()));
-                imagePhoto.setVisibility(View.VISIBLE);
-                imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                imagePhoto.setImageURI(uri);
-                maskPierceView.black(true);
+                imageModel = true;
+                imagePath = carPart.getPhotoPath();
+                showImageModel();
+            } else {
+                showSingle();
             }
         } else {
             if (!TextUtils.isEmpty(getIntent().getStringExtra("backPath"))) {
+                currentPosition = 3;
                 backPath = getIntent().getStringExtra("backPath");
-                backPhoto.setImageURI(Uri.fromFile(new File(backPath)));
+                imagePath = backPath;
             }
             if (!TextUtils.isEmpty(getIntent().getStringExtra("rightFrontPath"))) {
+                currentPosition = 2;
                 rightFrontPath = getIntent().getStringExtra("rightFrontPath");
-                rightFrontPhoto.setImageURI(Uri.fromFile(new File(rightFrontPath)));
+                imagePath = rightFrontPath;
             }
             if (!TextUtils.isEmpty(getIntent().getStringExtra("leftFrontPath"))) {
+                currentPosition = 1;
                 leftFrontPath = getIntent().getStringExtra("leftFrontPath");
-                leftFrontPhoto.setImageURI(Uri.fromFile(new File(leftFrontPath)));
+                imagePath = leftFrontPath;
             }
             if (!TextUtils.isEmpty(getIntent().getStringExtra("innerPath"))) {
+                currentPosition = 0;
                 innerPath = getIntent().getStringExtra("innerPath");
-                innerPhoto.setImageURI(Uri.fromFile(new File(innerPath)));
+                imagePath = innerPath;
             }
-            finishLayout.setVisibility(View.VISIBLE);
-
-            if (!LocalCacheUtils.getPersistentSettingBoolean(Constants.SP_GLOBAL_NAME, Constants.SP_NOT_SHOW_PICTURE, false)) {
-                new PictureTipDialog(this).show();
+            if (TextUtils.isEmpty(imagePath)) {
+                if (!LocalCacheUtils.getPersistentSettingBoolean(Constants.SP_GLOBAL_NAME, Constants.SP_NOT_SHOW_PICTURE, false)) {
+                    new PictureTipDialog(this).show();
+                }
+                showFour();
+            } else { //查看图片模式
+                imageModel = true;
+                showImageModel();
             }
         }
+    }
+
+    private void showImageModel() {
+        camera_back.setVisibility(View.GONE);
+        takePhotoLayout.setVisibility(View.GONE);
+        finishLayout.setVisibility(View.GONE);
+        sureLayout.setVisibility(View.VISIBLE);
+
+        Uri uri = Uri.fromFile(new File(imagePath));
+        imagePhoto.setVisibility(View.VISIBLE);
+        imagePhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+        imagePhoto.setImageURI(uri);
+        maskPierceView.black(true);
+    }
+
+    private void showSingle() {
+        imagePhoto.setVisibility(View.GONE);
+        camera_back.setVisibility(View.VISIBLE);
+        takePhotoLayout.setVisibility(View.VISIBLE);
+        finishLayout.setVisibility(View.GONE);
+        sureLayout.setVisibility(View.GONE);
+        maskPierceView.black(false);
+    }
+
+    private void showFour() {
+        imagePhoto.setVisibility(View.GONE);
+        camera_back.setVisibility(View.VISIBLE);
+        takePhotoLayout.setVisibility(View.VISIBLE);
+        finishLayout.setVisibility(View.VISIBLE);
+        sureLayout.setVisibility(View.GONE);
+        maskPierceView.black(false);
     }
 
     @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_camera:
-                if (isView) {
+                if (isCameraUseful && currentPosition < 4) {
                     switch (light_num) {
                         case 0:
                             CameraUtil.getInstance().turnLightOff(mCamera);
@@ -154,19 +188,11 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                             break;
                     }
                     capture();
-                    isView = false;
+                    isCameraUseful = false;
                 }
                 break;
             //退出相机界面 释放资源
             case R.id.camera_back:
-                if (state == 2) {
-                    Intent intent = getIntent();//backPath, rightFrontPath, leftFrontPath, innerPath
-                    intent.putExtra("backPath", backPath);
-                    intent.putExtra("rightFrontPath", rightFrontPath);
-                    intent.putExtra("leftFrontPath", leftFrontPath);
-                    intent.putExtra("innerPath", innerPath);
-                    setResult(RESULT_OK, intent);
-                }
                 finish();
                 break;
             //闪光灯
@@ -190,24 +216,32 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.retake_picture:
-                takePhotoLayout.setVisibility(View.VISIBLE);
-                camera_back.setVisibility(View.VISIBLE);
-                sureLayout.setVisibility(View.GONE);
-                imagePhoto.setVisibility(View.GONE);
-                maskPierceView.black(false);
+                showSingle();
                 startPreview(mCamera, mHolder);
                 break;
             case R.id.sure:
-                if (state == 0) {
-                    carPart.setPhotoPath(img_path);
-                    carPart.setHasPhoto(true);
-                    Intent intent = getIntent();
-                    intent.putExtra("part", carPart);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
+                returnLastPage();
                 break;
         }
+    }
+
+    private void returnLastPage() {
+        Intent intent = getIntent();
+        switch (state) {
+            case 0:
+                carPart.setPhotoPath(img_path);
+                carPart.setHasPhoto(true);
+                intent.putExtra("part", carPart);
+                break;
+            case 1:
+                if (!TextUtils.isEmpty(backPath)) intent.putExtra("backPath", backPath);
+                if (!TextUtils.isEmpty(rightFrontPath)) intent.putExtra("rightFrontPath", rightFrontPath);
+                if (!TextUtils.isEmpty(leftFrontPath)) intent.putExtra("leftFrontPath", leftFrontPath);
+                if (!TextUtils.isEmpty(innerPath)) intent.putExtra("innerPath", innerPath);
+                break;
+        }
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -215,7 +249,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         super.onResume();
         if (mCamera == null) {
             mCamera = getCamera(mCameraId);
-            if (mHolder != null && state != 1) {
+            if (mHolder != null && !imageModel) {
                 startPreview(mCamera, mHolder);
             }
         }
@@ -251,7 +285,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
             camera.setPreviewDisplay(holder);
             CameraUtil.getInstance().setCameraDisplayOrientation(this, mCameraId, camera);
             camera.startPreview();
-            isView = true;
+            isCameraUseful = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -261,7 +295,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
-                isView = false;
+                isCameraUseful = false;
                 //将data 转换为位图 或者你也可以直接保存为文件使用 FileOutputStream
                 //这里我相信大部分都有其他用处把 比如加个水印 后续再讲解
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
@@ -280,17 +314,34 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                     saveBitmap.recycle();
                 }
 
-                if (state == 2) {
-                    updateImage(img_path);
-                    mCamera.stopPreview();
-                    startPreview(mCamera, mHolder);
+                if (state == 1) {
+                    if (imageModel) {
+                        imagePath = img_path;
+                        showImageModel();
+                        switch (currentPosition) {
+                            case 0:
+                                innerPath = img_path;
+                                break;
+                            case 1:
+                                leftFrontPath = img_path;
+                                break;
+                            case 2:
+                                rightFrontPath = img_path;
+                                break;
+                            case 3:
+                                backPath = img_path;
+                                break;
+                        }
+                        mCamera.stopPreview();
+                    } else {
+                        updateImage(img_path);
+                        mCamera.stopPreview();
+                        startPreview(mCamera, mHolder);
+                    }
                 } else {
+                    imagePath = img_path;
+                    showImageModel();
                     mCamera.stopPreview();
-                    maskPierceView.black(true);
-                    camera_back.setVisibility(View.GONE);
-                    finishLayout.setVisibility(View.GONE);
-                    takePhotoLayout.setVisibility(View.GONE);
-                    sureLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -330,13 +381,14 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             case 3:
                 backPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
-                innerPhotoLayout.setVisibility(View.VISIBLE);
-                leftFrontPhotoLayout.setVisibility(View.GONE);
-                rightFrontPhotoLayout.setVisibility(View.GONE);
-                backPhotoLayout.setVisibility(View.GONE);
+//                innerPhotoLayout.setVisibility(View.VISIBLE);
+//                leftFrontPhotoLayout.setVisibility(View.GONE);
+//                rightFrontPhotoLayout.setVisibility(View.GONE);
+//                backPhotoLayout.setVisibility(View.GONE);
 
                 backPath = imgPath;
-                currentPosition = 0;
+                currentPosition++;
+                returnLastPage();
                 break;
         }
     }

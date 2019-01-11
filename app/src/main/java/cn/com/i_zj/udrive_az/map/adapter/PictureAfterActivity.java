@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,7 +25,8 @@ import com.qiniu.android.storage.UploadManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,7 +94,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
 
         Intent intent = new Intent();
         intent.setClass(this, CameraActivity.class);
-        intent.putExtra("state", 2);
+        intent.putExtra("state", 1);
         startActivityForResult(intent, REQUEST_CODE);
     }
 
@@ -99,25 +102,25 @@ public class PictureAfterActivity extends DBSBaseActivity {
     public void onClick(View view) {
         Intent intent = new Intent();
         intent.setClass(this, CameraActivity.class);
-        intent.putExtra("state", 2);
-        if (!TextUtils.isEmpty(backPath)) intent.putExtra("backPath", backPath);
-        if (!TextUtils.isEmpty(rightFrontPath)) intent.putExtra("rightFrontPath", rightFrontPath);
-        if (!TextUtils.isEmpty(leftFrontPath)) intent.putExtra("leftFrontPath", leftFrontPath);
-        if (!TextUtils.isEmpty(innerPath)) intent.putExtra("innerPath", innerPath);
+        intent.putExtra("state", 1);
         switch (view.getId()) {
             case R.id.iv_back:
                 finish();
                 break;
             case R.id.btn_neishi:
+                if (!TextUtils.isEmpty(innerPath)) intent.putExtra("innerPath", innerPath);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_left:
+                if (!TextUtils.isEmpty(leftFrontPath)) intent.putExtra("leftFrontPath", leftFrontPath);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_right:
+                if (!TextUtils.isEmpty(rightFrontPath)) intent.putExtra("rightFrontPath", rightFrontPath);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_tail:
+                if (!TextUtils.isEmpty(backPath)) intent.putExtra("backPath", backPath);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
@@ -213,6 +216,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK || data == null) {
+            finish();
             return;
         }
         if (requestCode == REQUEST_CODE) {
@@ -266,8 +270,32 @@ public class PictureAfterActivity extends DBSBaseActivity {
     }
 
     private void setImage(String path, ImageView imageView) {
-        Uri uri = Uri.fromFile(new File(path));
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        imageView.setImageURI(uri);
+        Bitmap bitmap = getLocalBitmap(path);
+        bitmap = rotateBitmap(bitmap, 270);
+        imageView.setImageBitmap(bitmap);
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int rotate) {
+        if (bitmap == null)
+            return null;
+
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Matrix mtx = new Matrix();
+        mtx.postRotate(rotate);
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+    }
+
+    public static Bitmap getLocalBitmap(String url) {
+        try {
+            FileInputStream fis = new FileInputStream(url);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            return BitmapFactory.decodeStream(fis, null, options);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

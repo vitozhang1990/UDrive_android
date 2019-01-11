@@ -105,11 +105,11 @@ public class MaskPierceView extends View {
     public void black(boolean black) {
         if (black) {
             mSrcPaint.setAlpha(255);
-            showStroke = true;
+            showStroke = false;
             color = Color.parseColor("#1C1C1C");
         } else {
             mSrcPaint.setAlpha(160);
-            showStroke = false;
+            showStroke = true;
             color = Color.BLACK;
         }
         invalidate();
