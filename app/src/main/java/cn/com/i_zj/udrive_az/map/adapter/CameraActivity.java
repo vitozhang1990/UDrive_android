@@ -350,6 +350,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     private void updateImage(String imgPath) {
         switch (currentPosition) {
             case 0:
+                innerPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
                 innerPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.VISIBLE);
@@ -360,6 +361,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 currentPosition++;
                 break;
             case 1:
+                leftFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
                 leftFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.GONE);
@@ -370,6 +372,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 currentPosition++;
                 break;
             case 2:
+                rightFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
                 rightFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.GONE);
@@ -380,6 +383,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 currentPosition++;
                 break;
             case 3:
+                backPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
                 backPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
 //                innerPhotoLayout.setVisibility(View.VISIBLE);
 //                leftFrontPhotoLayout.setVisibility(View.GONE);

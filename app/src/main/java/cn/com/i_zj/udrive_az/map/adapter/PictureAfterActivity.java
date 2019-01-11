@@ -273,6 +273,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
     private void setImage(String path, ImageView imageView) {
         Bitmap bitmap = getLocalBitmap(path);
         bitmap = rotateBitmap(bitmap, 270);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         imageView.setImageBitmap(bitmap);
     }
 
