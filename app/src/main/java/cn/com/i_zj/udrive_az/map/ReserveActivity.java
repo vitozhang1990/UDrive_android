@@ -429,6 +429,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         new AlertDialog.Builder(ReserveActivity.this)
                 .setTitle("取消预定")
                 .setMessage("确定要取消预定么？")
+                .setCancelable(false)
                 .setNegativeButton("先不取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -126,6 +126,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
             case R.id.btnSubmit:
                 new AlertDialog.Builder(PictureAfterActivity.this)
                         .setMessage("确认要结束此次行车？")
+                        .setCancelable(false)
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

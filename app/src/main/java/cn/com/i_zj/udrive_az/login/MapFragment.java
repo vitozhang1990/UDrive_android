@@ -875,6 +875,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void showDriverStateDialog() {
         new AlertDialog.Builder(getActivity())
                 .setMessage("您还没有绑定驾驶证")
+                .setCancelable(false)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -896,10 +897,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void showIdCardStateDialog() {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setMessage("您没还没有实名认证")
+                .setCancelable(false)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+
                     }
                 })
                 .setPositiveButton("立即认证", new DialogInterface.OnClickListener() {
@@ -921,16 +923,17 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         new AlertDialog.Builder(getActivity())
                 .setTitle("限行提示")
                 .setMessage("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
-                .setNegativeButton("继续使用", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        reservationVerify();
-                    }
-                })
-                .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                .setCancelable(false)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                })
+                .setPositiveButton("继续使用", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        reservationVerify();
                     }
                 })
                 .create().show();
@@ -941,16 +944,17 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         new AlertDialog.Builder(getActivity())
                 .setTitle("提示")
                 .setMessage("您还有未完成的订单，请完成订单")
-                .setNegativeButton("去完成", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startActivity(OrderActivity.class);
-                    }
-                })
-                .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                .setCancelable(false)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                })
+                .setPositiveButton("去完成", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(OrderActivity.class);
                     }
                 })
                 .create().show();
@@ -961,6 +965,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         new AlertDialog.Builder(getActivity())
                 .setTitle("支付提示")
                 .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
+                .setCancelable(false)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -55,6 +55,7 @@ public class HomeAdvDialog extends Dialog {
 
     public HomeAdvDialog(Context context) {
         super(context, R.style.UpdateDialogStytle);
+        setCancelable(false);
         mContext = context;
         initView();
         initEvent();

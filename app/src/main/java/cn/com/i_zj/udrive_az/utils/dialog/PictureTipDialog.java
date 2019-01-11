@@ -15,6 +15,7 @@ public class PictureTipDialog extends Dialog {
 
     public PictureTipDialog(Context context) {
         super(context, R.style.UpdateDialogStytle);
+        setCancelable(false);
         mContext = context;
         initView();
     }

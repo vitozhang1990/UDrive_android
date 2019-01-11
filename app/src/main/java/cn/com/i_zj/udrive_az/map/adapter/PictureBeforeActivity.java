@@ -173,6 +173,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                 new AlertDialog.Builder(PictureBeforeActivity.this)
                         .setTitle("不计免赔")
                         .setMessage("出现车辆故障或者碰撞免赔偿")
+                        .setCancelable(false)
                         .setNegativeButton("不需要", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
