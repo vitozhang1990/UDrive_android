@@ -300,6 +300,11 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     }
 
     private void returnLastPage() {
+        if (TextUtils.isEmpty(img_path)) {//若是查看模式进入，且没有重拍，退出时不返回任何内容
+            setResult(RESULT_OK);
+            finish();
+            return;
+        }
         Intent intent = getIntent();
         switch (state) {
             case 0:

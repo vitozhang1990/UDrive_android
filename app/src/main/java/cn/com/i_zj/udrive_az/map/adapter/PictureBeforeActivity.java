@@ -275,61 +275,71 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK || data == null) {
             return;
         }
         if (requestCode == REQUEST_CODE) {
-            CarPartPicture carPart = (CarPartPicture) data.getSerializableExtra("part");
-            switch (carPart.getRequestCode()) {
-                case 1001:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxLeft, textViewLeft);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1002:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxRight, textViewRight);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1003:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxLeftBefore, textViewLeftBefore);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1004:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxRightBefore, textViewRightBefore);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1005:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxLeftAfter, textViewLeftAfter);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1006:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxRightAfter, textViewRightAfter);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
-                case 1007:
-                    if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
-                        updateUI(checkBoxAfter, textViewAfter);
-                        mCarParts.put(carPart.getKey(), carPart); //更新map
-                        uploadImg2QiNiu(carPart);
-                    }
-                    break;
+            if (data.getSerializableExtra("part") == null) {
+                return;
+            }
+            try {
+                CarPartPicture carPart = (CarPartPicture) data.getSerializableExtra("part");
+                if (carPart == null) {
+                    return;
+                }
+                switch (carPart.getRequestCode()) {
+                    case 1001:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxLeft, textViewLeft);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1002:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxRight, textViewRight);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1003:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxLeftBefore, textViewLeftBefore);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1004:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxRightBefore, textViewRightBefore);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1005:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxLeftAfter, textViewLeftAfter);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1006:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxRightAfter, textViewRightAfter);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                    case 1007:
+                        if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
+                            updateUI(checkBoxAfter, textViewAfter);
+                            mCarParts.put(carPart.getKey(), carPart); //更新map
+                            uploadImg2QiNiu(carPart);
+                        }
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
