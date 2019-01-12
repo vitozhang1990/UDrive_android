@@ -1,8 +1,6 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -124,22 +122,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
-                new AlertDialog.Builder(PictureAfterActivity.this)
-                        .setMessage("确认要结束此次行车？")
-                        .setCancelable(false)
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finishOder();
-                            }
-                        })
-                        .create().show();
+                finishOder();
                 break;
         }
     }

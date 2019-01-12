@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -157,6 +158,14 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         maskPierceView.black(true);
     }
 
+    private void showImageModel1() {
+        camera_back.setVisibility(View.GONE);
+        takePhotoLayout.setVisibility(View.GONE);
+        finishLayout.setVisibility(View.GONE);
+        sureLayout.setVisibility(View.VISIBLE);
+        maskPierceView.black(true);
+    }
+
     private void showSingle() {
         imagePhoto.setVisibility(View.GONE);
         camera_back.setVisibility(View.VISIBLE);
@@ -185,7 +194,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     }
 
     @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure
-    ,R.id.rightFrontPhoto_layout, R.id.leftFrontPhoto_layout, R.id.innerPhoto_layout})
+            , R.id.rightFrontPhoto_layout, R.id.leftFrontPhoto_layout, R.id.innerPhoto_layout})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_camera:
@@ -204,6 +213,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             //退出相机界面 释放资源
             case R.id.camera_back:
+                if (state == 1 && imageModel) setResult(RESULT_OK);
                 finish();
                 break;
             //闪光灯
@@ -279,7 +289,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.rightFrontPhoto_layout:
-                if (currentPosition  == 3) {
+                if (currentPosition == 3) {
                     qipa = 3;
                     mCamera.stopPreview();
                     imagePath = rightFrontPath;
@@ -381,7 +391,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 if (state == 1) {
                     if (imageModel) {
                         imagePath = img_path;
-                        showImageModel();
+                        showImageModel1();
                         switch (currentPosition) {
                             case 0:
                                 innerPath = img_path;
@@ -400,7 +410,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                     } else {
                         if (qipa > 0) {
                             imagePath = img_path;
-                            showImageModel();
+                            showImageModel1();
                             mCamera.stopPreview();
                         } else {
                             updateImage(img_path);
@@ -410,7 +420,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                     }
                 } else {
                     imagePath = img_path;
-                    showImageModel();
+                    showImageModel1();
                     mCamera.stopPreview();
                 }
             }
@@ -508,5 +518,10 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         releaseCamera();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return false;
     }
 }

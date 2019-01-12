@@ -361,8 +361,6 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-            btnSubmit.setEnabled(isChecked);
-        }
+        btnSubmit.setEnabled(isChecked);
     }
 }
