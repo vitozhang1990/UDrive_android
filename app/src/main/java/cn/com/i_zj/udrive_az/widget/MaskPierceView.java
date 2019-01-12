@@ -14,6 +14,8 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 
+import cn.com.i_zj.udrive_az.utils.UIUtils;
+
 public class MaskPierceView extends View {
     private int mScreenWidth;   // 屏幕的宽
     private int mScreenHeight;  // 屏幕的高
@@ -21,8 +23,8 @@ public class MaskPierceView extends View {
 
     private int viewWidth;
     private int viewHeight;
-    private float startX = 150;
-    private float startY = 300;
+    private float startX;
+    private float startY;
     private float endX = 0;
     private float endY = 0;
 
@@ -46,6 +48,9 @@ public class MaskPierceView extends View {
             mScreenWidth = dm.widthPixels;
             mScreenHeight = dm.heightPixels;
         }
+
+        startX = UIUtils.dp2px(40);
+        startY = UIUtils.dp2px(100);
 
         mDstPaint = new Paint();
         mSrcPaint = new Paint();
@@ -77,8 +82,8 @@ public class MaskPierceView extends View {
         viewWidth = w;
         viewHeight = h;
 
-        endX = viewWidth - 150;
-        endY = viewHeight - 300;
+        endX = viewWidth - UIUtils.dp2px(40);
+        endY = viewHeight - UIUtils.dp2px(60);
         rectF = new RectF(startX, startY, endX, endY);
         rectFStroke = new RectF(startX, startY, endX, endY);
     }

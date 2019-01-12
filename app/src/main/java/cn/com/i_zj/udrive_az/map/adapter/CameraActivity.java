@@ -152,7 +152,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
 
         Uri uri = Uri.fromFile(new File(imagePath));
         imagePhoto.setVisibility(View.VISIBLE);
-        imagePhoto.setScaleType(ImageView.ScaleType.CENTER);
+        imagePhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imagePhoto.setImageURI(uri);
         maskPierceView.black(true);
     }

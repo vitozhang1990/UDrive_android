@@ -244,6 +244,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
     private Map<String, String> picMap = new HashMap<>();
 
     private void uploadImg2QiNiu(final String type, final String path) {
+        showProgressDialog("上传中...", false);
         new Thread() {
             public void run() {
                 UploadManager uploadManager = new UploadManager();
@@ -258,6 +259,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
                             try {
                                 picMap.put(type, res.getString("key"));
                                 if (picMap.size() == 4) {
+                                    dissmisProgressDialog();
                                     mHandler.sendEmptyMessage(0);
                                 }
                             } catch (JSONException e) {
