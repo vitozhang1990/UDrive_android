@@ -343,7 +343,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
     private void uploadImg2QiNiu(final CarPartPicture carPart) {
         btnSubmit.setEnabled(true);
         checkbox.setEnabled(false);
-        showProgressDialog("上传中...", true);
+        showProgressDialog("上传中...", false);
         UploadManager uploadManager = new UploadManager();
         // 设置图片名字
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
