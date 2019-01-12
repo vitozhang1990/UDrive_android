@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
+import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.model.WebSocketLocation;
 import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.model.WebSocketPrice;
@@ -78,12 +80,16 @@ public class BackService extends BaseService {
             if (result == null || result.getCode() == null || !result.getSuccess()) {
                 return;
             }
-            Intent dialogIntent = new Intent();
+            Intent intent = new Intent();
             switch (result.getCode()) {
                 case 1000://推送停车场信息
                     Type parkType = new TypeToken<WebSocketResult<WebSocketPark>>() {
                     }.getType();
                     WebSocketResult<WebSocketPark> park = gson.fromJson(text, parkType);
+
+                    if (park.getData() != null) {
+                        EventBus.getDefault().post(park.getData());
+                    }
                     break;
                 case 2000://推送车辆定位信息
                     Type locationType = new TypeToken<WebSocketResult<WebSocketLocation>>() {
@@ -101,9 +107,9 @@ public class BackService extends BaseService {
                     WebSocketResult<Integer> chaoe = gson.fromJson(text, chaoeType);
 
                     if (chaoe.getData() > 0) {
-                        dialogIntent.setClass(BackService.this, RechargeDialogActivity.class);
-                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        BackService.this.startActivity(dialogIntent);
+                        intent.setClass(BackService.this, RechargeDialogActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(intent);
                     }
                     break;
                 case 5000://推送订单是否断电信息
@@ -112,15 +118,15 @@ public class BackService extends BaseService {
                     WebSocketResult<Integer> duandian = gson.fromJson(text, duandianType);
 
                     if (duandian.getData() > 0) {
-                        dialogIntent.setClass(BackService.this, OffPowerDialogActivity.class);
-                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        BackService.this.startActivity(dialogIntent);
+                        intent.setClass(BackService.this, OffPowerDialogActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(intent);
                     }
                     break;
                 case 6000://推送强制结束订单信息
-                    Type finishType = new TypeToken<WebSocketResult<Integer>>() {
-                    }.getType();
-                    WebSocketResult<Integer> finish = gson.fromJson(text, finishType);
+                    intent.setClass(BackService.this, OrderActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    BackService.this.startActivity(intent);
                     break;
             }
         }

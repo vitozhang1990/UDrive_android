@@ -17,6 +17,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
@@ -56,6 +57,7 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
 
             @Override
             public void onClick(View view) {
+                startActivity(new Intent(OrderActivity.this, MainActivity.class));
                 finish();
             }
         });

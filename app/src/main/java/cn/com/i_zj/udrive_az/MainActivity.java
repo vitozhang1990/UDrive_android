@@ -88,6 +88,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         checkPermission();
         versionCheck();
         getActivity();
+
+        startService(new Intent(this, BackService.class));
     }
 
     private void checkPermission() {

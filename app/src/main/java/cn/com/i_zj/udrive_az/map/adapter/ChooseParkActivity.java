@@ -30,6 +30,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +51,7 @@ import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
+import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
@@ -161,6 +165,35 @@ public class ChooseParkActivity extends DBSBaseActivity implements
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(poiItem.getLat(), poiItem.getLng())
                     , Constants2.AreaShowZoom));
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(WebSocketPark park) {
+        ParkKey parkKey = new ParkKey(park.getId(), park.getLongitude(), park.getLatitude());
+        ParksResult.DataBean dataBean;
+        if (markerMap.containsKey(parkKey)) {
+            try {
+                dataBean = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
+                markerMap.get(parkKey).remove();//清除
+                markerMap.remove(parkKey);
+
+                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(park.getLatitude(), park.getLongitude()));
+                int bitmapId = R.mipmap.ic_cheweishu_monthly;
+                StringBuilder sb = new StringBuilder();
+                if (fromPark != null && park.getId() == fromPark.getParkID()) {
+                    sb.append("起");
+                } else {
+                    sb.append("P");
+                }
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(park.getParkCountBalance()), true)));
+
+                Marker marker = mAmap.addMarker(markerOptions);
+                marker.setObject(dataBean);
+                markerMap.put(parkKey, marker);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
