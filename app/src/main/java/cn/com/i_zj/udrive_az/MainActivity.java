@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
@@ -74,6 +75,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     private HomeAdvDialog homeAdvDialog;
     private ActivityInfo homeNote;
 
+    private long time = 0;
     private boolean hasRequest; //网络变化后只请求一次
     private NetworkChangeReceiver networkChangeReceiver;
 
@@ -434,10 +436,16 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            ScreenManager.getScreenManager().popAllActivityExceptOne();
-//            moveTaskToBack(true);
-            System.exit(0);
+            if (System.currentTimeMillis() - time > 1000) {
+                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                time = System.currentTimeMillis();
+            } else {
+                ScreenManager.getScreenManager().popAllActivityExceptOne();
+                System.exit(0);
+            }
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
         }
-        return false;
     }
 }
