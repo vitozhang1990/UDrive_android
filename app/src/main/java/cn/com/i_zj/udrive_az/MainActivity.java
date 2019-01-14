@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,7 +47,6 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
-import cn.com.i_zj.udrive_az.utils.NetworkChangeReceiver;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
@@ -77,7 +74,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private long time = 0;
     private boolean hasRequest; //网络变化后只请求一次
-    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected int getLayoutResource() {
@@ -92,21 +88,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         checkPermission();
         versionCheck();
         getActivity();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            IntentFilter filter = new IntentFilter();
-            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-            networkChangeReceiver = new NetworkChangeReceiver();
-            registerReceiver(networkChangeReceiver, filter);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (networkChangeReceiver != null) {
-            unregisterReceiver(networkChangeReceiver);
-        }
     }
 
     private void checkPermission() {
