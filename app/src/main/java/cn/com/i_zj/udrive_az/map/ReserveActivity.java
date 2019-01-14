@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -66,6 +67,7 @@ import cn.com.i_zj.udrive_az.map.adapter.PictureAfterActivity;
 import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
+import cn.com.i_zj.udrive_az.model.CheckCarResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DoorBean;
 import cn.com.i_zj.udrive_az.model.GetReservation;
@@ -333,10 +335,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         ToastUtils.showShort("请先设置还车点");
                         return;
                     }
-                    Intent intent2 = new Intent();
-                    intent2.setClass(this, PictureAfterActivity.class);
-                    intent2.putExtra("orderNum", orderNum);
-                    startActivity(intent2);
+                    checkCar();
                 }
                 break;
             case R.id.iv_back:
@@ -799,6 +798,58 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     @Override
                     public void onComplete() {
                         dissmisProgressDialog();
+                    }
+                });
+    }
+
+    private void checkCar() {
+        if (TextUtils.isEmpty(carId)) {
+            ToastUtils.showShort("未获取到车辆ID");
+            return;
+        }
+        String token = SessionManager.getInstance().getAuthorization();
+        UdriveRestClient.getClentInstance().checkCar(token, carId, toPark.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<CheckCarResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(CheckCarResult checkCarResult) {
+                        if (checkCarResult == null || checkCarResult.getCode() == null) {
+                            ToastUtils.showShort("请求返回错误");
+                            return;
+                        }
+                        if (checkCarResult.getCode() != 1) {
+                            ToastUtils.showShort(checkCarResult.getMessage());
+                            return;
+                        }
+                        if (checkCarResult.getData() != null) {
+                            if (checkCarResult.getData().isExist()) {
+                                Intent intent2 = new Intent();
+                                intent2.setClass(ReserveActivity.this, PictureAfterActivity.class);
+                                intent2.putExtra("orderNum", orderNum);
+                                startActivity(intent2);
+                            } else {
+                                ToastUtils.showShort("当前车辆不在停车场");
+                            }
+                        } else {
+                            ToastUtils.showShort("data null");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort("请求错误");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

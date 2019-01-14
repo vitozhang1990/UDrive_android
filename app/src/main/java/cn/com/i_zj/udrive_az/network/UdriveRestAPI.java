@@ -11,6 +11,7 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
+import cn.com.i_zj.udrive_az.model.CheckCarResult;
 import cn.com.i_zj.udrive_az.model.CreateDepositResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DepositAmountResult;
@@ -120,6 +121,9 @@ public interface UdriveRestAPI {
     //查询所有订单
     @GET("/mobile/tripOrder/queryAllOrdersByUser")
     Observable<OrderResult> queryAllOrdersByUser(@Header("Authorization") String Authorization);
+
+    @GET("/mobile/v1/park/checkCar")
+    Observable<CheckCarResult> checkCar(@Header("Authorization") String Authorization, @Query("carId") String carId, @Query("parkId") int parkId);
 
     //获取user信息
     @GET("/mobile/card/getUserInfo")
