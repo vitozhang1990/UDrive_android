@@ -807,6 +807,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
             ToastUtils.showShort("未获取到车辆ID");
             return;
         }
+        showProgressDialog();
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().checkCar(token, carId, toPark.getId())
                 .subscribeOn(Schedulers.io())
@@ -819,6 +820,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
 
                     @Override
                     public void onNext(CheckCarResult checkCarResult) {
+                        dissmisProgressDialog();
                         if (checkCarResult == null || checkCarResult.getCode() == null) {
                             ToastUtils.showShort("请求返回错误");
                             return;
@@ -844,6 +846,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        dissmisProgressDialog();
                         ToastUtils.showShort("请求错误");
                     }
 
