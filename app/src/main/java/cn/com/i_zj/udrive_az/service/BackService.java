@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.dhh.websocket.Config;
 import com.dhh.websocket.RxWebSocket;
@@ -49,6 +50,7 @@ public class BackService extends BaseService {
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onEvent(WebSocketEvent webSocketEvent) {
+        Log.d(TAG, "onEvent: " + webSocketEvent.getUserId());
         if (socketSubscriber != null) {
             socketSubscriber.dispose();
             socketSubscriber = null;
@@ -69,11 +71,13 @@ public class BackService extends BaseService {
         protected void onOpen(WebSocket webSocket) {
             super.onOpen(webSocket);
             mWebSocket = webSocket;
+            Log.d(TAG, "WebSocket Create!!!!");
         }
 
         @Override
         protected void onMessage(String text) {
             super.onMessage(text);
+            Log.d(TAG, text);
             GsonBuilder gb = new GsonBuilder();
             Gson gson = gb.create();
             WebSocketResult result = gson.fromJson(text, WebSocketResult.class);

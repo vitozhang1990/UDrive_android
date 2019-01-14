@@ -45,6 +45,7 @@ import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.service.BackService;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
