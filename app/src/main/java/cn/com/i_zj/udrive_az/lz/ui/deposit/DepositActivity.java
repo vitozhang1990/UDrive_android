@@ -187,7 +187,7 @@ public class DepositActivity extends DBSBaseActivity {
                             ToastUtils.showShort("操作成功");
                             getUserDeposit();
                         } else {
-                            ToastUtils.showShort("退还押金失败");
+                            ToastUtils.showShort(value.message);
                         }
                     }
 
