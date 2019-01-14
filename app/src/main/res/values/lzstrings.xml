@@ -67,6 +67,7 @@
     <string name="nedd_front">需要上传身份证正面</string>
     <string name="need_behind">需要上传身份证反面</string>
     <string name="permission_request_fail">权限申请失败,图片可能无法保存</string>
+    <string name="permission_request_fail1">权限申请失败,请在系统设置中打开相关权限</string>
     <string name="permission_file">权限申请失败</string>
     <string name="permission_success">权限申请成功</string>
     <string name="id_post_title">身份证信息</string>

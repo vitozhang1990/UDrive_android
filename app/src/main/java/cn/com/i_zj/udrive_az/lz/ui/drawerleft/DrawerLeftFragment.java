@@ -29,7 +29,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
@@ -179,8 +178,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @OnClick(R.id.share)
     public void onShareClick(View view) {
         System.out.println("====================================================");
-//        String url = "http://www.zzbcjj.com?ref?referral=";
-        String url = BuildConfig.SHARE_URL;
+//        String url = "http://www.zzbcjj.com?ref?referral=";Î
+        String url = "http://www.zaijianchuxing.com?ref?referral=";
         if (SessionManager.getInstance().isLogin()) {
             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
             if (accountInfo != null) {

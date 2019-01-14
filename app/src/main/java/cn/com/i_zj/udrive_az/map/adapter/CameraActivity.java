@@ -1,5 +1,6 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
@@ -18,8 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.blankj.utilcode.util.ToastUtils;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -32,8 +37,10 @@ import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.PictureTipDialog;
 import cn.com.i_zj.udrive_az.widget.MaskPierceView;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback, View.OnClickListener {
+public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback
+        , View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.photo_view)
     ImageView imagePhoto;
@@ -143,6 +150,21 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 showImageModel();
             }
         }
+
+        checkPermission();
+    }
+
+    private void checkPermission() {
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
+
+        if (!external) {
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
+        } else {
+            mCamera = getCamera(mCameraId);
+            if (mHolder != null && !imageModel) {
+                startPreview(mCamera, mHolder);
+            }
+        }
     }
 
     private void showImageModel() {
@@ -198,6 +220,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_camera:
+                if (mCamera == null) {
+                    return;
+                }
                 if (isCameraUseful && currentPosition < 4) {
                     switch (light_num) {
                         case 0:
@@ -218,6 +243,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             //闪光灯
             case R.id.flash_light:
+                if (mCamera == null) {
+                    return;
+                }
                 Camera.Parameters parameters = mCamera.getParameters();
                 switch (light_num) {
                     case 0:
@@ -237,6 +265,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.retake_picture:
+                if (mCamera == null) {
+                    return;
+                }
                 if (state == 1) {
                     showSingle1();
                 } else {
@@ -245,6 +276,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 startPreview(mCamera, mHolder);
                 break;
             case R.id.sure:
+                if (mCamera == null) {
+                    return;
+                }
                 if (qipa > 0) {
                     switch (qipa) {
                         case 1:
@@ -273,6 +307,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.innerPhoto_layout:
+                if (mCamera == null) {
+                    return;
+                }
                 if (currentPosition > 0) {
                     qipa = 1;
                     mCamera.stopPreview();
@@ -281,6 +318,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.leftFrontPhoto_layout:
+                if (mCamera == null) {
+                    return;
+                }
                 if (currentPosition > 1) {
                     qipa = 2;
                     mCamera.stopPreview();
@@ -289,6 +329,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 }
                 break;
             case R.id.rightFrontPhoto_layout:
+                if (mCamera == null) {
+                    return;
+                }
                 if (currentPosition == 3) {
                     qipa = 3;
                     mCamera.stopPreview();
@@ -359,6 +402,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
      * 预览相机
      */
     private void startPreview(Camera camera, SurfaceHolder holder) {
+        if (camera == null) {
+            return;
+        }
         try {
             setupCamera(camera);
             camera.setPreviewDisplay(holder);
@@ -511,13 +557,17 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        startPreview(mCamera, holder);
+        if (mCamera != null) {
+            startPreview(mCamera, holder);
+        }
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        mCamera.stopPreview();
-        startPreview(mCamera, holder);
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            startPreview(mCamera, holder);
+        }
     }
 
     @Override
@@ -528,5 +578,23 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (perms.size() == 0) {
+            ToastUtils.showShort(R.string.permission_request_fail1);
+            return;
+        }
+
+        mCamera = getCamera(mCameraId);
+        if (mHolder != null && !imageModel) {
+            startPreview(mCamera, mHolder);
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showShort(R.string.permission_request_fail1);
     }
 }
