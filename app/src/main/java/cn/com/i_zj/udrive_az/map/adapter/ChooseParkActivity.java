@@ -37,6 +37,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
@@ -143,7 +144,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 getParkRemark();
                 break;
             case R.id.amount:
-                WebActivity.startWebActivity(ChooseParkActivity.this, "http://www.zaijianchuxing.com/costdetail", "费用说明");
+                WebActivity.startWebActivity(ChooseParkActivity.this, BuildConfig.SHARE_AMOUNT, "费用说明");
                 break;
         }
     }

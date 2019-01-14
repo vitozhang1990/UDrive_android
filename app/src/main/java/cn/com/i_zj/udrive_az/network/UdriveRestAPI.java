@@ -64,7 +64,6 @@ import retrofit2.http.Url;
 
 public interface UdriveRestAPI {
 
-    //     String  DETAIL_URL="http://zzbcjj.com:8888?orderNum=";
     String DETAIL_URL = BuildConfig.ORDER_DETAIL_URL;
 
     @FormUrlEncoded

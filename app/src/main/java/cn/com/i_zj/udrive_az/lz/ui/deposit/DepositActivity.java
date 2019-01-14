@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
+import com.blankj.utilcode.util.ToastUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -178,15 +179,22 @@ public class DepositActivity extends DBSBaseActivity {
                     @Override
                     public void onNext(RefundDepositResult value) {
                         dissmisProgressDialog();
-                        moneyView.setText("0 元");
-                        Toast.makeText(DepositActivity.this, "退还押金成功", Toast.LENGTH_SHORT).show();
+                        if (value == null) {
+                            ToastUtils.showShort("退还押金失败");
+                            return;
+                        }
+                        if (value.code == 1) {
+                            ToastUtils.showShort("操作成功");
+                            getUserDeposit();
+                        } else {
+                            ToastUtils.showShort("退还押金失败");
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         dissmisProgressDialog();
-                        System.out.println(e.getMessage());
-                        Toast.makeText(DepositActivity.this, "退还押金失败", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("退还押金失败");
                     }
 
                     @Override

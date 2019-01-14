@@ -42,9 +42,10 @@ android {
             zipAlignEnabled true  // Zipalign优化
             shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', 'API_BASE_URL', '"http://prod.zzbcjj.com:8088/"'
-            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://prod.zzbcjj.com:8888?orderNum="'
-            buildConfigField 'String', 'SHARE_URL', '"http://prod.zzbcjj.com?ref?referral="'
+            buildConfigField 'String', 'API_BASE_URL', '"http://prod.zaijianchuxing.com:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://prod.zaijianchuxing.com:8888?orderNum="'
+            buildConfigField 'String', 'SHARE_URL', '"http://prod.zaijianchuxing.com?ref?referral="'
+            buildConfigField 'String', 'SHARE_AMOUNT', '"http://www.zaijianchuxing.com/costdetail"'
         }
         debug {
 
@@ -53,15 +54,10 @@ android {
             shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            buildConfigField 'String', 'API_BASE_URL', '"http://test.zzbcjj.com:8088/"'
-//            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zzbcjj.com:8888?orderNum="'
-//            buildConfigField 'String', 'SHARE_URL', '"http://prod.zzbcjj.com?ref?referral="'
-//            buildConfigField 'String', 'API_BASE_URL', '"http://132.232.128.121:8088/"'
-//            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://zzbcjj.com:8888?orderNum="'
-
-            buildConfigField 'String', 'API_BASE_URL', '"http://test.zzbcjj.com:8088/"'
-            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zzbcjj.com:8888?orderNum="'
-            buildConfigField 'String', 'SHARE_URL', '"http://test.prod.com?ref?referral="'
+            buildConfigField 'String', 'API_BASE_URL', '"http://test.zaijianchuxing.com:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zaijianchuxing.com:8888?orderNum="'
+            buildConfigField 'String', 'SHARE_URL', '"http://test.zaijianchuxing.com?ref?referral="'
+            buildConfigField 'String', 'SHARE_AMOUNT', '"http://www.zaijianchuxing.com/costdetail"'
         }
     }
     signingConfigs {
