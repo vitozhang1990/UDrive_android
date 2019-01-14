@@ -143,7 +143,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 getParkRemark();
                 break;
             case R.id.amount:
-                WebActivity.startWebActivity(ChooseParkActivity.this, "http://zzbcjj.com/costdetail", "费用说明");
+                WebActivity.startWebActivity(ChooseParkActivity.this, "http://www.zaijianchuxing.com/costdetail", "费用说明");
                 break;
         }
     }
