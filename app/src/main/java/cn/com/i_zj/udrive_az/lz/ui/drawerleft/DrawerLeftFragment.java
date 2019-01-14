@@ -200,11 +200,11 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                     @Override
                     public void onStart(SHARE_MEDIA share_media) {
                         if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                            showProgressDialog("准备分享到朋友圈", true);
+                            showProgressDialog(true);
                         } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                            showProgressDialog("准备分享给朋友", true);
+                            showProgressDialog(true);
                         } else if (TextUtils.equals(share_media.getName(), "wxfavorite")) {
-                            showProgressDialog("准备收藏", true);
+                            showProgressDialog(true);
                         }
 
                     }

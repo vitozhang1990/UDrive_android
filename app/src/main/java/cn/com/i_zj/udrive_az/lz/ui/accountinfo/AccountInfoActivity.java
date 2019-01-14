@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.zjcx.face.camera.CameraActivity;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +17,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
@@ -28,7 +25,6 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.FileUtil;
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -109,9 +105,8 @@ public class AccountInfoActivity extends DBSBaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        String  regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
+                        String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
                         registrationDown(regId);
-
 
 
                     }
@@ -169,9 +164,9 @@ public class AccountInfoActivity extends DBSBaseActivity {
         return msg;
     }
 
-    public  void registrationDown(String regid) {
-        Map<String,Object> map= new HashMap<>();
-        map.put("regId",regid);
+    public void registrationDown(String regid) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("regId", regid);
         UdriveRestClient.getClentInstance().registrationDown(map).
                 subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -179,12 +174,12 @@ public class AccountInfoActivity extends DBSBaseActivity {
                     @Override
                     public void onSubscribe(Disposable d) {
                         super.onSubscribe(d);
-                        showProgressDialog("正在退出");
+                        showProgressDialog();
                     }
 
                     @Override
                     public void onSuccess(String response) {
-                        Log.e("=====","==============================");
+                        Log.e("=====", "==============================");
                         SessionManager.getInstance().clearSession();
                         finish();
                     }

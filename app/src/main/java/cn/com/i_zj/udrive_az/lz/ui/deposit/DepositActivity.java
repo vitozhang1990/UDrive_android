@@ -165,7 +165,7 @@ public class DepositActivity extends DBSBaseActivity {
     }
 
     private void getDepositMoney(String orderNumber) {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().refundMoney(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -200,7 +200,7 @@ public class DepositActivity extends DBSBaseActivity {
 
     //获取押金信息
     private void getUserDeposit() {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().userDeposit(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -289,7 +289,7 @@ public class DepositActivity extends DBSBaseActivity {
     }
 
     private void getCreateDepositNumber(final int type) {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().createDeposit(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

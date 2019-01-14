@@ -144,7 +144,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
         Map<String, Object> map = new HashMap<>();
         map.put("orderNum", orderNum);
         map.put("photo", photoBean);
-        showProgressDialog("正在还车");
+        showProgressDialog();
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().finishTripOrder(token, map)
                 .subscribeOn(Schedulers.io())
@@ -230,7 +230,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
     private Map<String, String> picMap = new HashMap<>();
 
     private void uploadImg2QiNiu(final String type, final String path) {
-        showProgressDialog("上传中...", false);
+        showProgressDialog();
         new Thread() {
             public void run() {
                 UploadManager uploadManager = new UploadManager();

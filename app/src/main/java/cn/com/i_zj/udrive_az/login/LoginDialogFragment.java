@@ -1,6 +1,6 @@
 package cn.com.i_zj.udrive_az.login;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -82,7 +83,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
 
     private boolean isPhonePanel = true;
 
-    protected ProgressDialog progressDialog;
+    protected Dialog progressDialog;
     private CountDownTimer countDownTimer;
 
     @Nullable
@@ -197,7 +198,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void login(String phone, String code) {
-        showProgressDialog("登录中");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().login(DeviceUtils.getDeviceId(), phone, code)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -237,7 +238,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void sendVerifyCode(final String phone, final boolean isJump) {
-        showProgressDialog("验证码发送中");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().requestSms(DeviceUtils.getDeviceId(), phone)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -329,14 +330,17 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
         Toast.makeText(getContext(), content, Toast.LENGTH_SHORT).show();
     }
 
-    public void showProgressDialog(String content) {
+    public void showProgressDialog() {
+        if (getActivity() == null) {
+            return;
+        }
         if (null == progressDialog) {
-            progressDialog = new ProgressDialog(getContext());
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage(content);
+            progressDialog = new Dialog(getActivity(), R.style.MyDialog);
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_loading);
+            progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.setCancelable(false);
         }
-        progressDialog.setMessage(content);
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }

@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.alipay.sdk.app.PayTask;
 import com.squareup.picasso.Picasso;
 import com.tencent.mm.opensdk.modelpay.PayReq;
@@ -30,10 +29,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.lz.bean.PaymentEvent;
@@ -195,7 +194,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
             return;
         }
         UnUseCouponResult.DataBean result = couponPayEvent.getResult();
-        payAmount(mOrderItem.data.number+"", result.getId() + "");
+        payAmount(mOrderItem.data.number + "", result.getId() + "");
 
     }
 
@@ -219,7 +218,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
     }
 
     public void findTripOrders() {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -258,7 +257,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
         HashMap<String, Object> map = new HashMap<>();
         map.put("preferentialId", pId);
         map.put("orderId", orderId);
-        showProgressDialog("加载中...",true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().payAmount(SessionManager.getInstance().getAuthorization(), map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -283,7 +282,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
                         tvMoney.append(yuan);
                         float v = (value.data.realPayAmount - value.data.shouldPayAmount) / 100f;
                         if (v == 0) {
-                            carCoupon.setText("优惠券","");
+                            carCoupon.setText("优惠券", "");
                         } else {
                             carCoupon.setText("优惠券", String.format(Locale.getDefault(), "%+.2f元", v));
                         }
@@ -310,14 +309,14 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
     private void handleDetail(OrderDetailResult value) {
         mOrderItem = value;
         tvCarNumber.setText(value.data.plateNumber + "");
-        if(!StringUtils.isEmpty(value.data.url)){
+        if (!StringUtils.isEmpty(value.data.url)) {
             Picasso.with(this).load(value.data.url).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(ivTrajectory);
         }
 
         carDistance.setText("里程(" + value.data.mileage + "公里)", Float.parseFloat(value.data.mileage + "") + "元");
 
         if (value.data.durationTime > 60) {
-            carTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f), Float.parseFloat(value.data.realPayAmount  / 100f+ "") + "元");
+            carTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f), Float.parseFloat(value.data.realPayAmount / 100f + "") + "元");
         } else {
             carTime.setText("时长(" + (value.data.durationTime) + "分钟)", Float.parseFloat(value.data.realPayAmount / 100f + "") + "元");
         }
@@ -328,7 +327,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
         tvMoney.append(yuan);
         float v = (value.data.realPayAmount - value.data.shouldPayAmount) / 100f;
         if (v == 0) {
-            carCoupon.setText("优惠券","");
+            carCoupon.setText("优惠券", "");
         } else {
             carCoupon.setText("优惠券", String.format(Locale.getDefault(), "%+.2f元", v));
         }
@@ -340,7 +339,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
             Toast.makeText(this, "无法获取用户信息,支付失败", Toast.LENGTH_SHORT).show();
             return;
         }
-        showProgressDialog("加载中...");
+        showProgressDialog();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("orderNum", orderNumber);
         UdriveRestClient.getClentInstance().payOrderByBalance(SessionManager.getInstance().getAuthorization(), hashMap)
@@ -374,7 +373,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
     }
 
     private void getAliTripOrder(String orderNumber) {
-        showProgressDialog("加载中...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().getAliPayTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -401,7 +400,7 @@ public class PaymentActivity extends DBSBaseActivity implements View.OnClickList
     }
 
     private void getWechatTripOrder(String orderNumber) {
-        showProgressDialog("加载中...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().getWechatTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

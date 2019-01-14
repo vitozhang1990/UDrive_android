@@ -36,7 +36,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -141,17 +140,18 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
         LinearLayout.LayoutParams layoutParamsTwo = new LinearLayout.LayoutParams(width, height);
         layoutParamsTwo.setMargins(SizeUtils.dp2px(ActIdentificationDrivingLicense.this, 4), 0, 0, 0);
         ivTwo.setLayoutParams(layoutParamsTwo);
-        typeDate=  getResources().getStringArray(R.array.vehicle_type);
+        typeDate = getResources().getStringArray(R.array.vehicle_type);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 ActIdentificationDrivingLicense.this, R.layout.item_simple_spinner,
                 typeDate);
-              // 把定义好的Adapter设定到spinner中
+        // 把定义好的Adapter设定到spinner中
         etType.setAdapter(adapter);
         // 默认显示
         etType.setSelection(5);
         addDriverCardInfo.setDriverType("C1");
     }
-    private  void initEvent(){
+
+    private void initEvent() {
         etNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -167,9 +167,9 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
             public void afterTextChanged(Editable s) {
                 String numtr = etNumber.getText().toString().trim();
                 addDriverCardInfo.setArchiveNo(numtr);
-                if(commitVerify()){
+                if (commitVerify()) {
                     btnCommit.setEnabled(true);
-                }else {
+                } else {
                     btnCommit.setEnabled(false);
                 }
             }
@@ -178,9 +178,9 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 addDriverCardInfo.setDriverType(typeDate[position]);
-                if(commitVerify()){
+                if (commitVerify()) {
                     btnCommit.setEnabled(true);
-                }else {
+                } else {
                     btnCommit.setEnabled(false);
                 }
             }
@@ -196,10 +196,10 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
      * 检测照相机权限
      */
     private void checkPermission() {
-        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
 
         if (!external) {
-            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
         }
     }
 
@@ -273,7 +273,7 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
 
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
-        showProgressDialog("正在上传..");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -386,7 +386,7 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
     }
 
     public void postToAli(String json, final boolean front) {
-        showProgressDialog("正在解析");
+        showProgressDialog();
         OkHttpClient build = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new ActIdentificationDrivingLicense.TrustAllHostnameVerifier())
@@ -448,8 +448,6 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
         }
 
 
-
-
         UdriveRestClient.getClentInstance().addDriver(SessionManager.getInstance().getAuthorization(), addDriverCardInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -461,14 +459,14 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
 
                     @Override
                     public void onNext(DriverResult value) {
-                        if (value != null&&value.getCode()==1) {
+                        if (value != null && value.getCode() == 1) {
                             showToast("驾驶证信息提交成功");
                             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
                             accountInfo.data.driverState = Constants.ID_UNDER_REVIEW;
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
                             setResult(RESULT_OK);
                             finish();
-                        }else {
+                        } else {
                             showToast("驾驶证信息提交失败");
                         }
 
@@ -517,8 +515,8 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
                     addDriverCardInfo.setName(drivingIDEntity.getName());
                     addDriverCardInfo.setDriverLicenceNumber(drivingIDEntity.getNum());
                     addDriverCardInfo.setSex(drivingIDEntity.getSex());
-                    int postion=getVehicleType(drivingIDEntity.getVehicle_type());
-                    if(postion!=-1){
+                    int postion = getVehicleType(drivingIDEntity.getVehicle_type());
+                    if (postion != -1) {
                         etType.setSelection(postion);
                         addDriverCardInfo.setDriverType(drivingIDEntity.getVehicle_type());
                     }
@@ -527,25 +525,27 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
                     addDriverCardInfo.setArchiveNo(drivingIDBackEntity.getArchive_no());
                     etNumber.setText(drivingIDBackEntity.getArchive_no());
                 }
-                if(commitVerify()){
+                if (commitVerify()) {
                     btnCommit.setEnabled(true);
-                }else {
+                } else {
                     btnCommit.setEnabled(false);
                 }
             }
         });
     }
-    private  int getVehicleType(String type){
-        if(StringUtils.isEmpty(type)){
+
+    private int getVehicleType(String type) {
+        if (StringUtils.isEmpty(type)) {
             return -1;
         }
-        if(typeDate!=null&&typeDate.length>0){
-         return    Arrays.binarySearch(typeDate, type);
-        }else {
-            return  -1;
+        if (typeDate != null && typeDate.length > 0) {
+            return Arrays.binarySearch(typeDate, type);
+        } else {
+            return -1;
         }
 
     }
+
     private boolean commitVerify() {
         if (addDriverCardInfo != null) {
             if (StringUtils.isEmpty(addDriverCardInfo.getDriverLicencePhotoMaster())) {

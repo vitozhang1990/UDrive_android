@@ -92,7 +92,7 @@ public class ActOrderPayment extends DBSBaseActivity {
     }
 
     public void findTripOrders() {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -130,7 +130,7 @@ public class ActOrderPayment extends DBSBaseActivity {
     private void showDate(OrderDetailResult value) {
         if (value.data != null) {
 
-            if(!StringUtils.isEmpty(value.data.url)){
+            if (!StringUtils.isEmpty(value.data.url)) {
                 Glide.with(ActOrderPayment.this).load(value.data.url).listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -160,7 +160,7 @@ public class ActOrderPayment extends DBSBaseActivity {
             if (carInfoEntity != null) {
                 tvCarType.setText(carInfoEntity.getBrand());
                 tvCarColor.setText(carInfoEntity.getCarColor());
-                Glide.with(ActOrderPayment.this).load( CarTypeImageUtils.getCarImageByBrand(carInfoEntity.getBrand(),carInfoEntity.getCarColor())).into(ivCar);
+                Glide.with(ActOrderPayment.this).load(CarTypeImageUtils.getCarImageByBrand(carInfoEntity.getBrand(), carInfoEntity.getCarColor())).into(ivCar);
             }
 
         }

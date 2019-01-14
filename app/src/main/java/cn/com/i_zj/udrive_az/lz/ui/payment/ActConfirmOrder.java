@@ -16,17 +16,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alipay.sdk.app.PayTask;
 import com.blankj.utilcode.util.ToastUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +38,6 @@ import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
-import cn.com.i_zj.udrive_az.lz.bean.PaymentEvent;
-import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -57,12 +52,8 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
-import cn.com.i_zj.udrive_az.utils.ToastUtil;
-import cn.com.i_zj.udrive_az.utils.ToolsUtils;
-import cn.com.i_zj.udrive_az.utils.UIUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -207,7 +198,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     }
 
     public void findTripOrders() {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -262,9 +253,9 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
             if (value.data.preferentialAmount > 0) {
                 tvCoupon.setText("");
-                SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan( "-"+value.data.preferentialAmount / 100f + "元", Color.RED, SizeUtils.sp2px(ActConfirmOrder.this, 14));
+                SpannableString spannableString1 = SpannableStringUtil.setColorAndSizeSpan("-" + value.data.preferentialAmount / 100f + "元", Color.RED, SizeUtils.sp2px(ActConfirmOrder.this, 14));
                 tvCoupon.append(spannableString1);
-            }else {
+            } else {
                 tvCoupon.setText("不使用优惠券");
             }
             tvMoneyCount.setText("合计" + (orderItem.shouldPayAmount - value.data.preferentialAmount) / 100f + "元");
@@ -311,7 +302,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
             Toast.makeText(this, "无法获取用户信息,支付失败", Toast.LENGTH_SHORT).show();
             return;
         }
-        showProgressDialog("加载中...");
+        showProgressDialog();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("orderNum", orderNumber);
         UdriveRestClient.getClentInstance().payOrderByBalance(SessionManager.getInstance().getAuthorization(), hashMap)
@@ -360,7 +351,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
         HashMap<String, Object> map = new HashMap<>();
         map.put("preferentialId", pId);
         map.put("orderId", orderId);
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().payAmount(SessionManager.getInstance().getAuthorization(), map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -404,7 +395,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     }
 
     private void getAliTripOrder(String orderNumber) {
-        showProgressDialog("加载中...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().getAliPayTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -431,7 +422,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     }
 
     private void getWechatTripOrder(String orderNumber) {
-        showProgressDialog("加载中...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().getWechatTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

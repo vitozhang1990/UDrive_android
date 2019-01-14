@@ -1,6 +1,6 @@
 package cn.com.i_zj.udrive_az;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,7 +17,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
-import cn.com.i_zj.udrive_az.BaseActivity;
 import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
 /**
@@ -25,7 +25,7 @@ import cn.com.i_zj.udrive_az.event.EmptyEvent;
 
 public abstract class DBSBaseActivity extends BaseActivity {
 
-    protected ProgressDialog progressDialog;
+    protected Dialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,28 +62,18 @@ public abstract class DBSBaseActivity extends BaseActivity {
 
     protected abstract int getLayoutResource();
 
-    public void showProgressDialog(String content) {
-        if (null == progressDialog) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.setCanceledOnTouchOutside(true);
-        }
-        progressDialog.setMessage(content);
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
+    public void showProgressDialog() {
+        showProgressDialog(false);
     }
 
-    public void showProgressDialog(String content, boolean touchCancel) {
+    public void showProgressDialog(boolean touchCancel) {
         if (null == progressDialog) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(true);
-
+            progressDialog = new Dialog(this, R.style.MyDialog);
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_loading);
+            progressDialog.setCanceledOnTouchOutside(false);
         }
-        progressDialog.setCanceledOnTouchOutside(touchCancel);
-        progressDialog.setMessage(content);
+        progressDialog.setCancelable(touchCancel);
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }

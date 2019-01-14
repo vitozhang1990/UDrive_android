@@ -54,13 +54,11 @@ import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
-import cn.com.i_zj.udrive_az.model.DriverResult;
 import cn.com.i_zj.udrive_az.model.IDResult;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.image.ImageUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -318,7 +316,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
                     isLive = true;
                     startTimer();
                 }
-                if (timeindex >=1) {
+                if (timeindex >= 1) {
                     File file = saveImage(data, width, height);
                     if (file != null) {
                         timeindex = 0;
@@ -345,7 +343,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
 
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
-        showProgressDialog("正在上传...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -451,9 +449,9 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
                             setResult(RESULT_OK);
                             finish();
                         } else {
-                            if(value!=null){
-                                showToast("信息提交失败Code:"+value.getCode());
-                            }else {
+                            if (value != null) {
+                                showToast("信息提交失败Code:" + value.getCode());
+                            } else {
                                 showToast("信息提交失败");
                             }
 
@@ -490,14 +488,14 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
 
     @Override
     protected void onDestroy() {
-        if(vCamera!=null){
+        if (vCamera != null) {
             vCamera.cwStopCamera();
         }
-        if(ftEngine!=null){
+        if (ftEngine != null) {
             ftEngine.AFT_FSDK_UninitialFaceEngine();
         }
 
-        if(arcFaceEngine!=null){
+        if (arcFaceEngine != null) {
             arcFaceEngine.unInitEngine();
         }
         cancelTimer();

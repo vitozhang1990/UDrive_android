@@ -94,19 +94,19 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * 预约中&行程中
- *
+ * <p>
  * 通过type来区分不同的进入本页面方式
  * 预约中显示停车场范围及预约车辆
- *
+ * <p>
  * Marker类：
  * 停车场Marker不用变化，仅可能更加状态转为【终】
  * 预约中->行程中，停车场范围需要remove
- *
+ * <p>
  * 导航：
  * 1。预定中，需要Walk导航到起始点
  * 2。行程中，需要Drive导航到终点
- *
- *
+ * <p>
+ * <p>
  * ⚠️
  * 创建订单的时候使用起始停车场作为目的地停车场
  */
@@ -449,7 +449,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         map.put("reservationId", reservationID.trim());
 
         String token = SessionManager.getInstance().getAuthorization();
-        showProgressDialog("正在取消");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().cancelReservation(token, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -576,7 +576,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         map.put("destinationParkId", String.valueOf(fromPark.getId()));//TODO 结束位置暂时设置为起始停车场
         map.put("deductibleStatus", status);
         String token = SessionManager.getInstance().getAuthorization();
-        showProgressDialog("开始用车");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().createOder(token, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -646,7 +646,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         LogUtils.e(oderId + "--" + carId);
 
         if (status.equals("0")) {
-            showProgressDialog("正在开锁");
+            showProgressDialog();
             UdriveRestClient.getClentInstance().openCar(token, map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -682,7 +682,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         }
                     });
         } else if (status.equals("1")) {
-            showProgressDialog("正在锁车");
+            showProgressDialog();
             UdriveRestClient.getClentInstance().lockCar(token, map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -718,7 +718,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         }
                     });
         } else {
-            showProgressDialog("正在寻车");
+            showProgressDialog();
             UdriveRestClient.getClentInstance().searchCarBySound(token, map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -758,7 +758,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
     }
 
     private void finishOder() {
-        showProgressDialog("正在还车");
+        showProgressDialog();
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().completeTripOrder(token, orderNum)
                 .subscribeOn(Schedulers.io())
@@ -926,7 +926,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
         Map<String, Object> map = new HashMap<>();
         map.put("orderNum", orderNum);
         map.put("destinationParkId", dataBean.getId() + "");
-        showProgressDialog("正在更换还车点");
+        showProgressDialog();
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().updateDestinationPark(token, map)
                 .subscribeOn(Schedulers.io())

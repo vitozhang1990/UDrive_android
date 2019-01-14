@@ -244,7 +244,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
             return false;
         }
         //
-        String endTiem =addIdCardInfo.getExpireTime();
+        String endTiem = addIdCardInfo.getExpireTime();
         if (StringUtils.isEmpty(endTiem)) {
             showToast("请输入证件有效期结束时间");
             return false;
@@ -253,24 +253,24 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
     }
 
     private void showTimeDailog(final boolean isStratTime) {
-        TimePickerView mTpBirthday  = new TimePickerView(ActIdentificationIDCard.this, TimePickerView.Type.YEAR_MONTH_DAY);
+        TimePickerView mTpBirthday = new TimePickerView(ActIdentificationIDCard.this, TimePickerView.Type.YEAR_MONTH_DAY);
         mTpBirthday.setCyclic(false);
         mTpBirthday.setTime(new Date());
         mTpBirthday.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date) {
-                String mShowTime= ToolsUtils.getTime(date, "yyyy.MM.dd");
-                String mTime= ToolsUtils.getTime(date, "yyyyMMdd");
-                if(isStratTime){
+                String mShowTime = ToolsUtils.getTime(date, "yyyy.MM.dd");
+                String mTime = ToolsUtils.getTime(date, "yyyyMMdd");
+                if (isStratTime) {
                     addIdCardInfo.setValidaTime(mTime);
                     tvStartTime.setText(mShowTime);
-                }else {
+                } else {
                     addIdCardInfo.setExpireTime(mTime);
                     tvEndTime.setText(mShowTime);
                 }
-                if(commitDateVerify()){
+                if (commitDateVerify()) {
                     btnCommit.setEnabled(true);
-                }else {
+                } else {
                     btnCommit.setEnabled(false);
                 }
             }
@@ -287,10 +287,10 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
      * 检测照相机权限
      */
     private void checkPermission() {
-        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA);
+        boolean external = EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
 
         if (!external) {
-            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,Manifest.permission.CAMERA);
+            EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
         }
     }
 
@@ -352,7 +352,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
 
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
-        showProgressDialog("正在上传...");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -466,7 +466,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
     }
 
     public void postToAli(String json, final boolean front) {
-        showProgressDialog("正在解析");
+        showProgressDialog();
         OkHttpClient build = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
@@ -629,6 +629,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
         }
         return ssfFactory;
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
     public void onDataSynEvent(CloseActivityEvent event) {
         finish();

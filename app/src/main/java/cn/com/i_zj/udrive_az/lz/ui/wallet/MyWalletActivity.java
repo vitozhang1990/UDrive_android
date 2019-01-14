@@ -30,8 +30,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
@@ -191,7 +191,7 @@ public class MyWalletActivity extends DBSBaseActivity {
             }
             payMoney = Integer.parseInt(s);
         }
-        showProgressDialog("正在准备付款", true);
+        showProgressDialog(true);
         createOrder(payMoney * 100, pay_alipay.isCheck() ? ALI : WECHAT);
     }
 
@@ -220,7 +220,7 @@ public class MyWalletActivity extends DBSBaseActivity {
 
     //获取押金信息
     private void getMyWallet() {
-        showProgressDialog("加载中...", true);
+        showProgressDialog(true);
         UdriveRestClient.getClentInstance().myWallet(SessionManager.getInstance().getAuthorization())
                 .subscribeOn(Schedulers.io())
                 .delay(1, TimeUnit.SECONDS)

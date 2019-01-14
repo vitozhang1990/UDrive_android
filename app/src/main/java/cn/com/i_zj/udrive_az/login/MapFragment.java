@@ -564,7 +564,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         map.put("carId", carid);
         map.put("startParkId", parkid);
         String token = SessionManager.getInstance().getAuthorization();
-        showProgressDialog("正在预约");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().reservation(token, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -641,7 +641,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void parkDetail(int parkId) {
-        showProgressDialog("正在查询");
+        showProgressDialog();
         UdriveRestClient.getClentInstance().getParkDetail(parkId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

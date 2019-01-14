@@ -231,7 +231,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
         } else {
             map.put("protocol", "2");
         }
-        showProgressDialog("正在提交");
+        showProgressDialog();
         String token = SessionManager.getInstance().getAuthorization();
         UdriveRestClient.getClentInstance().createTripOrder(token, map)
                 .subscribeOn(Schedulers.io())
@@ -353,7 +353,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
     private void uploadImg2QiNiu(final CarPartPicture carPart) {
         btnSubmit.setEnabled(true);
         checkbox.setEnabled(false);
-        showProgressDialog("上传中...", false);
+        showProgressDialog();
         UploadManager uploadManager = new UploadManager();
         // 设置图片名字
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
