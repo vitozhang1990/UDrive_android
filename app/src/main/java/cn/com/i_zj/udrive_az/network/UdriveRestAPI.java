@@ -138,7 +138,7 @@ public interface UdriveRestAPI {
 
     //获取订单轨迹
     @GET("/mobile/tripOrder/originContrail/{orderId}")
-    Observable<BaseRetObj<OriginContrail>> originContrail(@Header("Authorization") String Authorization, @Path("orderId") String orderId);
+    Observable<BaseRetObj<List<OriginContrail>>> originContrail(@Header("Authorization") String Authorization, @Path("orderId") int orderId);
 
     //获取优惠券
     @Headers("Content-Type: application/json")

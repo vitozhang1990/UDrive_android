@@ -1,20 +1,33 @@
 package cn.com.i_zj.udrive_az.lz.ui.payment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.trace.LBSTraceClient;
+import com.amap.api.trace.TraceListener;
+import com.amap.api.trace.TraceLocation;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -22,17 +35,22 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
-import cn.com.i_zj.udrive_az.utils.StringUtils;
-import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -43,6 +61,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ActOrderPayment extends DBSBaseActivity {
     public static final String TITLE = "title";
     public static final String ORDER_NUMBER = "order_number";
+    private final String TAG = getClass().getSimpleName();
     @BindView(R.id.iv_car)
     ImageView ivCar;
     @BindView(R.id.tv_car_number)
@@ -63,8 +82,14 @@ public class ActOrderPayment extends DBSBaseActivity {
     TextView tvDetail;
     @BindView(R.id.iv_imag)
     ImageView mIvImage;
+    @BindView(R.id.mv_map)
+    MapView mMapView;
+
+    private AMap mAmap;
+    private Context mContext;
     private String title;
     private String orderNumber;
+    private ArrayList<Polyline> mDrawnLines = new ArrayList<>(); //所有的line集合
 
     @Override
     protected int getLayoutResource() {
@@ -74,9 +99,11 @@ public class ActOrderPayment extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
         initView();
+        initViewstMap(savedInstanceState);
         findTripOrders();
     }
 
@@ -91,63 +118,140 @@ public class ActOrderPayment extends DBSBaseActivity {
         });
     }
 
+    private void initViewstMap(Bundle savedInstanceState) {
+        mMapView.onCreate(savedInstanceState);// 此方法必须重写
+        mAmap = mMapView.getMap();
+        UiSettings uiSettings = mAmap.getUiSettings();
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setTiltGesturesEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
+        MapUtils.setMapCustomStyleFile(this, mAmap);
+    }
+
     public void findTripOrders() {
         showProgressDialog(true);
         UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<OrderDetailResult>() {
+                .filter(new Predicate<OrderDetailResult>() {
+                    @Override
+                    public boolean test(OrderDetailResult result) {
+                        if (result == null || result.data == null) {
+                            ToastUtils.showShort("数据请求失败");
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .flatMap(new Function<OrderDetailResult, ObservableSource<BaseRetObj<List<OriginContrail>>>>() {
+                    @Override
+                    public ObservableSource<BaseRetObj<List<OriginContrail>>> apply(OrderDetailResult orderDetailResult) throws Exception {
+                        showDate(orderDetailResult);
+                        String token = SessionManager.getInstance().getAuthorization();
+
+                        return UdriveRestClient.getClentInstance()
+                                .originContrail(token, orderDetailResult.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
+                    }
+                })
+                .filter(new Predicate<BaseRetObj<List<OriginContrail>>>() {
+                    @Override
+                    public boolean test(BaseRetObj<List<OriginContrail>> result) {
+                        if (result == null || result.getDate() == null
+                                || result.getDate().size() == 0) {
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .map(new Function<BaseRetObj<List<OriginContrail>>, List<TraceLocation>>() {
+                    @Override
+                    public List<TraceLocation> apply(BaseRetObj<List<OriginContrail>> listBaseRetObj) throws Exception {
+                        List<TraceLocation> locations = new ArrayList<>();
+                        for (OriginContrail originContrail : listBaseRetObj.getDate()) {
+                            TraceLocation location = new TraceLocation();
+                            location.setLatitude(originContrail.getLatitude());
+                            location.setLongitude(originContrail.getLongitude());
+                            location.setSpeed(originContrail.getSpeed());
+                            location.setBearing(originContrail.getDirection());
+                            location.setTime(originContrail.getTime());
+                            locations.add(location);
+                        }
+                        return locations;
+                    }
+                })
+                .compose(this.<List<TraceLocation>>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Observer<List<TraceLocation>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(OrderDetailResult value) {
-                        dissmisProgressDialog();
-                        if (value == null || value.data == null) {
-                            Toast.makeText(ActOrderPayment.this, "数据请求失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        showDate(value);
+                    public void onNext(List<TraceLocation> traceLocations) {
+                        LBSTraceClient.getInstance(mContext).queryProcessedTrace(1, traceLocations, 0, new TraceListener() {
+                            @Override
+                            public void onRequestFailed(int i, String s) {
+                                Log.d(TAG, "onRequestFailed");
+                            }
+
+                            @Override
+                            public void onTraceProcessing(int i, int i1, List<LatLng> list) {
+                                Log.d(TAG, "onTraceProcessing");
+                            }
+
+                            @Override
+                            public void onFinished(int i, List<LatLng> list, int i1, int i2) {
+                                Log.d(TAG, "onFinished");
+                                if (list == null) {
+                                    return;
+                                }
+                                drawTrace(list);
+                                mMapView.setVisibility(View.VISIBLE);
+                            }
+                        });
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (null != e) {
-                            ToastUtils.showShort(e.getMessage());
-                        }
                         dissmisProgressDialog();
                     }
 
                     @Override
                     public void onComplete() {
-
+                        dissmisProgressDialog();
                     }
                 });
     }
 
+    private void drawTrace(List<LatLng> latLngs) {
+        PolylineOptions ooPolyline = new PolylineOptions().width(13)
+                .color(0xFF707070).addAll(latLngs);
+        Polyline mColorfulPolyline = mAmap.addPolyline(ooPolyline);
+        if (mColorfulPolyline != null) {
+            mDrawnLines.add(mColorfulPolyline);
+        }
+        drawMarker(latLngs.get(0), latLngs.get(latLngs.size() - 1));
+        //调整视角
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngs) {
+            boundsBuilder.include(latLng);
+        }
+        mAmap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 250));
+    }
+
+    private void drawMarker(LatLng start, LatLng end) {
+        MarkerOptions startMarkerOptions = new MarkerOptions().position(start);
+        startMarkerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(mContext, R.mipmap.ic_cheweishu_monthly, "起", "0")));
+        MarkerOptions endMarkerOptions = new MarkerOptions().position(end);
+        endMarkerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(mContext, R.mipmap.ic_cheweishu_monthly, "终", "0")));
+        mAmap.addMarker(startMarkerOptions);
+        mAmap.addMarker(endMarkerOptions);
+    }
+
     private void showDate(OrderDetailResult value) {
         if (value.data != null) {
-
-            if (!StringUtils.isEmpty(value.data.url)) {
-                Glide.with(ActOrderPayment.this).load(value.data.url).listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ToolsUtils.getWindowWidth(ActOrderPayment.this),
-                                ToolsUtils.getWindowWidth(ActOrderPayment.this));
-                        mIvImage.setLayoutParams(layoutParams);
-                        return false;
-                    }
-                }).error(R.mipmap.pic_dingdan_complete).into(mIvImage);
-            }
-
-
             tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             if (value.data.durationTime > 60) {
                 tvDurationTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f));
