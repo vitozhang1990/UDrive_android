@@ -36,7 +36,8 @@ import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
-import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.map.TravelingActivity;
+import cn.com.i_zj.udrive_az.map.WaitingActivity;
 import cn.com.i_zj.udrive_az.model.ActivityInfo;
 import cn.com.i_zj.udrive_az.model.AppversionEntity;
 import cn.com.i_zj.udrive_az.model.GetReservation;
@@ -170,7 +171,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                             homeAdvDialog.dismiss();
                                             homeAdvDialog = null;
                                         }
-                                        Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
+                                        Intent intent = new Intent(MainActivity.this, WaitingActivity.class);
                                         intent.putExtra("type", "2");
                                         intent.putExtra("bunld", result);
                                         intent.putExtra("id", result.getData().getReservationId() + "");
@@ -213,8 +214,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                             homeAdvDialog.dismiss();
                                             homeAdvDialog = null;
                                         }
-                                        Intent intent = new Intent(MainActivity.this, ReserveActivity.class);
-                                        intent.putExtra("type", "3");
+                                        Intent intent = new Intent(MainActivity.this, TravelingActivity.class);
                                         intent.putExtra("bunld", result);
                                         startActivity(intent);
                                     } else if (result.getData().getStatus() == 1) {

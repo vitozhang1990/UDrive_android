@@ -253,6 +253,10 @@ public interface UdriveRestAPI {
     @POST("/mobile/tripOrder/searchCarBySound")
     Observable<DoorBean> searchCarBySound(@Header("Authorization") String Authorization, @Body Map<String, String> body);
 
+    @Headers("Content-Type: application/json")
+    @POST("/mobile/tripOrder/searchCarByReservation")
+    Observable<DoorBean> searchCarByReservation(@Header("Authorization") String Authorization);
+
     //结束行程
     @PUT("/mobile/tripOrder/completeTripOrder/{orderNum}")
     Observable<OrderDetailResult> completeTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);

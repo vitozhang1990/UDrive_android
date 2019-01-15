@@ -75,7 +75,7 @@ import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDr
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
-import cn.com.i_zj.udrive_az.map.ReserveActivity;
+import cn.com.i_zj.udrive_az.map.WaitingActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -627,7 +627,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                     if (result.getData().getOrderType() != 0) {
                                         showUnfinshOrder();
                                     } else {
-                                        Intent intent = new Intent(getActivity(), ReserveActivity.class);
+                                        Intent intent = new Intent(getActivity(), WaitingActivity.class);
                                         intent.putExtra("type", "1");
                                         intent.putExtra("bunld", bunldBean);
                                         intent.putExtra("bunldPark", buldParkBean);

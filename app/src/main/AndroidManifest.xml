@@ -161,6 +161,12 @@
             android:name=".map.ReserveActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".map.WaitingActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".map.TravelingActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".map.adapter.PictureBeforeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

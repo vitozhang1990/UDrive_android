@@ -33,15 +33,20 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.PhotoBean;
+import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class PictureBeforeActivity extends DBSBaseActivity implements CompoundButton.OnCheckedChangeListener {
@@ -236,26 +241,51 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
         UdriveRestClient.getClentInstance().createTripOrder(token, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CreateOderBean>() {
+                .filter(new Predicate<CreateOderBean>() {
+                    @Override
+                    public boolean test(CreateOderBean result) {
+                        if (result == null) {
+                            ToastUtils.showShort("数据请求失败");
+                            return false;
+                        }
+                        if (result.getCode() != 1) {
+                            if (!TextUtils.isEmpty(result.getMessage())) {
+                                ToastUtils.showShort(result.getMessage());
+                            }
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .flatMap(new Function<CreateOderBean, ObservableSource<UnFinishOrderResult>>() {
+                    @Override
+                    public ObservableSource<UnFinishOrderResult> apply(CreateOderBean createOderBean) throws Exception {
+                        return UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
+                    }
+                })
+                .subscribe(new Observer<UnFinishOrderResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(CreateOderBean createOderBean) {
-                        dissmisProgressDialog();
-                        if (createOderBean == null) {
+                    public void onNext(UnFinishOrderResult result) {
+                        if (result == null) {
+                            ToastUtils.showShort("数据请求失败");
                             return;
                         }
-                        if (createOderBean.getCode() == 1) {
-                            Intent intent = getIntent();
-                            intent.putExtra("createOderBean", createOderBean);
-                            setResult(RESULT_OK, intent);
-                            finish();
+                        if (result.getCode() == 1) {
+                            if (result.getData() != null && result.getData().getId() > 0) {
+                                Intent intent = new Intent(PictureBeforeActivity.this, TravelingActivity.class);
+                                intent.putExtra("bunld", result);
+                                startActivity(intent);
+                            }
                         } else {
-                            if (!TextUtils.isEmpty(createOderBean.getMessage())) {
-                                ToastUtils.showShort(createOderBean.getMessage());
+                            if (!TextUtils.isEmpty(result.getMessage())) {
+                                ToastUtils.showShort(result.getMessage());
                             }
                         }
                     }
