@@ -187,6 +187,9 @@
         <activity
             android:name=".lz.ui.usecar.ActOverparking"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".login.ParkExplainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
 
         <provider

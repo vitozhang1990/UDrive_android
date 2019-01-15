@@ -277,7 +277,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     @OnClick({R.id.iv_refresh, R.id.iv_mylocation, R.id.tv_park_detail, R.id.rl1,
-            R.id.btn_yuding, R.id.btn_yongche})
+            R.id.btn_yuding, R.id.btn_yongche, R.id.park_explain})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_refresh:
@@ -354,6 +354,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 } else {
                     ToastUtils.showShort("3公里内无可用车辆");
                 }
+                break;
+            case R.id.park_explain:
+                startActivity(ParkExplainActivity.class);
                 break;
         }
     }
