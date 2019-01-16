@@ -504,7 +504,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                         markerMap.get(parkKey).remove();//清除
                                         markerMap.remove(parkKey);
 
-                                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
+                                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
                                         int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
                                                 TravelingActivity.this, bitmapId, "P", String.valueOf(toPark.getValidCarCount()))));
@@ -519,7 +519,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                             markerMap.get(parkKey).remove();//清除
                                             markerMap.remove(parkKey);
 
-                                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
+                                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
                                             int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
                                                     TravelingActivity.this, bitmapId, "起", String.valueOf(toPark.getValidCarCount()))));
@@ -530,22 +530,25 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                     }
                                 }
                             }
-                            toPark = retParkObj.getDate();
-                            if (toPark.getLongitude() == 0) {
-                                toPark.setLongitude(toPark.getLongtitude());
-                            }
+                            toPark = new ToParkBean();
+                            toPark.setLatitude(retParkObj.getDate().getLatitude());
+                            toPark.setLongtitude(retParkObj.getDate().getLongitude() == 0
+                                    ? retParkObj.getDate().getLongtitude()
+                                    : retParkObj.getDate().getLongitude());
+                            toPark.setParkID(retParkObj.getDate().getId());
+                            toPark.setName(retParkObj.getDate().getName());
                             //2.更新界面地址
                             tv_address.setText(toPark.getName());
                             //3.更新图标
-                            ParkKey parkKey1 = new ParkKey(toPark.getId(), toPark.getLongitude(), toPark.getLatitude());
+                            ParkKey parkKey1 = new ParkKey(toPark.getParkID(), toPark.getLongtitude(), toPark.getLatitude());
                             if (markerMap.containsKey(parkKey1)) {
                                 markerMap.get(parkKey1).remove();//清除
                                 markerMap.remove(parkKey1);
 
                                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
-                                int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                                int bitmapId = R.mipmap.ic_cheweishu_monthly;
                                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
-                                        TravelingActivity.this, bitmapId, "终", String.valueOf(toPark.getValidCarCount()))));
+                                        TravelingActivity.this, bitmapId, "终", "0")));
                                 Marker marker = mAmap.addMarker(markerOptions);
                                 marker.setObject(toPark);
                                 markerMap.put(parkKey1, marker);
