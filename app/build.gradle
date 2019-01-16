@@ -186,6 +186,7 @@ dependencies {
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
     implementation project(':pickerview')
+    implementation project(':library')
     implementation files('libs/jpush-android-3.1.7.jar')
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
