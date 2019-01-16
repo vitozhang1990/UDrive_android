@@ -2,43 +2,79 @@ package cn.com.i_zj.udrive_az.web;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebSettings;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.blankj.utilcode.util.ToastUtils;
+import com.github.lzyzsd.jsbridge.BridgeHandler;
+import com.github.lzyzsd.jsbridge.BridgeWebView;
+import com.github.lzyzsd.jsbridge.CallBackFunction;
+import com.github.lzyzsd.jsbridge.DefaultHandler;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
+import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
+import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
+import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.model.ShareBean;
+import cn.com.i_zj.udrive_az.model.Token;
+import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author JayQiu
  * @create 2018/10/26
  * @Describe
  */
-public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebStatusListener {
+public class WebActivity extends DBSBaseActivity {
     @BindView(R.id.commonWebview)
-    WebView webView;
+    BridgeWebView webView;
     @BindView(R.id.progress_bar)
     SeekBar progressBar;
     @BindView(R.id.tv_title)
     TextView tv_title;
+
+    private Context mContext;
     private Disposable disposable;
-    private UWebChromeClient uWebChromeClient;
-    private UWebViewClient uWebViewClient;
     private String url;
     private String title;
     private int index = 10;
@@ -59,6 +95,8 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
+        mContext = this;
+
         title = getIntent().getStringExtra("title");
         tv_title.setText(title);
         url = getIntent().getStringExtra("url");
@@ -77,45 +115,209 @@ public class WebActivity extends DBSBaseActivity implements UWebViewClient.WebSt
 
     private void initView() {
         progressBar.setProgress(0);
-        uWebChromeClient = new UWebChromeClient();
-        uWebViewClient = new UWebViewClient();
-        webView.loadUrl(url);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setAppCacheEnabled(true);
-        //设置 缓存模式
-        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        webView.setDefaultHandler(new DefaultHandler());
+        webView.setWebChromeClient(new WebChromeClient() {
 
-        //开启 database storage API 功能
-        webView.getSettings().setDatabaseEnabled(true);
-        // 开启 DOM storage API 功能
-        webView.getSettings().setDomStorageEnabled(true);
-        //开启 Application Caches 功能
-        webView.getSettings().setAppCacheEnabled(true);
-        webView.setWebViewClient(uWebViewClient);
-        webView.setWebChromeClient(uWebChromeClient);
-        uWebViewClient.setWebStatusListener(this);
-
-        uWebChromeClient.setOnProgressChanged(new UWebChromeClient.onProgressChanged() {
             @Override
-            public void onProgressChanged(int progress) {
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                nextPor(newProgress);
+            }
 
-                nextPor(progress);
+            @SuppressWarnings("unused")
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType, String capture) {
+                this.openFileChooser(uploadMsg);
+            }
 
+            @SuppressWarnings("unused")
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType) {
+                this.openFileChooser(uploadMsg);
+            }
+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+            }
+
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                return true;
+            }
+        });
+
+        webView.loadUrl(url);
+        registerHandler();
+        sendToken();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LoginSuccessEvent event) {
+        sendToken();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
+        if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
+            webView.callHandler("App_PayResult", "发送数据给js指定接收", new CallBackFunction() {
+                @Override
+                public void onCallBack(String data) { //处理js回传的数据
+                    if (BuildConfig.DEBUG) {
+                        Toast.makeText(WebActivity.this, data, Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+    }
+
+    private void registerHandler() {
+        //默认接收
+        webView.setDefaultHandler(new DefaultHandler());
+
+        webView.registerHandler("JS_UserLogin", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                if (BuildConfig.DEBUG) {
+                    String msg = "JS_UserLogin指定接收到js的数据：" + data;
+                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+
+                LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
+                loginDialogFragment.show(getSupportFragmentManager(), "login");
+            }
+        });
+
+        webView.registerHandler("JS_UsingCar", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                if (BuildConfig.DEBUG) {
+                    String msg = "JS_UsingCar指定接收到js的数据：" + data;
+                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+
+                startActivity(MainActivity.class);
+                finish();
+            }
+        });
+
+        webView.registerHandler("JS_Pay", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                if (BuildConfig.DEBUG) {
+                    String msg = "JS_Pay指定接收到js的数据：" + data;
+                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+
+                UdriveRestClient.getClentInstance().getWechatTripOrder(SessionManager.getInstance().getAuthorization(), data)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<WeichatPayOrder>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onNext(WeichatPayOrder value) {
+                                dissmisProgressDialog();
+                                if (value != null && value.code == 1 || value.code == 1012) {
+                                    IWXAPI iwxapi = WXAPIFactory.createWXAPI(mContext, Constants.WEIXIN_APP_ID, false);
+                                    iwxapi.registerApp(Constants.WEIXIN_APP_ID);
+                                    PayReq payReq = new PayReq();
+                                    payReq.appId = value.data.appid;
+                                    payReq.partnerId = value.data.partnerid;
+                                    payReq.prepayId = value.data.prepayid;
+                                    payReq.packageValue = value.data.packageValue;
+                                    payReq.nonceStr = value.data.noncestr;
+                                    payReq.timeStamp = value.data.timestamp;
+                                    payReq.sign = value.data.sign;
+                                    boolean result = iwxapi.sendReq(payReq);
+                                } else {
+                                    ToastUtils.showShort("微信支付失败了");
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                dissmisProgressDialog();
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                dissmisProgressDialog();
+                            }
+                        });
+            }
+        });
+
+        webView.registerHandler("JS_WXShare", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                if (BuildConfig.DEBUG) {
+                    String msg = "JS_WXShare指定接收到js的数据：" + data;
+                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+
+                Gson gson = new GsonBuilder().create();
+                ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
+
+                UMWeb web = new UMWeb(shareInfo.getShareUrl());
+                web.setTitle(shareInfo.getShareTitle());
+                web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+                web.setDescription(shareInfo.getShareDescr());
+
+                ShareAction shareAction = new ShareAction(WebActivity.this);
+                shareAction.withMedia(web);
+                shareAction.setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE);
+                shareAction.setCallback(new UMShareListener() {
+                    @Override
+                    public void onStart(SHARE_MEDIA share_media) {
+                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
+                            showProgressDialog(true);
+                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
+                            showProgressDialog(true);
+                        }
+                    }
+
+                    @Override
+                    public void onResult(SHARE_MEDIA share_media) {
+                        ToastUtils.showShort("成功");
+                        dissmisProgressDialog();
+                    }
+
+                    @Override
+                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+                        ToastUtils.showShort("分享失败");
+                        dissmisProgressDialog();
+                    }
+
+                    @Override
+                    public void onCancel(SHARE_MEDIA share_media) {
+                        ToastUtils.showShort("分项取消");
+                        dissmisProgressDialog();
+                    }
+                });
+                shareAction.open();
             }
         });
     }
 
-    @Override
-    public void start() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void loadFinish(String titleStr) {
-        nextPor(100);
-        if (StringUtils.isEmpty(title)) {
-            tv_title.setText(titleStr);
+    private void sendToken() {
+        Token token = null;
+        if (!TextUtils.isEmpty(SessionManager.getInstance().getAuthorization())) {
+            token = new Token();
+            token.setAccessToken(SessionManager.getInstance().getAccess());
+            token.setRefreshToken(SessionManager.getInstance().getRefresh());
         }
+        StringBuilder gsonString = new StringBuilder();
+        if (token != null) {
+            gsonString.append(new Gson().toJson(token));
+        }
+        webView.callHandler("App_TokenParameters", gsonString.toString(), new CallBackFunction() {
+            @Override
+            public void onCallBack(String data) { //处理js回传的数据
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(WebActivity.this, "App_TokenParameters ==" + data, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void nextPor(final int progress) {

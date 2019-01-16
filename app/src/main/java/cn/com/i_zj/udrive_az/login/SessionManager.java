@@ -116,6 +116,20 @@ public class SessionManager {
     }
   }
 
+  public String getRefresh() {
+    if (null != sessionResult) {
+      return sessionResult.getRefresh();
+    }
+    return null;
+  }
+
+  public String getAccess() {
+    if (null != sessionResult) {
+      return sessionResult.getAccess();
+    }
+    return null;
+  }
+
   public String getAuthorization() {
     if (null != sessionResult) {
       return sessionResult.getAuthorization();

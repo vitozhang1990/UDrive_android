@@ -60,6 +60,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="android"
+                    android:scheme="udrive" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
@@ -255,11 +266,11 @@
 
         <activity
             android:name=".utils.dialog.OffPowerDialogActivity"
-            android:theme="@style/Theme.SoundRecorder"/>
+            android:theme="@style/Theme.SoundRecorder" />
 
         <activity
             android:name=".utils.dialog.RechargeDialogActivity"
-            android:theme="@style/Theme.SoundRecorder"/>
+            android:theme="@style/Theme.SoundRecorder" />
 
         <service android:name=".service.BackService" />
 

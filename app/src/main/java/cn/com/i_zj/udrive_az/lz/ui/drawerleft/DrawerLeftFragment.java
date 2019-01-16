@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -177,6 +178,10 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     }
 
     @OnClick(R.id.share)
+    public void activity(View view) {
+        WebActivity.startWebActivity(getActivity(), "http://192.168.1.73:8080/", "回家过年免费用车");
+    }
+
     public void onShareClick(View view) {
         System.out.println("====================================================");
         String url = BuildConfig.SHARE_URL;
