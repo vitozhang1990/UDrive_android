@@ -3,13 +3,12 @@ package cn.com.i_zj.udrive_az.web;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.SeekBar;
@@ -108,9 +107,19 @@ public class WebActivity extends DBSBaseActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        dissmisProgressDialog();
+    }
+
     @OnClick(R.id.iv_back)
-    void back(View view) {
-        finish();
+    void back() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            finish();
+        }
     }
 
     private void initView() {
@@ -123,26 +132,7 @@ public class WebActivity extends DBSBaseActivity {
                 super.onProgressChanged(view, newProgress);
                 nextPor(newProgress);
             }
-
-            @SuppressWarnings("unused")
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType, String capture) {
-                this.openFileChooser(uploadMsg);
-            }
-
-            @SuppressWarnings("unused")
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType) {
-                this.openFileChooser(uploadMsg);
-            }
-
-            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-            }
-
-            @Override
-            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-                return true;
-            }
         });
-
         webView.loadUrl(url);
         registerHandler();
         sendToken();
@@ -269,29 +259,22 @@ public class WebActivity extends DBSBaseActivity {
                 shareAction.setCallback(new UMShareListener() {
                     @Override
                     public void onStart(SHARE_MEDIA share_media) {
-                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                            showProgressDialog(true);
-                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                            showProgressDialog(true);
-                        }
+
                     }
 
                     @Override
                     public void onResult(SHARE_MEDIA share_media) {
                         ToastUtils.showShort("成功");
-                        dissmisProgressDialog();
                     }
 
                     @Override
                     public void onError(SHARE_MEDIA share_media, Throwable throwable) {
                         ToastUtils.showShort("分享失败");
-                        dissmisProgressDialog();
                     }
 
                     @Override
                     public void onCancel(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("分项取消");
-                        dissmisProgressDialog();
+                        ToastUtils.showShort("分享取消");
                     }
                 });
                 shareAction.open();
@@ -356,5 +339,15 @@ public class WebActivity extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        } else {
+            finish();
+            return true;
+        }
     }
 }

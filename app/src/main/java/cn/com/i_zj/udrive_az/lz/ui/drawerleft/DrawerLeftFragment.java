@@ -227,7 +227,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onCancel(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("分项取消");
+                        ToastUtils.showShort("分享取消");
                         dissmisProgressDialog();
                     }
                 }).open();
