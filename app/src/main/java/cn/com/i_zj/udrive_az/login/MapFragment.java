@@ -106,9 +106,10 @@ import static android.widget.Toast.makeText;
 /**
  * 地图MapFragment
  */
-public class MapFragment extends DBSBaseFragment implements AMapLocationListener, RouteSearch.OnRouteSearchListener,
-        EasyPermissions.PermissionCallbacks, AMap.OnMarkerClickListener, ViewPager.OnPageChangeListener {
-
+public class MapFragment extends DBSBaseFragment implements AMapLocationListener
+        , RouteSearch.OnRouteSearchListener, EasyPermissions.PermissionCallbacks
+        , AMap.OnMarkerClickListener, ViewPager.OnPageChangeListener
+        , AMap.OnMapClickListener {
 
     @BindView(R.id.map)
     MapView mMapView;
@@ -214,6 +215,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void initViewstMap(Bundle savedInstanceState) {
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
         mAmap = mMapView.getMap();
+        mAmap.setOnMapClickListener(this);
         UiSettings uiSettings = mAmap.getUiSettings();
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
@@ -1110,6 +1112,29 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @Override
     public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
 
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        boolean inPolygon = true;
+        if (circle != null) {
+            inPolygon = circle.contains(latLng);
+        }
+        if (polygon != null) {
+            inPolygon = polygon.contains(latLng);
+        }
+        if (!inPolygon) {
+            buldParkBean = null;
+            if (clickMarker != null) {
+                clickMarker.setVisible(true);
+            }
+            removeAllOtherMarker();
+            fetchParks();
+            showArea(false);
+            if (mLocationClient != null) {
+                mLocationClient.startLocation();
+            }
+        }
     }
 }
 
