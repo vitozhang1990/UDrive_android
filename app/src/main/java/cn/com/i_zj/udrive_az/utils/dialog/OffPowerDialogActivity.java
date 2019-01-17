@@ -23,6 +23,7 @@ public class OffPowerDialogActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(OffPowerDialogActivity.this, MyWalletActivity.class), 100);
+                finish();
             }
         });
     }

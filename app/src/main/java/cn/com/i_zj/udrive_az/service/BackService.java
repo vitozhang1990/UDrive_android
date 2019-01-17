@@ -24,7 +24,10 @@ import java.util.concurrent.TimeUnit;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
+import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.model.WebSocketLocation;
+import cn.com.i_zj.udrive_az.model.WebSocketOrder;
 import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.model.WebSocketPrice;
 import cn.com.i_zj.udrive_az.model.WebSocketResult;
@@ -128,9 +131,20 @@ public class BackService extends BaseService {
                     }
                     break;
                 case 6000://推送强制结束订单信息
-                    intent.setClass(BackService.this, OrderActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    BackService.this.startActivity(intent);
+                    Type killType = new TypeToken<WebSocketResult<WebSocketOrder>>() {
+                    }.getType();
+                    WebSocketResult<WebSocketOrder> kill = gson.fromJson(text, killType);
+
+                    if (kill.getData() != null) {
+                        intent.setClass(BackService.this, ActConfirmOrder.class);
+                        intent.putExtra(PaymentActivity.ORDER_NUMBER, kill.getData().getNumber());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(intent);
+                    } else {
+                        intent.setClass(BackService.this, OrderActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(intent);
+                    }
                     break;
             }
         }

@@ -305,7 +305,7 @@ public class WebActivity extends DBSBaseActivity {
 
                 UMWeb web = new UMWeb(shareInfo.getShareUrl());
                 web.setTitle(shareInfo.getShareTitle());
-                web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+                web.setThumb(new UMImage(mContext, shareInfo.getShareImage()));
                 web.setDescription(shareInfo.getShareDescr());
 
                 ShareAction shareAction = new ShareAction(WebActivity.this);

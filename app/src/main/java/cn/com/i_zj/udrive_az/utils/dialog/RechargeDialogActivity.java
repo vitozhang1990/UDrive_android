@@ -23,6 +23,7 @@ public class RechargeDialogActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(RechargeDialogActivity.this, MyWalletActivity.class), 100);
+                finish();
             }
         });
 
