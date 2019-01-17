@@ -1,6 +1,7 @@
 package cn.com.i_zj.udrive_az.login;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -135,6 +136,33 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
         });
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        if (cancelListener != null) {
+            cancelListener.onCancel(dialog);
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (dismissListener != null) {
+            dismissListener.onDismiss(dialog);
+        }
+    }
+
+    private DialogInterface.OnCancelListener cancelListener;
+    private DialogInterface.OnDismissListener dismissListener;
+
+    public void setListener(DialogInterface.OnCancelListener listener) {
+        this.cancelListener = listener;
+    }
+
+    public void setDismissListener(DialogInterface.OnDismissListener dismissListener) {
+        this.dismissListener = dismissListener;
+    }
+
     @OnClick(R.id.login_tv_licence)
     public void onLicenceClick(View view) {
         Intent intent = new Intent(getContext(), ProtocolActivity.class);
@@ -149,6 +177,19 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
     @OnClick(R.id.login_btn_close)
     public void onCloseClick(View view) {
         this.dismiss();
+        if (cancelListener != null) {
+            cancelListener.onCancel(new DialogInterface() {
+                @Override
+                public void cancel() {
+
+                }
+
+                @Override
+                public void dismiss() {
+
+                }
+            });
+        }
     }
 
     @OnClick(R.id.login_tv_second)

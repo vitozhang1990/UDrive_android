@@ -1,12 +1,15 @@
 package cn.com.i_zj.udrive_az.web;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -21,6 +24,8 @@ import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.github.lzyzsd.jsbridge.DefaultHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -77,6 +82,7 @@ public class WebActivity extends DBSBaseActivity {
     private String url;
     private String title;
     private int index = 10;
+    private CallBackFunction callBackFunction;
 
     public static void startWebActivity(Context context, String url, String title) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -115,7 +121,11 @@ public class WebActivity extends DBSBaseActivity {
 
     @OnClick(R.id.iv_back)
     void back() {
-        finish();
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            finish();
+        }
     }
 
     private void initView() {
@@ -136,33 +146,39 @@ public class WebActivity extends DBSBaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(LoginSuccessEvent event) {
-        sendToken();
+        Token token = null;
+        if (!TextUtils.isEmpty(SessionManager.getInstance().getAuthorization())) {
+            token = new Token();
+            token.setAccessToken(SessionManager.getInstance().getAccess());
+            token.setRefreshToken(SessionManager.getInstance().getRefresh());
+        }
+        StringBuilder gsonString = new StringBuilder();
+        if (token != null) {
+            gsonString.append(new Gson().toJson(token));
+        }
+        if (callBackFunction != null) {
+            callBackFunction.onCallBack(gsonString.toString());
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
-            webView.callHandler("App_PayResult", "1", new CallBackFunction() {
-                @Override
-                public void onCallBack(String data) {
-                    if (BuildConfig.DEBUG) {
-                        Toast.makeText(WebActivity.this, data, Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+            Token token = new Token();
+            token.setResult("1");
+            if (callBackFunction != null) {
+                callBackFunction.onCallBack(new Gson().toJson(token));
+            }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPayFailureEvent eventPayFailureEvent) {
-        webView.callHandler("App_PayResult", "0", new CallBackFunction() {
-            @Override
-            public void onCallBack(String data) {
-                if (BuildConfig.DEBUG) {
-                    Toast.makeText(WebActivity.this, data, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        Token token = new Token();
+        token.setResult("0");
+        if (callBackFunction != null) {
+            callBackFunction.onCallBack(new Gson().toJson(token));
+        }
     }
 
     private void registerHandler() {
@@ -177,8 +193,30 @@ public class WebActivity extends DBSBaseActivity {
                     Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
 
+                callBackFunction = function;
                 LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
+                loginDialogFragment.setListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                });
                 loginDialogFragment.show(getSupportFragmentManager(), "login");
+            }
+        });
+
+        webView.registerHandler("JS_Phone", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                if (BuildConfig.DEBUG) {
+                    String msg = "JS_Phone指定接收到js的数据：" + data;
+                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri uri = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
+                intent.setData(uri);
+                startActivity(intent);
             }
         });
 
@@ -203,7 +241,15 @@ public class WebActivity extends DBSBaseActivity {
                     Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
 
-                UdriveRestClient.getClentInstance().getWechatTripOrder(SessionManager.getInstance().getAuthorization(), data)
+                JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
+                String orderNum = circleObject.get("orderNum").getAsString();
+                if (TextUtils.isEmpty(orderNum)) {
+                    function.onCallBack("0");
+                    return;
+                }
+
+                callBackFunction = function;
+                UdriveRestClient.getClentInstance().getWechatRentApp(SessionManager.getInstance().getAuthorization(), orderNum)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<WeichatPayOrder>() {
@@ -253,6 +299,7 @@ public class WebActivity extends DBSBaseActivity {
                     Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
 
+                callBackFunction = function;
                 Gson gson = new GsonBuilder().create();
                 ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
 
@@ -273,16 +320,31 @@ public class WebActivity extends DBSBaseActivity {
                     @Override
                     public void onResult(SHARE_MEDIA share_media) {
                         ToastUtils.showShort("成功");
+                        Token token = new Token();
+                        token.setResult("1");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
                     }
 
                     @Override
                     public void onError(SHARE_MEDIA share_media, Throwable throwable) {
                         ToastUtils.showShort("分享失败");
+                        Token token = new Token();
+                        token.setResult("0");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
                     }
 
                     @Override
                     public void onCancel(SHARE_MEDIA share_media) {
                         ToastUtils.showShort("分享取消");
+                        Token token = new Token();
+                        token.setResult("0");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
                     }
                 });
                 shareAction.open();
@@ -347,5 +409,15 @@ public class WebActivity extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        } else {
+            finish();
+            return true;
+        }
     }
 }

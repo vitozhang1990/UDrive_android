@@ -4,6 +4,7 @@ public class Token {
 
     private String accessToken;
     private String refreshToken;
+    private String result;
 
     public String getAccessToken() {
         return accessToken;
@@ -19,5 +20,13 @@ public class Token {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

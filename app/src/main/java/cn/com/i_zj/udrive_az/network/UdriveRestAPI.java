@@ -182,6 +182,9 @@ public interface UdriveRestAPI {
     @POST("/mobile/wechatpay/getPrepayId/tripOrder/{orderNum}")
     Observable<WeichatPayOrder> getWechatTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
 
+    @POST("/mobile/wechatpay/getPrepayId/rentApp/{orderNum}")
+    Observable<WeichatPayOrder> getWechatRentApp(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+
     //指定行程订单订单号，获取支付宝支付参数
     @POST("/mobile/alipay/getPayOrder/tripOrder/{orderNum}")
     Observable<AliPayOrder> getAliPayTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
