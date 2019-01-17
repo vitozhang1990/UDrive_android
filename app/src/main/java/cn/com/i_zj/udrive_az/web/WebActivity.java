@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -42,6 +41,7 @@ import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.EventPayFailureEvent;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
@@ -115,11 +115,7 @@ public class WebActivity extends DBSBaseActivity {
 
     @OnClick(R.id.iv_back)
     void back() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            finish();
-        }
+        finish();
     }
 
     private void initView() {
@@ -146,15 +142,27 @@ public class WebActivity extends DBSBaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
-            webView.callHandler("App_PayResult", "发送数据给js指定接收", new CallBackFunction() {
+            webView.callHandler("App_PayResult", "1", new CallBackFunction() {
                 @Override
-                public void onCallBack(String data) { //处理js回传的数据
+                public void onCallBack(String data) {
                     if (BuildConfig.DEBUG) {
                         Toast.makeText(WebActivity.this, data, Toast.LENGTH_LONG).show();
                     }
                 }
             });
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EventPayFailureEvent eventPayFailureEvent) {
+        webView.callHandler("App_PayResult", "0", new CallBackFunction() {
+            @Override
+            public void onCallBack(String data) {
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(WebActivity.this, data, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void registerHandler() {
@@ -339,15 +347,5 @@ public class WebActivity extends DBSBaseActivity {
 
                     }
                 });
-    }
-
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
-            webView.goBack();
-            return true;
-        } else {
-            finish();
-            return true;
-        }
     }
 }

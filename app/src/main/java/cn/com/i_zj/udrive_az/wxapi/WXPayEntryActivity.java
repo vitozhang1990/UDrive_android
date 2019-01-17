@@ -16,6 +16,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.greenrobot.eventbus.EventBus;
 
+import cn.com.i_zj.udrive_az.event.EventPayFailureEvent;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
@@ -56,9 +57,11 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         finish();
       } else if (resp.errCode == -2) {
         Toast.makeText(this, "您已取消付款!", Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new EventPayFailureEvent());
         finish();
       } else {
         Toast.makeText(this, "参数错误", Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new EventPayFailureEvent());
         finish();
       }
     } else {
