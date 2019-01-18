@@ -8,7 +8,7 @@ public class WebSocketPrice implements Serializable {
     private float mileageAmount;
     private float timeAmount;
     private float totalAmount;
-    private int deductible;
+    private float deductible;
 
     public int getOrderId() {
         return orderId;
@@ -42,11 +42,11 @@ public class WebSocketPrice implements Serializable {
         this.totalAmount = totalAmount;
     }
 
-    public int getDeductible() {
+    public float getDeductible() {
         return deductible;
     }
 
-    public void setDeductible(int deductible) {
+    public void setDeductible(float deductible) {
         this.deductible = deductible;
     }
 }

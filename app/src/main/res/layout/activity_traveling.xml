@@ -173,6 +173,7 @@
                         android:textSize="@dimen/sp_12" />
 
                     <LinearLayout
+                        android:id="@+id/amount_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="bottom">

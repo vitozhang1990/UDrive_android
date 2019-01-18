@@ -16,13 +16,13 @@ public class OrderBean implements Serializable {
      */
 
     private String number;
-    private int totalAmount;
+    private float totalAmount;
     private String reservationId;
     private int orderId;
-    private int mileageAmount;
-    private int deductible;
+    private float mileageAmount;
+    private float deductible;
     private int powerFlag;
-    private int timeAmount;
+    private float timeAmount;
     private int amountFlag;
 
     public String getNumber() {
@@ -31,14 +31,6 @@ public class OrderBean implements Serializable {
 
     public void setNumber(String number) {
         this.number = number;
-    }
-
-    public int getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(int totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
     public String getReservationId() {
@@ -57,19 +49,11 @@ public class OrderBean implements Serializable {
         this.orderId = orderId;
     }
 
-    public int getMileageAmount() {
-        return mileageAmount;
-    }
-
-    public void setMileageAmount(int mileageAmount) {
-        this.mileageAmount = mileageAmount;
-    }
-
-    public int getDeductible() {
+    public float getDeductible() {
         return deductible;
     }
 
-    public void setDeductible(int deductible) {
+    public void setDeductible(float deductible) {
         this.deductible = deductible;
     }
 
@@ -81,19 +65,35 @@ public class OrderBean implements Serializable {
         this.powerFlag = powerFlag;
     }
 
-    public int getTimeAmount() {
-        return timeAmount;
-    }
-
-    public void setTimeAmount(int timeAmount) {
-        this.timeAmount = timeAmount;
-    }
-
     public int getAmountFlag() {
         return amountFlag;
     }
 
     public void setAmountFlag(int amountFlag) {
         this.amountFlag = amountFlag;
+    }
+
+    public float getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(float totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public float getMileageAmount() {
+        return mileageAmount;
+    }
+
+    public void setMileageAmount(float mileageAmount) {
+        this.mileageAmount = mileageAmount;
+    }
+
+    public float getTimeAmount() {
+        return timeAmount;
+    }
+
+    public void setTimeAmount(float timeAmount) {
+        this.timeAmount = timeAmount;
     }
 }

@@ -71,6 +71,7 @@ import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.AmountDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -181,7 +182,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 tvgonglishu.setText("" + car.getMaxDistance());
                 Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
             }
-            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100f);
+            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100);
         }
     }
 
@@ -201,7 +202,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     }
 
     @OnClick({R.id.header_left, R.id.header_right, R.id.btn_yuding, R.id.rl_kaisuo, R.id.rl_suoding, R.id.rl_xunche,
-            R.id.tv_address, R.id.iv_na})
+            R.id.tv_address, R.id.iv_na, R.id.amount_detail})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -251,6 +252,16 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 } else {
                     ToastUtils.showShort("尚未选取还车点");
                 }
+                break;
+            case R.id.amount_detail:
+                WebSocketPrice price = new WebSocketPrice();
+                price.setTotalAmount(unFinishOrderBean.getData().getOrder().getTotalAmount());
+                price.setMileageAmount(unFinishOrderBean.getData().getOrder().getMileageAmount());
+                price.setTimeAmount(unFinishOrderBean.getData().getOrder().getTimeAmount());
+                price.setDeductible(unFinishOrderBean.getData().getOrder().getDeductible());
+                AmountDialog dialog = new AmountDialog(this);
+                dialog.setAmount(price);
+                dialog.show();
                 break;
         }
     }
@@ -592,7 +603,11 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     public void onEvent(WebSocketPrice event) {
         if (event != null) {
             if (unFinishOrderBean.getData().getId() == event.getOrderId()) {
-                tv_amount.setText("" + event.getTotalAmount() / 100f);
+                unFinishOrderBean.getData().getOrder().setMileageAmount(event.getMileageAmount());
+                unFinishOrderBean.getData().getOrder().setTimeAmount(event.getTimeAmount());
+                unFinishOrderBean.getData().getOrder().setTotalAmount(event.getTotalAmount());
+                unFinishOrderBean.getData().getOrder().setDeductible(event.getDeductible());
+                tv_amount.setText("" + event.getTotalAmount() / 100);
             }
         }
     }

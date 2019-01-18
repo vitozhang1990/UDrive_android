@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/total"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_40"
+                android:gravity="center"
+                android:text="费用预估 - 元"
+                android:textColor="#030303"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F5F5F5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/dp_16"
+                android:paddingRight="@dimen/dp_16"
+                android:paddingBottom="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="时长费"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+
+                    <TextView
+                        android:id="@+id/shichang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="- 元"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="里程费"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+
+                    <TextView
+                        android:id="@+id/licheng"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="- 元"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/mianpei_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="不计免赔"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+
+                    <TextView
+                        android:id="@+id/mianpei"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="- 元"
+                        android:textColor="#373737"
+                        android:textSize="@dimen/sp_14" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:paddingLeft="@dimen/dp_16"
+                android:paddingRight="@dimen/dp_16"
+                android:text="* 费用预估仅供参考，请以最终支付金额为准"
+                android:textColor="#7A7A7A"
+                android:textSize="@dimen/sp_12" />
+
+            <TextView
+                android:id="@+id/sure"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_40"
+                android:background="#33333D"
+                android:gravity="center"
+                android:text="我知道了"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_14" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
