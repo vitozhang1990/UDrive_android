@@ -36,6 +36,7 @@ import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
@@ -94,6 +95,7 @@ import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
+import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import io.reactivex.Observer;
@@ -126,6 +128,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     @BindView(R.id.ll_info)
     LinearLayout ll_info;
+    @BindView(R.id.ll_info1)
+    LinearLayout ll_info1;
 
     @BindView(R.id.rl_car_info)
     RelativeLayout rlCarinfo;
@@ -155,6 +159,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private RouteSearch mRouteSearch;
     private WalkRouteOverlay walkRouteOverlay;
     private boolean isFirstLoc = true;
+    private int paddingSize = 200;
+    private List<LatLng> allLatLngs = new ArrayList<>();
 
     private Circle circle;//停车场范围圆
     private Polygon polygon;//停车场范围多边形
@@ -716,6 +722,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                             .fillColor(Color.parseColor("#FFCBE2FF"))
                                             .strokeColor(Color.parseColor("#FF0075FF"))
                                             .strokeWidth(1));
+                                    allLatLngs.add(latLng);
                                     break;
                                 case ParkType.Polygon:
                                 case ParkType.Rectangle:
@@ -728,6 +735,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                     for (AreaInfo info : areaInfos) {
                                         latLngs.add(new LatLng(info.getLat(), info.getLng()));
                                     }
+                                    allLatLngs.addAll(latLngs);
                                     polygon = mAmap.addPolygon(new PolygonOptions()
                                             .addAll(latLngs)
                                             .fillColor(Color.parseColor("#FFCBE2FF"))
@@ -806,6 +814,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                 mobileLocation, new LatLng(buldParkBean.getLatitude(), buldParkBean.getLongitude()));
                         if (distance < 3000) {
                             drawRoute();
+                        } else {
+                            updateCamera();
                         }
                     }
 
@@ -1052,6 +1062,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         if (mobileLocation == null) {
             return;
         }
+        //调整视角
+        allLatLngs.add(mobileLocation);
+        updateCamera();
+
         if (buldParkBean != null) {
             mRouteSearch = new RouteSearch(getActivity());
             mRouteSearch.setRouteSearchListener(this);
@@ -1061,6 +1075,18 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
             mRouteSearch.calculateWalkRouteAsyn(query);
         }
+    }
+
+    private void updateCamera() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng latLng : allLatLngs) {
+            boundsBuilder.include(latLng);
+        }
+        int bottomPadding = ToolsUtils.getWindowHeight(getActivity()) - ll_info1.getTop() + paddingSize;
+        if (ToolsUtils.checkDeviceHasNavigationBar(getActivity())) {
+            bottomPadding += ToolsUtils.getNavigationBarHeight(getActivity());
+        }
+        mAmap.animateCamera(CameraUpdateFactory.newLatLngBoundsRect(boundsBuilder.build(), paddingSize, paddingSize, paddingSize, bottomPadding));
     }
 
     private void removeAllOtherMarker() {
@@ -1079,6 +1105,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         for (Marker marker : carMarkers) {
             marker.remove();
         }
+        allLatLngs.clear();
     }
 
     @Override
@@ -1164,7 +1191,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     walkRouteResult.getStartPos(), walkRouteResult.getTargetPos(), null);
             walkRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
             walkRouteOverlay.addToMap();
-            walkRouteOverlay.zoomToSpan();
+//            walkRouteOverlay.zoomToSpan();
         }
     }
 

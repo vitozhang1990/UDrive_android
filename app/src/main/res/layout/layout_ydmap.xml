@@ -5,47 +5,25 @@
     android:layout_height="wrap_content">
 
 
-    <LinearLayout
-
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_refresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp_14"
-                android:layout_marginRight="@dimen/dp_14"
-                android:src="@mipmap/ic_refresh" />
-
-            <ImageView
-                android:id="@+id/iv_mylocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="@dimen/dp_14"
-                android:layout_marginRight="@dimen/dp_14"
-                android:src="@mipmap/ic_mylocation" />
-        </RelativeLayout>
-
         <LinearLayout
-            android:id="@+id/ll_info"
+            android:id="@+id/ll_info1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="invisible">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="75dp"
-                android:layout_above="@+id/viewpager"
+                android:layout_above="@+id/viewpager1"
                 android:layout_marginLeft="@dimen/dp_14"
                 android:layout_marginRight="@dimen/dp_14"
                 android:layout_marginBottom="@dimen/dp_10"
@@ -57,15 +35,15 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/dp_14"
-                    android:layout_toLeftOf="@+id/tv_park_detail">
+                    android:layout_toLeftOf="@+id/tv_park_detail1">
 
                     <RelativeLayout
-                        android:id="@+id/name_layout"
+                        android:id="@+id/name_layout1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/tv_pname"
+                            android:id="@+id/tv_pname1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -75,11 +53,11 @@
                             android:textSize="16sp" />
 
                         <ImageView
-                            android:id="@+id/park_explain"
+                            android:id="@+id/park_explain1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/tv_pname"
+                            android:layout_toRightOf="@id/tv_pname1"
                             android:padding="5dp"
                             android:src="@mipmap/ic_help" />
                     </RelativeLayout>
@@ -87,10 +65,10 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/name_layout">
+                        android:layout_below="@+id/name_layout1">
 
                         <ImageView
-                            android:id="@+id/iv1"
+                            android:id="@+id/iv11"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -98,12 +76,12 @@
                             android:src="@mipmap/marker2" />
 
                         <TextView
-                            android:id="@+id/tv_paradress"
+                            android:id="@+id/tv_paradress1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="@dimen/dp_5"
-                            android:layout_toRightOf="@+id/iv1"
+                            android:layout_toRightOf="@+id/iv11"
                             android:text="双流区华府大道一段688号"
                             android:textColor="#999999"
                             android:textSize="@dimen/dp_12" />
@@ -111,29 +89,29 @@
                 </RelativeLayout>
 
                 <TextView
-                    android:id="@+id/tv_park_detail"
+                    android:id="@+id/tv_park_detail1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_eight"
-                    android:layout_toLeftOf="@+id/v_line"
+                    android:layout_toLeftOf="@+id/v_line1"
                     android:drawableTop="@mipmap/ic_details"
                     android:text="点位详情"
                     android:textColor="#b4b5b6"
                     android:textSize="@dimen/text_size_twelve" />
 
                 <View
-                    android:id="@+id/v_line"
+                    android:id="@+id/v_line1"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginRight="@dimen/margin_eight"
                     android:layout_marginBottom="@dimen/dp_20"
-                    android:layout_toLeftOf="@+id/rl1"
+                    android:layout_toLeftOf="@+id/rl11"
                     android:background="@color/line" />
 
                 <RelativeLayout
-                    android:id="@+id/rl1"
+                    android:id="@+id/rl11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -141,34 +119,32 @@
                     android:layout_marginRight="@dimen/dp_18">
 
                     <ImageView
-                        android:id="@+id/iv2"
+                        android:id="@+id/iv21"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:background="@mipmap/juli" />
 
                     <TextView
-                        android:id="@+id/tv_dis"
+                        android:id="@+id/tv_dis1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/iv2"
+                        android:layout_below="@id/iv21"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/dp_5"
                         android:text="872m"
                         android:textColor="#999999"
                         android:textSize="12sp" />
                 </RelativeLayout>
-
-
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/rl_car_info"
+                android:id="@+id/rl_car_info1"
                 android:layout_width="match_parent"
                 android:layout_height="160dp">
 
                 <android.support.v4.view.ViewPager
-                    android:id="@+id/viewpager"
+                    android:id="@+id/viewpager1"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_alignParentBottom="true"
@@ -178,7 +154,7 @@
                     android:background="@drawable/bg_map_white" />
 
                 <android.support.design.widget.TabLayout
-                    android:id="@+id/tblayout"
+                    android:id="@+id/tblayout1"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
                     android:layout_alignParentBottom="true"
@@ -187,8 +163,194 @@
                     android:layout_marginRight="@dimen/dp_14"
                     android:layout_marginBottom="@dimen/dp_10"
                     app:tabIndicatorColor="@color/white"
-                    app:tabMode="fixed"></android.support.design.widget.TabLayout>
+                    app:tabMode="fixed" />
             </RelativeLayout>
         </LinearLayout>
-    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/ll_info">
+
+                <ImageView
+                    android:id="@+id/iv_refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_14"
+                    android:layout_marginRight="@dimen/dp_14"
+                    android:src="@mipmap/ic_refresh" />
+
+                <ImageView
+                    android:id="@+id/iv_mylocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/dp_14"
+                    android:layout_marginRight="@dimen/dp_14"
+                    android:src="@mipmap/ic_mylocation" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_above="@+id/viewpager"
+                    android:layout_marginLeft="@dimen/dp_14"
+                    android:layout_marginRight="@dimen/dp_14"
+                    android:layout_marginBottom="@dimen/dp_10"
+                    android:background="@drawable/bg_map_white">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp_14"
+                        android:layout_toLeftOf="@+id/tv_park_detail">
+
+                        <RelativeLayout
+                            android:id="@+id/name_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_pname"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginBottom="@dimen/dp_10"
+                                android:text="益阳停车场"
+                                android:textColor="@color/color_map_btn"
+                                android:textSize="16sp" />
+
+                            <ImageView
+                                android:id="@+id/park_explain"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toRightOf="@id/tv_pname"
+                                android:padding="5dp"
+                                android:src="@mipmap/ic_help" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/name_layout">
+
+                            <ImageView
+                                android:id="@+id/iv1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginTop="@dimen/dp_2"
+                                android:src="@mipmap/marker2" />
+
+                            <TextView
+                                android:id="@+id/tv_paradress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="@dimen/dp_5"
+                                android:layout_toRightOf="@+id/iv1"
+                                android:text="双流区华府大道一段688号"
+                                android:textColor="#999999"
+                                android:textSize="@dimen/dp_12" />
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/tv_park_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/margin_eight"
+                        android:layout_toLeftOf="@+id/v_line"
+                        android:drawableTop="@mipmap/ic_details"
+                        android:text="点位详情"
+                        android:textColor="#b4b5b6"
+                        android:textSize="@dimen/text_size_twelve" />
+
+                    <View
+                        android:id="@+id/v_line"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginRight="@dimen/margin_eight"
+                        android:layout_marginBottom="@dimen/dp_20"
+                        android:layout_toLeftOf="@+id/rl1"
+                        android:background="@color/line" />
+
+                    <RelativeLayout
+                        android:id="@+id/rl1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/dp_18">
+
+                        <ImageView
+                            android:id="@+id/iv2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:background="@mipmap/juli" />
+
+                        <TextView
+                            android:id="@+id/tv_dis"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/iv2"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_5"
+                            android:text="872m"
+                            android:textColor="#999999"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_car_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp">
+
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/viewpager"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="@dimen/dp_14"
+                        android:layout_marginRight="@dimen/dp_14"
+                        android:layout_marginBottom="@dimen/dp_5"
+                        android:background="@drawable/bg_map_white" />
+
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tblayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginLeft="@dimen/dp_14"
+                        android:layout_marginRight="@dimen/dp_14"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        app:tabIndicatorColor="@color/white"
+                        app:tabMode="fixed" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -41,11 +44,13 @@ public class ToolsUtils {
         int version = packInfo.versionCode;
         return version;
     }
+
     public static boolean isConnected(Context context) {
         ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = conn.getActiveNetworkInfo();
         return (info != null && info.isConnected());
     }
+
     /**
      * 获取版本名称
      *
@@ -61,20 +66,62 @@ public class ToolsUtils {
         String versionName = packInfo.versionName;
         return versionName;
     }
+
     public static int getWindowWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         int width = wm.getDefaultDisplay().getWidth();
         return width;
     }
+
     public static int getWindowHeight(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         int height = wm.getDefaultDisplay().getHeight();
         return height;
     }
+
     /**
+     * 获取NavigationBar高度
      *
+     * @param var0
+     * @return
+     */
+    public static int getNavigationBarHeight(Context var0) {
+        boolean var1 = ViewConfiguration.get(var0).hasPermanentMenuKey();
+        int var2;
+        return (var2 = var0.getResources().getIdentifier("navigation_bar_height", "dimen", "android")) > 0 && !var1 ? var0.getResources().getDimensionPixelSize(var2) : 0;
+    }
+
+    /**
+     * 是否存在NavigationBar
+     *
+     * @param context
+     * @return
+     */
+    public static boolean checkDeviceHasNavigationBar(Context context) {
+        boolean hasNavigationBar = false;
+        Resources rs = context.getResources();
+        int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
+        if (id > 0) {
+            hasNavigationBar = rs.getBoolean(id);
+        }
+        try {
+            Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method m = systemPropertiesClass.getMethod("get", String.class);
+            String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+            if ("1".equals(navBarOverride)) {
+                hasNavigationBar = false;
+            } else if ("0".equals(navBarOverride)) {
+                hasNavigationBar = true;
+            }
+        } catch (Exception e) {
+
+        }
+        return hasNavigationBar;
+    }
+
+    /**
      * @param password
      * @return
      */
@@ -82,6 +129,7 @@ public class ToolsUtils {
 
         return password.length() >= 6;
     }
+
     /**
      * 验证手机号码
      *
@@ -100,24 +148,25 @@ public class ToolsUtils {
         }
         return flag;
     }
+
     /**
      * 功能：判断一个字符串是否包含特殊字符
+     *
      * @param string 要判断的字符串
-     * @return true 提供的参数string不包含特殊字符
      * @return false 提供的参数string包含特殊字符
      */
     public static boolean isConSpeCharacters(String string) {
         // TODO Auto-generated method stub
-        if(string.replaceAll("[\u4e00-\u9fa5]*[a-z]*[A-Z]*\\d*-*_*\\s*", "").length()==0){
+        if (string.replaceAll("[\u4e00-\u9fa5]*[a-z]*[A-Z]*\\d*-*_*\\s*", "").length() == 0) {
             //如果不包含特殊字符
             return true;
         }
         return false;
     }
 
-    public static String getUUID(){
-        String id= UUID.randomUUID().toString();//生成的id942cd30b-16c8-449e-8dc5-028f38495bb5中间含有横杠，<span style="color: rgb(75, 75, 75); font-family: Verdana, Arial, Helvetica, sans-serif; line-height: 20.7999992370605px;">用来生成数据库的主键id是很实用的。</span>
-        id=id.replace("-", "");//替换掉中间的那个斜杠
+    public static String getUUID() {
+        String id = UUID.randomUUID().toString();//生成的id942cd30b-16c8-449e-8dc5-028f38495bb5中间含有横杠，<span style="color: rgb(75, 75, 75); font-family: Verdana, Arial, Helvetica, sans-serif; line-height: 20.7999992370605px;">用来生成数据库的主键id是很实用的。</span>
+        id = id.replace("-", "");//替换掉中间的那个斜杠
         return id;
     }
 
@@ -176,7 +225,8 @@ public class ToolsUtils {
         return timeStemp;
 
     }
-    public static String getTime(long time, String xxx){
+
+    public static String getTime(long time, String xxx) {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(xxx);
             return simpleDateFormat.format(time);
@@ -186,9 +236,11 @@ public class ToolsUtils {
         }
         return "";
     }
+
     /**
      * 获取application中指定的meta-data
-     * @return 如果没有获取成功(没有对应值，或者异常)，则返回值为空
+     *
+     * @return 如果没有获取成功(没有对应值 ， 或者异常)，则返回值为空
      */
     public static String getAppMetaData(Context ctx, String key) {
         if (ctx == null || TextUtils.isEmpty(key)) {
@@ -212,6 +264,7 @@ public class ToolsUtils {
 
         return resultData;
     }
+
     public static String getTime(Date date, String fromat) {
         try {
             SimpleDateFormat format = new SimpleDateFormat(fromat);
@@ -221,6 +274,7 @@ public class ToolsUtils {
         }
 
     }
+
     /**
      * 检测某个应用是否安装
      *
