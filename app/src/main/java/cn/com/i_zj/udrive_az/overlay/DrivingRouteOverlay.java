@@ -112,6 +112,13 @@ public class DrivingRouteOverlay extends RouteOverlay{
         }
     }
 
+    public List<LatLng> getPoints() {
+	    if (mPolylineOptions != null) {
+            return mPolylineOptions.getPoints();
+        }
+        return null;
+    }
+
 	/**
      * 初始化线段属性
      */

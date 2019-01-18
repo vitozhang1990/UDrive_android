@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AddressInfo;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
+import cn.com.i_zj.udrive_az.model.FromParkBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
@@ -87,7 +88,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private Polygon polygon;
 
     private ParksResult.DataBean pickPark;
-    private ParksResult.DataBean fromPark;
+    private FromParkBean fromPark;
 
     private ParkDetailDialog parkDetailDialog;
 
@@ -105,7 +106,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
-        fromPark = (ParksResult.DataBean) getIntent().getSerializableExtra("fromPark");
+        fromPark = (FromParkBean) getIntent().getSerializableExtra("fromPark");
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
         mAmap = mMapView.getMap();
         UiSettings uiSettings = mAmap.getUiSettings();

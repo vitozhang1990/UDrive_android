@@ -19,6 +19,7 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
@@ -43,6 +44,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
@@ -65,6 +67,7 @@ import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
+import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -96,6 +99,8 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     ImageView mIvCar;
     @BindView(R.id.map)
     MapView mMapView;
+    @BindView(R.id.rl_dengdai)
+    View mapBottom;
 
     private AMap mAmap;
     private AMapLocationClient mLocationClient;
@@ -104,6 +109,8 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     private Map<ParkKey, Marker> markerMap = new HashMap();
     private LatLng mobileLocation;
     private DrivingRouteOverlay drivingRouteOverlay;
+    private int paddingSize = 150;
+    private List<LatLng> allLatLngs = new ArrayList<>();
 
     private FromParkBean fromPark;
     private ToParkBean toPark;
@@ -162,6 +169,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
             if (unFinishOrderBean.getData().getToPark() != null) {
                 toPark = unFinishOrderBean.getData().getToPark();
+                allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
                 tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
             }
             if (unFinishOrderBean.getData().getCar() != null) {
@@ -195,6 +203,8 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
+                startActivity(MainActivity.class);
+                finish();
                 break;
             case R.id.header_right:
                 Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -242,7 +252,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 break;
         }
     }
-
 
     private void opencloseDoor(String status) {
         Map<String, String> map = new HashMap<>();
@@ -505,7 +514,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                         markerMap.remove(parkKey);
 
                                         MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
-                                        int bitmapId = R.mipmap.ic_cheweishu_monthly;
+                                        int bitmapId = R.mipmap.ic_cheweishu_monthly;//TODO 直接使用合作停车场的图标
                                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
                                                 TravelingActivity.this, bitmapId, "P", String.valueOf("0"))));
                                         Marker marker = mAmap.addMarker(markerOptions);
@@ -537,6 +546,8 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                     : retParkObj.getDate().getLongitude());
                             toPark.setParkID(retParkObj.getDate().getId());
                             toPark.setName(retParkObj.getDate().getName());
+                            allLatLngs.clear();
+                            allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
                             //2.更新界面地址
                             tv_address.setText(toPark.getName());
                             //3.更新图标
@@ -554,7 +565,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                 markerMap.put(parkKey1, marker);
                             }
                             //4.更新路线
-                            drawRoute();
+                            drawMap();
                             ToastUtils.showShort(retParkObj.getMessage());
                         } else {
                             ToastUtils.showShort(retParkObj.getMessage());
@@ -590,11 +601,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 mAmap.setMyLocationEnabled(true);
 
                 mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
-                //将地图移动到定位点
-                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
+                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
                 isFirstLoc = false;
-                drawRoute();
+                drawMap();
             } else {
                 mLocationClient.stopLocation();
                 mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
@@ -653,7 +662,10 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                     driveRouteResult.getStartPos(), driveRouteResult.getTargetPos(), null);
             drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
             drivingRouteOverlay.addToMap();
-            drivingRouteOverlay.zoomToSpan();
+            if (drivingRouteOverlay.getPoints() != null) {
+                allLatLngs.addAll(drivingRouteOverlay.getPoints());
+                updateCamera();
+            }
         }
     }
 
@@ -667,7 +679,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
     }
 
-    private void drawRoute() {
+    private void drawMap() {
         if (drivingRouteOverlay != null) {
             drivingRouteOverlay.removeFromMap();
             drivingRouteOverlay = null;
@@ -675,6 +687,10 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
         if (mobileLocation == null) {
             return;
         }
+        //调整视角
+        allLatLngs.add(mobileLocation);
+        updateCamera();
+
         if (toPark != null) {
             mRouteSearch = new RouteSearch(TravelingActivity.this);
             mRouteSearch.setRouteSearchListener(TravelingActivity.this);
@@ -682,5 +698,18 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
             RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, null, null, "");
             mRouteSearch.calculateDriveRouteAsyn(query);
         }
+    }
+
+    private void updateCamera() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng latLng : allLatLngs) {
+            boundsBuilder.include(latLng);
+        }
+        int bottomPadding = ToolsUtils.getWindowHeight(this) - mapBottom.getTop() + paddingSize;
+        if (ToolsUtils.checkDeviceHasNavigationBar(this)) {
+            bottomPadding += ToolsUtils.getNavigationBarHeight(this);
+        }
+        mAmap.animateCamera(CameraUpdateFactory.newLatLngBoundsRect(boundsBuilder.build(), paddingSize, paddingSize, paddingSize, bottomPadding));
+
     }
 }

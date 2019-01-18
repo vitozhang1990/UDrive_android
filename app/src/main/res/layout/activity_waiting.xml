@@ -55,10 +55,10 @@
 
             <ImageView
                 android:id="@+id/iv_na"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:background="@mipmap/juli" />
+                android:background="@mipmap/ic_gps" />
         </LinearLayout>
 
         <LinearLayout
