@@ -273,6 +273,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
                     @Override
                     public void onNext(UnFinishOrderResult result) {
+                        dissmisProgressDialog();
                         if (result == null) {
                             ToastUtils.showShort("数据请求失败");
                             return;

@@ -505,9 +505,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                         markerMap.remove(parkKey);
 
                                         MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
-                                        int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                                        int bitmapId = R.mipmap.ic_cheweishu_monthly;
                                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
-                                                TravelingActivity.this, bitmapId, "P", String.valueOf(toPark.getValidCarCount()))));
+                                                TravelingActivity.this, bitmapId, "P", String.valueOf("0"))));
                                         Marker marker = mAmap.addMarker(markerOptions);
                                         marker.setObject(toPark);
                                         markerMap.put(parkKey, marker);
@@ -520,9 +520,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                             markerMap.remove(parkKey);
 
                                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
-                                            int bitmapId = toPark.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                                            int bitmapId = R.mipmap.ic_cheweishu_monthly;
                                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
-                                                    TravelingActivity.this, bitmapId, "起", String.valueOf(toPark.getValidCarCount()))));
+                                                    TravelingActivity.this, bitmapId, "起", String.valueOf("0"))));
                                             Marker marker = mAmap.addMarker(markerOptions);
                                             marker.setObject(toPark);
                                             markerMap.put(parkKey, marker);
@@ -545,7 +545,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                 markerMap.get(parkKey1).remove();//清除
                                 markerMap.remove(parkKey1);
 
-                                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongitude()));
+                                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
                                 int bitmapId = R.mipmap.ic_cheweishu_monthly;
                                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(
                                         TravelingActivity.this, bitmapId, "终", "0")));

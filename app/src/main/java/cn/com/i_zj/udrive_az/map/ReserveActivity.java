@@ -115,6 +115,7 @@ import pub.devrel.easypermissions.EasyPermissions;
  * ⚠️
  * 创建订单的时候使用起始停车场作为目的地停车场
  */
+@Deprecated
 public class ReserveActivity extends DBSBaseActivity implements AMapLocationListener, RouteSearch.OnRouteSearchListener {
     @BindView(R.id.tv_title)
     TextView tvTitle;
@@ -286,7 +287,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                 orderBean = (UnFinishOrderResult) intent.getSerializableExtra("bunld");
                 if (orderBean != null) {
                     state = 1;
-                    fromPark = orderBean.getData().getFromPark();
+//                    fromPark = orderBean.getData().getFromPark();
                     if (fromPark.getId() == 0) {
                         fromPark.setId(fromPark.getParkID());
                     }
@@ -300,7 +301,7 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                     oderId = String.valueOf(orderBean.getData().getId());
                     orderNum = String.valueOf(orderBean.getData().getNumber());
                     if (orderBean.getData().getToPark() != null) {
-                        toPark = orderBean.getData().getToPark();
+//                        toPark = orderBean.getData().getToPark();
                         if (toPark.getId() == 0) {
                             toPark.setId(toPark.getParkID());
                         }
@@ -311,11 +312,11 @@ public class ReserveActivity extends DBSBaseActivity implements AMapLocationList
                         tv_address_type.setText("还车点");
                     }
                     if (orderBean.getData().getCar() != null) {
-                        CarInfoEntity car = orderBean.getData().getCar();
-                        tvCarnum.setText(car.getPlateNumber());
-                        tvColor.setText(car.getCarColor());
-                        tvgonglishu.setText("" + car.getMaxDistance());
-                        Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
+//                        CarInfoEntity car = orderBean.getData().getCar();
+//                        tvCarnum.setText(car.getPlateNumber());
+//                        tvColor.setText(car.getCarColor());
+//                        tvgonglishu.setText("" + car.getMaxDistance());
+//                        Glide.with(ReserveActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
                     }
                 }
             }
