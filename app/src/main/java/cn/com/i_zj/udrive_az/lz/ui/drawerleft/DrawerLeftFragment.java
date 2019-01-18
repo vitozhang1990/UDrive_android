@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareListener;
@@ -44,6 +47,7 @@ import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.view.DrawerItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.ActivityResult;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -91,10 +95,17 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     RelativeLayout mRlHead;
 
     private AccountInfoResult accountInfo;
+    private ActivityResult activityResultInfo;
 
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_drawer_left;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getAppView();
     }
 
     @Override
@@ -179,7 +190,9 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
     @OnClick(R.id.share)
     public void activity(View view) {
-        WebActivity.startWebActivity(getActivity(), "http://192.168.1.73:8080/", "回家过年免费用车");
+        if (activityResultInfo != null) {
+            WebActivity.startWebActivity(getActivity(), activityResultInfo.getData().get(0).getViewUrl(), "回家过年免费用车");
+        }
     }
 
     public void onShareClick(View view) {
@@ -231,6 +244,45 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                         dissmisProgressDialog();
                     }
                 }).open();
+    }
+
+    private void getAppView() {
+        UdriveRestClient.getClentInstance().getAppView()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ActivityResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(ActivityResult activityResult) {
+                        if (activityResult == null) {
+                            return;
+                        }
+                        if (activityResult.getCode() != 1) {
+                            ToastUtils.showShort(activityResult.getMessage());
+                            return;
+                        }
+                        if (activityResult.getData() != null && activityResult.getData().size() > 0) {
+                            activityResultInfo = activityResult;
+                            mDbShare.setVisibility(View.VISIBLE);
+                            Glide.with(getActivity()).load(activityResult.getData().get(0).getImgUrl()).into(mDbShare);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

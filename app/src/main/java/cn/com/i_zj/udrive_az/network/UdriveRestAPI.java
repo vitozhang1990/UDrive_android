@@ -8,6 +8,7 @@ import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.ActivityResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
@@ -131,6 +132,9 @@ public interface UdriveRestAPI {
     //获取我的行程状态
     @GET("/mobile/tripOrder/unfinishedOrder")
     Observable<UnFinishOrderResult> getUnfinishedOrder(@Header("Authorization") String Authorization);
+
+    @GET("/open/getAppView")
+    Observable<ActivityResult> getAppView();
 
     //获取订单详情
     @GET("/mobile/tripOrder/{orderNum}")

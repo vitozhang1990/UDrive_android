@@ -15,7 +15,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.github.lzyzsd.jsbridge.BridgeHandler;
@@ -42,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
@@ -158,6 +156,8 @@ public class WebActivity extends DBSBaseActivity {
         }
         if (callBackFunction != null) {
             callBackFunction.onCallBack(gsonString.toString());
+        } else {
+            sendToken();
         }
     }
 
@@ -188,11 +188,6 @@ public class WebActivity extends DBSBaseActivity {
         webView.registerHandler("JS_UserLogin", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                if (BuildConfig.DEBUG) {
-                    String msg = "JS_UserLogin指定接收到js的数据：" + data;
-                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-
                 callBackFunction = function;
                 LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
                 loginDialogFragment.setListener(new DialogInterface.OnCancelListener() {
@@ -208,11 +203,6 @@ public class WebActivity extends DBSBaseActivity {
         webView.registerHandler("JS_Phone", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                if (BuildConfig.DEBUG) {
-                    String msg = "JS_Phone指定接收到js的数据：" + data;
-                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-
                 Intent intent = new Intent(Intent.ACTION_DIAL);
                 Uri uri = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
                 intent.setData(uri);
@@ -223,11 +213,6 @@ public class WebActivity extends DBSBaseActivity {
         webView.registerHandler("JS_UsingCar", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                if (BuildConfig.DEBUG) {
-                    String msg = "JS_UsingCar指定接收到js的数据：" + data;
-                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-
                 startActivity(MainActivity.class);
                 finish();
             }
@@ -236,11 +221,6 @@ public class WebActivity extends DBSBaseActivity {
         webView.registerHandler("JS_Pay", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                if (BuildConfig.DEBUG) {
-                    String msg = "JS_Pay指定接收到js的数据：" + data;
-                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-
                 JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
                 String orderNum = circleObject.get("orderNum").getAsString();
                 if (TextUtils.isEmpty(orderNum)) {
@@ -294,18 +274,13 @@ public class WebActivity extends DBSBaseActivity {
         webView.registerHandler("JS_WXShare", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                if (BuildConfig.DEBUG) {
-                    String msg = "JS_WXShare指定接收到js的数据：" + data;
-                    Toast.makeText(WebActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-
                 callBackFunction = function;
                 Gson gson = new GsonBuilder().create();
                 ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
 
                 UMWeb web = new UMWeb(shareInfo.getShareUrl());
                 web.setTitle(shareInfo.getShareTitle());
-                web.setThumb(new UMImage(mContext, shareInfo.getShareImage()));
+                web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
                 web.setDescription(shareInfo.getShareDescr());
 
                 ShareAction shareAction = new ShareAction(WebActivity.this);
@@ -366,9 +341,7 @@ public class WebActivity extends DBSBaseActivity {
         webView.callHandler("App_TokenParameters", gsonString.toString(), new CallBackFunction() {
             @Override
             public void onCallBack(String data) { //处理js回传的数据
-                if (BuildConfig.DEBUG) {
-                    Toast.makeText(WebActivity.this, "App_TokenParameters ==" + data, Toast.LENGTH_LONG).show();
-                }
+
             }
         });
     }
