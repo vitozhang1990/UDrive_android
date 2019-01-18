@@ -86,6 +86,7 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.ParkAreaBean;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
+import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
@@ -327,15 +328,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 }
                 break;
             case R.id.btn_yuding:
-                if (bunldBean != null && buldParkBean != null) {
-                    if (bunldBean.isTrafficControl()) {
-                        showTrafficControlDialog();
-                    } else {
-                        reservationVerify();
-                    }
-                } else {
+                if (bunldBean == null || buldParkBean == null) {
                     ToastUtils.showShort("请先选择车辆");
+                    return;
                 }
+                reservationVerify();
                 break;
             case R.id.btn_yongche:
                 ParksResult.DataBean bestPark = null;
@@ -522,46 +519,83 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void reservationVerify() {
-        if (SessionManager.getInstance().getAuthorization() != null) {
-            AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-            if (accountInfo == null) {
-                return;
-            }
-            if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS && accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
-                if (accountInfo.data.depositState == 2) {
-                    if (buldParkBean != null && buldParkBean.getCooperate() == 0
-                            && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                        showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
-                    } else {
-                        reservation();
-                    }
-                } else {
-                    ToastUtil.show(getActivity(), "请先缴纳押金");
-                }
-            } else {
-                // 先认证身份证 成功后再认证驾照
-                if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-                    makeText(getActivity(), "实名认证正在审核中", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS) {// 认证成功
-                    //开始认证认证驾照
-                    if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
-                        makeText(getActivity(), "驾照认证正在审核中", Toast.LENGTH_SHORT).show();
-                        return;
-                    } else {
-                        showDriverStateDialog();
-                    }
-                } else {
-                    showIdCardStateDialog();
-
-                }
-
-            }
-
-        } else {
+        if (SessionManager.getInstance().getAuthorization() == null) {
             LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
             loginDialogFragment.show(getChildFragmentManager(), "login");
+            return;
         }
+        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
+        if (accountInfo == null) {
+            return;
+        }
+        if (accountInfo.data.idCardState != Constants.ID_AUTHORIZED_SUCCESS) {
+            if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
+                makeText(getActivity(), "实名认证正在审核中", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            showIdCardStateDialog();
+            return;
+        }
+        if (accountInfo.data.driverState != Constants.ID_AUTHORIZED_SUCCESS) {
+            if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
+                makeText(getActivity(), "驾照认证正在审核中", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            showDriverStateDialog();
+            return;
+        }
+        if (accountInfo.data.depositState != 2) {
+            ToastUtil.show(getActivity(), "请先缴纳押金");
+            return;
+        }
+        getUnPayOrder();
+    }
+
+    private void getUnPayOrder() {
+        UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<UnFinishOrderResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(UnFinishOrderResult result) {
+                        if (result != null && result.getCode() == 1
+                                && result.getData() != null && result.getData().getId() > 0
+                                && result.getData().getStatus() == 1) {
+                            showUnfinishedOrderDialog();
+                            return;
+                        }
+                        if (bunldBean.isTrafficControl()) {
+                            showTrafficControlDialog();
+                        } else if (buldParkBean != null && buldParkBean.getCooperate() == 0
+                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
+                        } else {
+                            reservation();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        if (bunldBean.isTrafficControl()) {
+                            showTrafficControlDialog();
+                        } else if (buldParkBean != null && buldParkBean.getCooperate() == 0
+                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
+                        } else {
+                            reservation();
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void reservation() {
@@ -938,7 +972,12 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .setPositiveButton("继续使用", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        reservationVerify();
+                        if (buldParkBean != null && buldParkBean.getCooperate() == 0
+                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
+                        } else {
+                            reservation();
+                        }
                     }
                 })
                 .create().show();
@@ -962,6 +1001,26 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         startActivity(OrderActivity.class);
                     }
                 })
+                .create().show();
+    }
+
+    private void showUnfinishedOrderDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle("通知")
+                .setMessage("您有未付款的订单")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("去付款", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), OrderActivity.class);
+                        startActivityForResult(intent, 103);
+                    }
+                }).setCancelable(false)
                 .create().show();
     }
 
