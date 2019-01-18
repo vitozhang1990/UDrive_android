@@ -107,6 +107,9 @@ public class BackService extends BaseService {
                     Type priceType = new TypeToken<WebSocketResult<WebSocketPrice>>() {
                     }.getType();
                     WebSocketResult<WebSocketPrice> price = gson.fromJson(text, priceType);
+                    if (price != null && price.getData() != null) {
+                        EventBus.getDefault().post(price.getData());
+                    }
                     break;
                 case 4000://推送订单是否超额信息
                     if (!getRunningAppProcesses(BackService.this, getPackageName())) {

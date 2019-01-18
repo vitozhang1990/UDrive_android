@@ -34,6 +34,8 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +62,7 @@ import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ToParkBean;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
+import cn.com.i_zj.udrive_az.model.WebSocketPrice;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.DrivingRouteOverlay;
@@ -124,7 +127,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     //TODO 为啥要全局变量
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>(); //所有停车场信息
 
-
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_traveling;
@@ -179,7 +181,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 tvgonglishu.setText("" + car.getMaxDistance());
                 Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
             }
-            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100);
+            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100f);
         }
     }
 
@@ -584,6 +586,15 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                         dissmisProgressDialog();
                     }
                 });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(WebSocketPrice event) {
+        if (event != null) {
+            if (unFinishOrderBean.getData().getId() == event.getOrderId()) {
+                tv_amount.setText("" + event.getTotalAmount() / 100f);
+            }
+        }
     }
 
     @Override
