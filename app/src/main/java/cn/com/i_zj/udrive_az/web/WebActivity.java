@@ -294,7 +294,19 @@ public class WebActivity extends DBSBaseActivity {
 
                     @Override
                     public void onResult(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("成功");
+                        Token token = new Token();
+                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
+                            token.setResult("0");
+                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
+                            token.setResult("1");
+                        }
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
+                    }
+
+                    @Override
+                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
                         Token token = new Token();
                         token.setResult("1");
                         if (callBackFunction != null) {
@@ -303,23 +315,8 @@ public class WebActivity extends DBSBaseActivity {
                     }
 
                     @Override
-                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                        ToastUtils.showShort("分享失败");
-                        Token token = new Token();
-                        token.setResult("0");
-                        if (callBackFunction != null) {
-                            callBackFunction.onCallBack(new Gson().toJson(token));
-                        }
-                    }
-
-                    @Override
                     public void onCancel(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("分享取消");
-                        Token token = new Token();
-                        token.setResult("0");
-                        if (callBackFunction != null) {
-                            callBackFunction.onCallBack(new Gson().toJson(token));
-                        }
+
                     }
                 });
                 shareAction.open();
@@ -360,7 +357,6 @@ public class WebActivity extends DBSBaseActivity {
                     @Override
                     public void onNext(Object o) {
                         int oldPro = progressBar.getProgress();
-                        Log.e("====>", oldPro + "============");
                         if (oldPro <= progress) {
                             oldPro = oldPro + 2;
                             progressBar.setProgress(oldPro);

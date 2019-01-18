@@ -262,7 +262,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
                     @Override
                     public void onError(Throwable e) {
-
+                        dissmisProgressDialog();
                     }
 
                     @Override

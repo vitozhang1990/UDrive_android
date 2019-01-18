@@ -228,19 +228,16 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onResult(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("成功");
                         dissmisProgressDialog();
                     }
 
                     @Override
                     public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                        ToastUtils.showShort("分享失败");
                         dissmisProgressDialog();
                     }
 
                     @Override
                     public void onCancel(SHARE_MEDIA share_media) {
-                        ToastUtils.showShort("分享取消");
                         dissmisProgressDialog();
                     }
                 }).open();
