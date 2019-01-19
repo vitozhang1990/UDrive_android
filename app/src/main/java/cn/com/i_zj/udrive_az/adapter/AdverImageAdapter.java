@@ -92,8 +92,21 @@ public class AdverImageAdapter extends PagerAdapter {
             public void onClick(View v) {
                 if (slideImageEntity != null) {
                     WebActivity.startWebActivity(mContext, slideImageEntity.getHref(), slideImageEntity.getTitle());
+                    if (listener != null) {
+                        listener.onClick();
+                    }
                 }
             }
         };
+    }
+
+    private ClickListener listener;
+
+    public void setListener(ClickListener listener) {
+        this.listener = listener;
+    }
+
+    public interface ClickListener {
+        void onClick();
     }
 }

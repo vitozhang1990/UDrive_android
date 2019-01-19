@@ -90,6 +90,12 @@ public class HomeAdvDialog extends Dialog {
             mViewList.add(this.mViewAv);
         }
         adverImageAdapter = new AdverImageAdapter(mContext, arrayList);
+        adverImageAdapter.setListener(new AdverImageAdapter.ClickListener() {
+            @Override
+            public void onClick() {
+                dismiss();
+            }
+        });
         vpAdv.setAdapter(adverImageAdapter);
         num = mViewList.size() * 500;
         vpAdv.setCurrentItem(num);
