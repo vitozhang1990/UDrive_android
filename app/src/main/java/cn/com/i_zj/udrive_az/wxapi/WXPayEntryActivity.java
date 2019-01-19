@@ -52,6 +52,8 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         if (resp instanceof PayResp) {
           if (Constants.WEIXIN_PAY_TYPE_BALANCE.equals(((PayResp) resp).extData)) {
             EventBus.getDefault().post(new EventPaySuccessEvent(EventPaySuccessEvent.PayType.BALANCE, EventPaySuccessEvent.PayMethod.WEICHAT));
+          } else {
+            EventBus.getDefault().post(new EventPaySuccessEvent());
           }
         }
         finish();

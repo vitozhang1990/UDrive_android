@@ -163,12 +163,10 @@ public class WebActivity extends DBSBaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
-        if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
-            Token token = new Token();
-            token.setResult("1");
-            if (callBackFunction != null) {
-                callBackFunction.onCallBack(new Gson().toJson(token));
-            }
+        Token token = new Token();
+        token.setResult("1");
+        if (callBackFunction != null) {
+            callBackFunction.onCallBack(new Gson().toJson(token));
         }
     }
 
@@ -296,9 +294,9 @@ public class WebActivity extends DBSBaseActivity {
                     public void onResult(SHARE_MEDIA share_media) {
                         Token token = new Token();
                         if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                            token.setResult("1");
+                            token.setPlatformType("0");
                         } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                            token.setResult("0");
+                            token.setPlatformType("1");
                         }
                         if (callBackFunction != null) {
                             callBackFunction.onCallBack(new Gson().toJson(token));
@@ -308,7 +306,7 @@ public class WebActivity extends DBSBaseActivity {
                     @Override
                     public void onError(SHARE_MEDIA share_media, Throwable throwable) {
                         Token token = new Token();
-                        token.setResult("0");
+                        token.setPlatformType("1");
                         if (callBackFunction != null) {
                             callBackFunction.onCallBack(new Gson().toJson(token));
                         }

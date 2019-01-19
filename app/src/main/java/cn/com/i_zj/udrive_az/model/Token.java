@@ -5,6 +5,7 @@ public class Token {
     private String accessToken;
     private String refreshToken;
     private String result;
+    private String platformType;
 
     public String getAccessToken() {
         return accessToken;
@@ -28,5 +29,13 @@ public class Token {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getPlatformType() {
+        return platformType;
+    }
+
+    public void setPlatformType(String platformType) {
+        this.platformType = platformType;
     }
 }

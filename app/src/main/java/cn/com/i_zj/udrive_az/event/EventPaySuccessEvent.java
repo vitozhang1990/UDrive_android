@@ -24,6 +24,10 @@ public class EventPaySuccessEvent {
     ALI
   }
 
+  public EventPaySuccessEvent() {
+
+  }
+
   public EventPaySuccessEvent(PayType payType, PayMethod payMethod) {
 
   }
