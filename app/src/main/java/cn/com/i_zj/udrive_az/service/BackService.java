@@ -109,6 +109,9 @@ public class BackService extends BaseService {
                     WebSocketResult<WebSocketPrice> price = gson.fromJson(text, priceType);
                     break;
                 case 4000://推送订单是否超额信息
+                    if (!getRunningAppProcesses(BackService.this, getPackageName())) {
+                        return;
+                    }
                     Type chaoeType = new TypeToken<WebSocketResult<Integer>>() {
                     }.getType();
                     WebSocketResult<Integer> chaoe = gson.fromJson(text, chaoeType);
@@ -120,6 +123,9 @@ public class BackService extends BaseService {
                     }
                     break;
                 case 5000://推送订单是否断电信息
+                    if (!getRunningAppProcesses(BackService.this, getPackageName())) {
+                        return;
+                    }
                     Type duandianType = new TypeToken<WebSocketResult<Integer>>() {
                     }.getType();
                     WebSocketResult<Integer> duandian = gson.fromJson(text, duandianType);
@@ -131,6 +137,9 @@ public class BackService extends BaseService {
                     }
                     break;
                 case 6000://推送强制结束订单信息
+                    if (!getRunningAppProcesses(BackService.this, getPackageName())) {
+                        return;
+                    }
                     Type killType = new TypeToken<WebSocketResult<WebSocketOrder>>() {
                     }.getType();
                     WebSocketResult<WebSocketOrder> kill = gson.fromJson(text, killType);
@@ -154,6 +163,21 @@ public class BackService extends BaseService {
             super.onClose();
             mWebSocket.close(1000, "再见");
         }
+    }
+
+    public static boolean getRunningAppProcesses(Context context, String packageName) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                    appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

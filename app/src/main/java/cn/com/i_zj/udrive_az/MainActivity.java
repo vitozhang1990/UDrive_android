@@ -30,6 +30,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.NetWorkEvent;
+import cn.com.i_zj.udrive_az.login.LaunchActivity;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
@@ -413,6 +414,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         if (personalDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             personalDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
+            stopService(new Intent(MainActivity.this, BackService.class));
             super.onBackPressed();
         }
     }
@@ -424,6 +426,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
                 time = System.currentTimeMillis();
             } else {
+                stopService(new Intent(MainActivity.this, BackService.class));
+
                 ScreenManager.getScreenManager().popAllActivityExceptOne();
                 System.exit(0);
             }
