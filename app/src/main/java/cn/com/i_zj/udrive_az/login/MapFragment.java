@@ -123,9 +123,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @BindView(R.id.tblayout)
     TabLayout tabLayout;
 
-    @BindView(R.id.rl_where)
-    RelativeLayout rl_where;
-
     @BindView(R.id.ll_info)
     LinearLayout ll_info;
     @BindView(R.id.ll_info1)
@@ -804,7 +801,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         } else {
                             ll_info.setVisibility(View.VISIBLE);
                             rlCarinfo.setVisibility(View.GONE);
-                            rl_where.setVisibility(View.GONE);
                             btn_yongche.setVisibility(View.GONE);
                             btn_yuding.setVisibility(View.VISIBLE);
                             btn_yuding.setText("暂无车辆");
@@ -859,7 +855,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 //然后可以移动到定位点,使用animateCamera就有动画效果
                 mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
                 ll_info.setVisibility(View.GONE);
-                rl_where.setVisibility(View.GONE);
                 btn_yuding.setVisibility(View.GONE);
                 btn_yongche.setVisibility(View.VISIBLE);
             }
@@ -897,7 +892,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         clickMarker = null;
         buldParkBean = null;
         ll_info.setVisibility(View.GONE);
-        rl_where.setVisibility(View.GONE);
         btn_yuding.setVisibility(View.GONE);
     }
 
@@ -1133,7 +1127,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         ParksResult.DataBean dataBean = (ParksResult.DataBean) marker.getObject();
         clickMarker = marker;
         carMarkers.clear();
-        rl_where.setVisibility(View.GONE);
 
         mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()), Constants2.MarkerClickZoom));
         buldParkBean = dataBean;

@@ -2,71 +2,126 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
+    android:fitsSystemWindows="true">
 
     <com.amap.api.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <cn.com.i_zj.udrive_az.map.CompatToolbar
+    <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:fitsSystemWindows="true"
-        android:minHeight="45dp"
-        android:padding="0dp">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_map_top1"
+        android:minHeight="44dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="44dp">
 
-            <TextView
-                android:id="@+id/tv_city"
+            <ImageView
+                android:id="@+id/main_tv_personal_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="@color/color_map_btn"
-                android:textSize="15sp" />
-        </RelativeLayout>
-    </cn.com.i_zj.udrive_az.map.CompatToolbar>
+                android:layout_centerVertical="true"
+                android:src="@mipmap/toolbar_personal_icon" />
 
-    <RelativeLayout
-        android:id="@+id/rl_where"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_below="@+id/toolbar"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:background="@drawable/bg_map_white"
-        android:visibility="gone">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:id="@+id/tv_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="#181818"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/main_tv_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_notice_new" />
+        </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
+            android:layout_width="match_parent"
+            android:layout_height="68dp">
 
-            <TextView
-                android:id="@+id/tv1"
-                android:layout_width="@dimen/dp_5"
-                android:layout_height="@dimen/dp_5"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:background="@drawable/bg_circle" />
+                android:gravity="bottom">
 
-            <TextView
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/pic_cd" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:text="成都"
+                    android:textColor="#030303"
+                    android:textSize="@dimen/sp_14" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginLeft="@dimen/dp_10"
-                android:layout_toRightOf="@+id/tv1"
-                android:text="@string/xiangqunali"
-                android:textColor="#999999" />
+                android:gravity="bottom">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/pic_dali" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:text="大理"
+                    android:textColor="#030303"
+                    android:textSize="@dimen/sp_14" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="bottom">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/pic_lijiang" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:text="丽江"
+                    android:textColor="#030303"
+                    android:textSize="@dimen/sp_14" />
+            </LinearLayout>
         </RelativeLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
     <RelativeLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_yuding"

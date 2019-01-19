@@ -80,7 +80,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     @Override
     protected int getLayoutResource() {
-        MapUtils.setStatusBar(this);
+        MapUtils.statusBarColor(this);
         return R.layout.activity_main;
     }
 

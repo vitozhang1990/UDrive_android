@@ -75,7 +75,7 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
-            android:theme="@style/MapTheme" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".login.ProtocolActivity"
             android:label="@string/activity_protocol"
