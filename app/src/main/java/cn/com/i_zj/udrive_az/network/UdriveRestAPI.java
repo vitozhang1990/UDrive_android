@@ -13,6 +13,7 @@ import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.CheckCarResult;
+import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.CreateDepositResult;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.DepositAmountResult;
@@ -160,6 +161,10 @@ public interface UdriveRestAPI {
     //获取押金订单号
     @GET("/mobile/deposit/refundDeposit")
     Observable<RefundDepositResult> refundDeposit(@Header("Authorization") String Authorization);
+
+    //获取城市信息
+    @GET("/open/getCityList")
+    Observable<BaseRetObj<List<CityListResult>>> getCityList();
 
     //根据订单号退押金
     @POST("/mobile/refund/{orderNum}")

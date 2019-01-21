@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +25,15 @@ import java.util.List;
 
 public class RecyclerViewUtils {
 
+    public static <T> GlobalAdapter initRecycler(Context context, RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager, int resId, ArrayList<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener) {
+        GlobalAdapter adapter = new GlobalAdapter(resId, mList, onGlobalListener);
+        if (null != onItemClickListener) {
+            adapter.setOnItemClickListener(onItemClickListener);
+        }
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        return adapter;
+    }
 
     public static <T> GlobalAdapter initLiner(Context context, RecyclerView recyclerView, int resId, ArrayList<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener){
         GlobalAdapter adapter = new GlobalAdapter(resId, mList, onGlobalListener);
