@@ -9,10 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +30,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.NetWorkEvent;
-import cn.com.i_zj.udrive_az.login.LaunchActivity;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
@@ -68,7 +67,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @BindView(R.id.tv_msg)
     TextView tvMsg;
     @BindView(R.id.rl_note)
-    RelativeLayout rlNote;
+    CardView rlNote;
 
     private AlertDialog unfinishedOrderDialog;
     private AppUpdateDialog appUpdateDialog;

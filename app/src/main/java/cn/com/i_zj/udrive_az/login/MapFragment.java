@@ -136,8 +136,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     @BindView(R.id.tv_paradress)
     TextView tv_adress;
-    @BindView(R.id.tv_city)
-    TextView tv_centerName;
     @BindView(R.id.tv_dis)
     TextView tv_dis;
     @BindView(R.id.iv_refresh)
@@ -846,7 +844,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 mLocationClient.stopLocation();
                 mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
                 //将地图移动到定位点
-                tv_centerName.setText(aMapLocation.getCity());
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
                 isFirstLoc = false;
             } else {
