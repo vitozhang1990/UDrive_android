@@ -31,7 +31,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
@@ -237,8 +236,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
             map.put("protocol", "2");
         }
         showProgressDialog();
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().createTripOrder(token, map)
+        UdriveRestClient.getClentInstance().createTripOrder(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Predicate<CreateOderBean>() {
@@ -260,7 +258,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                 .flatMap(new Function<CreateOderBean, ObservableSource<UnFinishOrderResult>>() {
                     @Override
                     public ObservableSource<UnFinishOrderResult> apply(CreateOderBean createOderBean) throws Exception {
-                        return UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+                        return UdriveRestClient.getClentInstance().getUnfinishedOrder()
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread());
                     }

@@ -50,7 +50,6 @@ import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.adapter.ChooseParkActivity;
 import cn.com.i_zj.udrive_az.map.adapter.PictureAfterActivity;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -270,12 +269,11 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
         Map<String, String> map = new HashMap<>();
         map.put("orderId", oderId);
         map.put("carId", carId);
-        String token = SessionManager.getInstance().getAuthorization();
         LogUtils.e(oderId + "--" + carId);
 
         if (status.equals("0")) {
             showProgressDialog();
-            UdriveRestClient.getClentInstance().openCar(token, map)
+            UdriveRestClient.getClentInstance().openCar(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<DoorBean>() {
@@ -311,7 +309,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                     });
         } else if (status.equals("1")) {
             showProgressDialog();
-            UdriveRestClient.getClentInstance().lockCar(token, map)
+            UdriveRestClient.getClentInstance().lockCar(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<DoorBean>() {
@@ -347,7 +345,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                     });
         } else {
             showProgressDialog();
-            UdriveRestClient.getClentInstance().searchCarBySound(token, map)
+            UdriveRestClient.getClentInstance().searchCarBySound(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<DoorBean>() {
@@ -391,8 +389,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
             return;
         }
         showProgressDialog();
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().checkCar(token, carId, toPark.getParkID())
+        UdriveRestClient.getClentInstance().checkCar(carId, toPark.getParkID())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CheckCarResult>() {
@@ -505,8 +502,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
         map.put("orderNum", orderNum);
         map.put("destinationParkId", dataBean.getId() + "");
         showProgressDialog();
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().updateDestinationPark(token, map)
+        UdriveRestClient.getClentInstance().updateDestinationPark(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<RetParkObj>() {

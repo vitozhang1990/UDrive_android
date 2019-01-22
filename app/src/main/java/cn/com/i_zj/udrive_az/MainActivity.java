@@ -149,7 +149,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     }
 
     private void getReservation() {
-        UdriveRestClient.getClentInstance().getReservation(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().getReservation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GetReservation>() {
@@ -194,7 +194,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     }
 
     private void getUnfinishedOrder() {
-        UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().getUnfinishedOrder()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UnFinishOrderResult>() {

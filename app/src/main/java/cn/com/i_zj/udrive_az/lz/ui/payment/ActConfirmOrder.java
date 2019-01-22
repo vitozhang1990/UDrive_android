@@ -36,7 +36,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
@@ -199,7 +198,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
     public void findTripOrders() {
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
+        UdriveRestClient.getClentInstance().tripOrderDetail(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<OrderDetailResult>() {
@@ -305,7 +304,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
         showProgressDialog();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("orderNum", orderNumber);
-        UdriveRestClient.getClentInstance().payOrderByBalance(SessionManager.getInstance().getAuthorization(), hashMap)
+        UdriveRestClient.getClentInstance().payOrderByBalance(hashMap)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<PayOrderByBlanceResult>() {
@@ -352,7 +351,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
         map.put("preferentialId", pId);
         map.put("orderId", orderId);
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().payAmount(SessionManager.getInstance().getAuthorization(), map)
+        UdriveRestClient.getClentInstance().payAmount(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<OrderDetailResult>() {
@@ -396,7 +395,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
     private void getAliTripOrder(String orderNumber) {
         showProgressDialog();
-        UdriveRestClient.getClentInstance().getAliPayTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber)
+        UdriveRestClient.getClentInstance().getAliPayTripOrder(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<AliPayOrder>() {
@@ -423,7 +422,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
     private void getWechatTripOrder(String orderNumber) {
         showProgressDialog();
-        UdriveRestClient.getClentInstance().getWechatTripOrder(SessionManager.getInstance().getAuthorization(), orderNumber + "")
+        UdriveRestClient.getClentInstance().getWechatTripOrder(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeichatPayOrder>() {

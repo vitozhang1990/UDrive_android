@@ -22,7 +22,6 @@ import java.util.List;
 
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
@@ -81,7 +80,7 @@ public class CouponDialogFragment extends BottomSheetDialogFragment implements B
             Toast.makeText(getContext(), "数据请求失败", Toast.LENGTH_SHORT).show();
             return;
         }
-        UdriveRestClient.getClentInstance().findUnUsePreferential(SessionManager.getInstance().getAuthorization(), accountInfo.data.userId + "")
+        UdriveRestClient.getClentInstance().findUnUsePreferential(accountInfo.data.userId + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UnUseCouponResult>() {

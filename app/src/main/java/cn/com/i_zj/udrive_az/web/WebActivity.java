@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -227,7 +226,7 @@ public class WebActivity extends DBSBaseActivity {
                 }
 
                 callBackFunction = function;
-                UdriveRestClient.getClentInstance().getWechatRentApp(SessionManager.getInstance().getAuthorization(), orderNum)
+                UdriveRestClient.getClentInstance().getWechatRentApp(orderNum)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<WeichatPayOrder>() {

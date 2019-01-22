@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,16 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -40,7 +34,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -54,11 +47,9 @@ import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.BaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
 import cn.com.i_zj.udrive_az.lz.ui.camera.CameraActivity;
 import cn.com.i_zj.udrive_az.lz.ui.idpost.IDPostActivity;
-import cn.com.i_zj.udrive_az.lz.util.HttpUtils;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.DriverResult;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
@@ -288,7 +279,7 @@ public class IDRegisterActivity extends BaseActivity implements View.OnClickList
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
 
-        UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
+        UdriveRestClient.getClentInstance().postImage(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ImageUrlResult>() {
@@ -358,7 +349,7 @@ public class IDRegisterActivity extends BaseActivity implements View.OnClickList
         map.put("driverLicencePhotoMaster", mFrontUrl);
         map.put("driverLicencePhotoSlave", mBehindUrl);
 
-        UdriveRestClient.getClentInstance().addDriver(SessionManager.getInstance().getAuthorization(), null)
+        UdriveRestClient.getClentInstance().addDriver(null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DriverResult>() {

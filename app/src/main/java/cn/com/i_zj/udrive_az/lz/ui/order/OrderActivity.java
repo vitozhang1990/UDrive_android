@@ -19,7 +19,6 @@ import java.util.List;
 
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
@@ -140,8 +139,7 @@ public class OrderActivity extends AppCompatActivity implements BaseQuickAdapter
     }
 
     private void getFindTripOrders() {
-
-        UdriveRestClient.getClentInstance().queryAllOrdersByUser(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().queryAllOrdersByUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<OrderResult>() {

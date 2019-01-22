@@ -2,8 +2,6 @@ package cn.com.i_zj.udrive_az.lz.ui.idpost;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,24 +18,19 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 import cn.com.i_zj.udrive_az.BaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
 import cn.com.i_zj.udrive_az.lz.ui.camera.CameraActivity;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.IDRegisterActivity;
@@ -260,7 +253,7 @@ public class IDPostActivity extends BaseActivity implements View.OnClickListener
         map.put("identityCardPhotoFront", mFrontUrl);
         map.put("identityCardPhotoBehind", mBehindUrl);
 
-        UdriveRestClient.getClentInstance().postAddIdCardInfo(SessionManager.getInstance().getAuthorization(), map)
+        UdriveRestClient.getClentInstance().postAddIdCardInfo(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<IDResult>() {
@@ -301,7 +294,7 @@ public class IDPostActivity extends BaseActivity implements View.OnClickListener
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
 
-        UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
+        UdriveRestClient.getClentInstance().postImage(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ImageUrlResult>() {

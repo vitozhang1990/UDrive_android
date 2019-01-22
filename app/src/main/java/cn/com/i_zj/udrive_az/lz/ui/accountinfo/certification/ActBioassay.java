@@ -52,7 +52,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.IDResult;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
@@ -344,7 +343,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
         showProgressDialog();
-        UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
+        UdriveRestClient.getClentInstance().postImage(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ImageUrlResult>() {
@@ -428,7 +427,7 @@ public class ActBioassay extends DBSBaseActivity implements OnFrameListener<byte
 
     //上传认证信息
     private void uploadCardInfo() {
-        UdriveRestClient.getClentInstance().postAddIdCardInfo(SessionManager.getInstance().getAuthorization(), addIdCardInfo)
+        UdriveRestClient.getClentInstance().postAddIdCardInfo(addIdCardInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<IDResult>() {

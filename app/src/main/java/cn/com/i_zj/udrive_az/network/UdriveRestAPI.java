@@ -86,73 +86,70 @@ public interface UdriveRestAPI {
     //提交驾驶证信息
     @Headers("Content-Type: application/json")
     @PUT("/mobile/card/addDriverCardInfo")
-    Observable<DriverResult> addDriver(@Header("Authorization") String Authorization,
-                                       @Body AddDriverCardInfo body);
+    Observable<DriverResult> addDriver(@Body AddDriverCardInfo body);
 
     //我的钱包
     @GET("/mobile/pay/myWallet")
-    Observable<WalletResult> myWallet(@Header("Authorization") String Authorization);
+    Observable<WalletResult> myWallet();
 
     //查询用户押金信息
     @GET("/mobile/deposit/userDeposit")
-    Observable<UserDepositResult> userDeposit(@Header("Authorization") String Authorization);
+    Observable<UserDepositResult> userDeposit();
 
     //获取押金金额
     @GET("/mobile/deposit/getDepositAmount")
-    Observable<DepositAmountResult> getDepositAmount(@Header("Authorization") String Authorization);
+    Observable<DepositAmountResult> getDepositAmount();
 
 
     //上传身份证正反面
     @Multipart
     @POST("mobile/card/uploadImage")
-    Observable<ImageUrlResult> postImage(@Header("Authorization") String Authorization, @Part MultipartBody.Part file);
+    Observable<ImageUrlResult> postImage(@Part MultipartBody.Part file);
 
     //上传身份信息
     @Headers("Content-Type: application/json")
     @PUT("/mobile/card/addIdCardInfo")
-    Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
-                                           @Body Map<String, Object> body);
+    Observable<IDResult> postAddIdCardInfo(@Body Map<String, Object> body);
 
     //上传身份信息
     @Headers("Content-Type: application/json")
     @PUT("/mobile/card/addIdCardInfo")
-    Observable<IDResult> postAddIdCardInfo(@Header("Authorization") String Authorization,
-                                           @Body AddIdCardInfo addIdCardInfo);
+    Observable<IDResult> postAddIdCardInfo(@Body AddIdCardInfo addIdCardInfo);
 
     //查询所有订单
     @GET("/mobile/tripOrder/queryAllOrdersByUser")
-    Observable<OrderResult> queryAllOrdersByUser(@Header("Authorization") String Authorization);
+    Observable<OrderResult> queryAllOrdersByUser();
 
     @GET("/mobile/v1/park/checkCar")
-    Observable<CheckCarResult> checkCar(@Header("Authorization") String Authorization, @Query("carId") String carId, @Query("parkId") int parkId);
+    Observable<CheckCarResult> checkCar(@Query("carId") String carId, @Query("parkId") int parkId);
 
     //获取user信息
     @GET("/mobile/card/getUserInfo")
-    Observable<AccountInfoResult> getUserInfo(@Header("Authorization") String Authorization);
+    Observable<AccountInfoResult> getUserInfo();
 
     //获取我的行程状态
     @GET("/mobile/tripOrder/unfinishedOrder")
-    Observable<UnFinishOrderResult> getUnfinishedOrder(@Header("Authorization") String Authorization);
+    Observable<UnFinishOrderResult> getUnfinishedOrder();
 
     @GET("/open/getAppView")
     Observable<ActivityResult> getAppView();
 
     //获取订单详情
     @GET("/mobile/tripOrder/{orderNum}")
-    Observable<OrderDetailResult> tripOrderDetail(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<OrderDetailResult> tripOrderDetail(@Path("orderNum") String orderNum);
 
     //获取订单轨迹
     @GET("/mobile/tripOrder/originContrail/{orderId}")
-    Observable<BaseRetObj<List<OriginContrail>>> originContrail(@Header("Authorization") String Authorization, @Path("orderId") int orderId);
+    Observable<BaseRetObj<List<OriginContrail>>> originContrail(@Path("orderId") int orderId);
 
     //获取优惠券
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/payAmount")
-    Observable<OrderDetailResult> payAmount(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<OrderDetailResult> payAmount(@Body Map<String, Object> body);
 
     //获取所有的优惠券
     @GET("/mobile/preferential/findAllPreferential")
-    Observable<UnUseCouponResult> findAllPreferential(@Header("Authorization") String Authorization, @Query("userId") String id);
+    Observable<UnUseCouponResult> findAllPreferential(@Query("userId") String id);
 
     //获取所有的优惠券
     @GET("/mobile/v1/preferential/findAllPreferential")
@@ -160,7 +157,7 @@ public interface UdriveRestAPI {
 
     //获取押金订单号
     @GET("/mobile/deposit/refundDeposit")
-    Observable<RefundDepositResult> refundDeposit(@Header("Authorization") String Authorization);
+    Observable<RefundDepositResult> refundDeposit();
 
     //获取城市信息
     @GET("/open/getCityList")
@@ -168,39 +165,39 @@ public interface UdriveRestAPI {
 
     //根据订单号退押金
     @POST("/mobile/refund/{orderNum}")
-    Observable<RefundDepositResult> refundMoney(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<RefundDepositResult> refundMoney(@Path("orderNum") String orderNum);
 
     //创建缴纳押金订单
     @GET("/mobile/deposit/createDeposit")
-    Observable<CreateDepositResult> createDeposit(@Header("Authorization") String Authorization);
+    Observable<CreateDepositResult> createDeposit();
 
     //获取支付宝押金信息
     @POST("/mobile/alipay/getPrepayId/depositOrder/{orderNum}")
-    Observable<AliPayOrder> getAliPayYajinOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<AliPayOrder> getAliPayYajinOderInfo(@Path("orderNum") String orderNum);
 
     //获取微信押金信息
     @POST("/mobile/wechatpay/getPrepayId/depositOrder/{orderNum}")
-    Observable<WeichatPayOrder> getWechatYajinOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<WeichatPayOrder> getWechatYajinOderInfo(@Path("orderNum") String orderNum);
 
     //余额支付
     @Headers("Content-Type: application/json")
     @POST("/mobile/pay/payOrderByBalance")
-    Observable<PayOrderByBlanceResult> payOrderByBalance(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<PayOrderByBlanceResult> payOrderByBalance(@Body Map<String, Object> body);
 
     //行程订单微信支付统一下单获取预支付ID
     @POST("/mobile/wechatpay/getPrepayId/tripOrder/{orderNum}")
-    Observable<WeichatPayOrder> getWechatTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<WeichatPayOrder> getWechatTripOrder(@Path("orderNum") String orderNum);
 
     @POST("/mobile/wechatpay/getPrepayId/rentApp/{orderNum}")
-    Observable<WeichatPayOrder> getWechatRentApp(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<WeichatPayOrder> getWechatRentApp(@Path("orderNum") String orderNum);
 
     //指定行程订单订单号，获取支付宝支付参数
     @POST("/mobile/alipay/getPayOrder/tripOrder/{orderNum}")
-    Observable<AliPayOrder> getAliPayTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<AliPayOrder> getAliPayTripOrder(@Path("orderNum") String orderNum);
 
     //获取所有可用的优惠券
     @GET("/mobile/preferential/findUnUsePreferential")
-    Observable<UnUseCouponResult> findUnUsePreferential(@Header("Authorization") String Authorization, @Query("userId") String id);
+    Observable<UnUseCouponResult> findUnUsePreferential(@Query("userId") String id);
 
     //获取所有可用的优惠券
     @GET("/mobile/v1/preferential/findUnUsePreferential")
@@ -228,68 +225,68 @@ public interface UdriveRestAPI {
     //预约车辆接口
     @Headers("Content-Type: application/json")
     @POST("mobile/tripOrder/reservation")
-    Observable<ReserVationBean> reservation(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<ReserVationBean> reservation(@Body Map<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("mobile/v1/order")
-    Observable<CreateOderBean> createTripOrder(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<CreateOderBean> createTripOrder(@Body Map<String, Object> body);
 
     @Headers("Content-Type: application/json")
     @PUT("mobile/v1/order/finish")
-    Observable<OrderDetailResult> finishTripOrder(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<OrderDetailResult> finishTripOrder(@Body Map<String, Object> body);
 
     //创建订单接口
     @Headers("Content-Type: application/json")
     @POST("mobile/tripOrder/create")
-    Observable<CreateOderBean> createOder(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<CreateOderBean> createOder(@Body Map<String, String> body);
 
     //打开车门
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/openCar")
-    Observable<DoorBean> openCar(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<DoorBean> openCar(@Body Map<String, String> body);
 
     //关闭车门
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/lockCar")
-    Observable<DoorBean> lockCar(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<DoorBean> lockCar(@Body Map<String, String> body);
 
     //寻车
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/searchCarBySound")
-    Observable<DoorBean> searchCarBySound(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<DoorBean> searchCarBySound(@Body Map<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("/mobile/tripOrder/searchCarByReservation")
-    Observable<DoorBean> searchCarByReservation(@Header("Authorization") String Authorization);
+    Observable<DoorBean> searchCarByReservation();
 
     //结束行程
     @PUT("/mobile/tripOrder/completeTripOrder/{orderNum}")
-    Observable<OrderDetailResult> completeTripOrder(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<OrderDetailResult> completeTripOrder(@Path("orderNum") String orderNum);
 
     //取消预约
     @Headers("Content-Type: application/json")
     @PUT("/mobile/car/cancelReservation")
-    Observable<DoorBean> cancelReservation(@Header("Authorization") String Authorization, @Body Map<String, String> body);
+    Observable<DoorBean> cancelReservation(@Body Map<String, String> body);
 
     //查询用户预约信息
     @GET("/mobile/tripOrder/getReservation")
-    Observable<GetReservation> getReservation(@Header("Authorization") String Authorization);
+    Observable<GetReservation> getReservation();
 
     @Headers("Content-Type: application/json")
     @POST("mobile/recharge/create")
-    Observable<RechargeOrder> createRechargeOrder(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<RechargeOrder> createRechargeOrder(@Body Map<String, Object> body);
 
 
     @POST("/mobile/alipay/getPrepayId/rechargeOrder/{orderNum}")
-    Observable<AliPayOrder> getAliPayOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<AliPayOrder> getAliPayOderInfo(@Path("orderNum") String orderNum);
 
     @POST("/mobile/wechatpay/getPrepayId/rechargeOrder/{orderNum}")
-    Observable<WeichatPayOrder> getWeiChatPayOderInfo(@Header("Authorization") String Authorization, @Path("orderNum") String orderNum);
+    Observable<WeichatPayOrder> getWeiChatPayOderInfo(@Path("orderNum") String orderNum);
 
     //更新订单终点停车场
     @Headers("Content-Type: application/json")
     @PUT("/mobile/tripOrder/updateDestinationPark")
-    Observable<RetParkObj> updateDestinationPark(@Header("Authorization") String Authorization, @Body Map<String, Object> body);
+    Observable<RetParkObj> updateDestinationPark(@Body Map<String, Object> body);
 
     @GET("/mobile/appversion/1/check")
     Observable<RetAppversionObj> appversionCheck(@Query("version") String version);

@@ -50,7 +50,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.ActIdentificationCameraTwo;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -274,7 +273,7 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
         showProgressDialog();
-        UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
+        UdriveRestClient.getClentInstance().postImage(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ImageUrlResult>() {
@@ -448,7 +447,7 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
         }
 
 
-        UdriveRestClient.getClentInstance().addDriver(SessionManager.getInstance().getAuthorization(), addDriverCardInfo)
+        UdriveRestClient.getClentInstance().addDriver(addDriverCardInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DriverResult>() {

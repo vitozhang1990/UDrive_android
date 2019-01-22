@@ -1,24 +1,20 @@
 package cn.com.i_zj.udrive_az.lz.ui.coupon;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.DBSBaseActivity;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
@@ -78,7 +74,7 @@ public class CouponListActivity extends DBSBaseActivity implements SwipeRefreshL
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
-        UdriveRestClient.getClentInstance().findAllPreferential(SessionManager.getInstance().getAuthorization(), accountInfo.data.userId + "")
+        UdriveRestClient.getClentInstance().findAllPreferential(accountInfo.data.userId + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UnUseCouponResult>() {

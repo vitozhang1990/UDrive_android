@@ -295,7 +295,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
      * 获取用户的个人信息
      */
     private void getUserInfo() {
-        UdriveRestClient.getClentInstance().getUserInfo(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().getUserInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<AccountInfoResult>() {
@@ -380,7 +380,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
      */
     private void getUnfinishedOrder() {
 
-        UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().getUnfinishedOrder()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UnFinishOrderResult>() {

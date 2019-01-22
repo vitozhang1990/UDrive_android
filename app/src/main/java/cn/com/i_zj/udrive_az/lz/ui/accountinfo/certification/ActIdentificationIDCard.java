@@ -46,7 +46,6 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.ActIdentificationCameraTwo;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.ALiIDCarBean;
@@ -353,7 +352,7 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
         showProgressDialog();
-        UdriveRestClient.getClentInstance().postImage(SessionManager.getInstance().getAuthorization(), body)
+        UdriveRestClient.getClentInstance().postImage(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ImageUrlResult>() {

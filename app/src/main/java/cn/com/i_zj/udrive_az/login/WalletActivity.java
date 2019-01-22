@@ -16,9 +16,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.coupon.CouponListActivity;
 import cn.com.i_zj.udrive_az.lz.ui.coupons.CouponsActivity;
-import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.model.WalletResult;
@@ -68,7 +66,7 @@ public class WalletActivity extends DBSBaseActivity {
             finish();
             return;
         }
-        fetchBalance(authorization);
+        fetchBalance();
     }
 
     @Override
@@ -85,8 +83,7 @@ public class WalletActivity extends DBSBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PAY_BALANCE && RESULT_OK == resultCode) {
-            String authorization = SessionManager.getInstance().getAuthorization();
-            fetchBalance(authorization);
+            fetchBalance();
         }
     }
 
@@ -95,8 +92,8 @@ public class WalletActivity extends DBSBaseActivity {
         startActivity(new Intent(this, CouponsActivity.class));
     }
 
-    private void fetchBalance(String authorization) {
-        UdriveRestClient.getClentInstance().myWallet(authorization)
+    private void fetchBalance() {
+        UdriveRestClient.getClentInstance().myWallet()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WalletResult>() {

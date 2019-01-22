@@ -30,6 +30,8 @@ import cn.com.i_zj.udrive_az.map.adapter.RecyclerViewUtils;
 import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -78,6 +80,7 @@ public class MainTopFragment extends DBSBaseFragment {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         cityInfo = cityList.get(position);
+                        LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
                         EventBus.getDefault().post(cityInfo);
                         pickModel = false;
                         updateUi();
@@ -101,6 +104,9 @@ public class MainTopFragment extends DBSBaseFragment {
                         if (listBaseRetObj.getCode() != 1) {
                             ToastUtils.showShort(listBaseRetObj.getMessage());
                             return;
+                        }
+                        if (listBaseRetObj.getDate().size() > 0) {
+                            LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY_LIST, listBaseRetObj.getDate());
                         }
                         cityList.clear();
                         cityList.addAll(listBaseRetObj.getDate());

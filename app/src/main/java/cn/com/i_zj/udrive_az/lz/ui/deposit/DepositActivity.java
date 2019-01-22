@@ -31,7 +31,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -167,7 +166,7 @@ public class DepositActivity extends DBSBaseActivity {
 
     private void getDepositMoney(String orderNumber) {
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().refundMoney(SessionManager.getInstance().getAuthorization(), orderNumber)
+        UdriveRestClient.getClentInstance().refundMoney(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<RefundDepositResult>() {
@@ -209,7 +208,7 @@ public class DepositActivity extends DBSBaseActivity {
     //获取押金信息
     private void getUserDeposit() {
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().userDeposit(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().userDeposit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UserDepositResult>() {
@@ -246,7 +245,7 @@ public class DepositActivity extends DBSBaseActivity {
 
     //获取押金金额
     private void getDepositAmount() {
-        UdriveRestClient.getClentInstance().getDepositAmount(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().getDepositAmount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DepositAmountResult>() {
@@ -298,7 +297,7 @@ public class DepositActivity extends DBSBaseActivity {
 
     private void getCreateDepositNumber(final int type) {
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().createDeposit(SessionManager.getInstance().getAuthorization())
+        UdriveRestClient.getClentInstance().createDeposit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CreateDepositResult>() {
@@ -331,7 +330,7 @@ public class DepositActivity extends DBSBaseActivity {
     }
 
     private void getAliYajin(String orderNumber) {
-        UdriveRestClient.getClentInstance().getAliPayYajinOderInfo(SessionManager.getInstance().getAuthorization(), orderNumber)
+        UdriveRestClient.getClentInstance().getAliPayYajinOderInfo(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<AliPayOrder>() {
@@ -357,7 +356,7 @@ public class DepositActivity extends DBSBaseActivity {
     }
 
     private void getWechatYajin(String orderNumber) {
-        UdriveRestClient.getClentInstance().getWechatYajinOderInfo(SessionManager.getInstance().getAuthorization(), orderNumber + "")
+        UdriveRestClient.getClentInstance().getWechatYajinOderInfo(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeichatPayOrder>() {

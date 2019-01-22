@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-
 import com.alipay.sdk.app.PayTask;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -22,6 +21,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.AliPayEvent;
 import cn.com.i_zj.udrive_az.event.WeixinPayEvent;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -34,7 +34,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import cn.com.i_zj.udrive_az.R;
 
 /**
  * 充值Activity
@@ -79,8 +78,7 @@ public class RechargeActivity extends DBSBaseActivity {
     map.put("amount", amount);
     map.put("payType", payType);
 
-    String token = SessionManager.getInstance().getAuthorization();
-    UdriveRestClient.getClentInstance().createRechargeOrder(token, map)
+      UdriveRestClient.getClentInstance().createRechargeOrder(map)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(new Observer<RechargeOrder>() {
@@ -113,8 +111,7 @@ public class RechargeActivity extends DBSBaseActivity {
   }
 
   private void getAliPayOrderInfo(RechargeOrder.RechargeOrderItem orderItem) {
-    String token = SessionManager.getInstance().getAuthorization();
-    UdriveRestClient.getClentInstance().getAliPayOderInfo(token, orderItem.number)
+      UdriveRestClient.getClentInstance().getAliPayOderInfo(orderItem.number)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(new Observer<AliPayOrder>() {
@@ -143,8 +140,7 @@ public class RechargeActivity extends DBSBaseActivity {
   }
 
   private void getWeiChatOderInfo(RechargeOrder.RechargeOrderItem orderItem) {
-    String token = SessionManager.getInstance().getAuthorization();
-    UdriveRestClient.getClentInstance().getWeiChatPayOderInfo(token, orderItem.number)
+      UdriveRestClient.getClentInstance().getWeiChatPayOderInfo(orderItem.number)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(new Observer<WeichatPayOrder>() {

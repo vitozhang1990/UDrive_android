@@ -34,7 +34,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
@@ -130,7 +129,7 @@ public class ActOrderPayment extends DBSBaseActivity {
 
     public void findTripOrders() {
         showProgressDialog(true);
-        UdriveRestClient.getClentInstance().tripOrderDetail(SessionManager.getInstance().getAuthorization(), orderNumber)
+        UdriveRestClient.getClentInstance().tripOrderDetail(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Predicate<OrderDetailResult>() {
@@ -147,10 +146,8 @@ public class ActOrderPayment extends DBSBaseActivity {
                     @Override
                     public ObservableSource<BaseRetObj<List<OriginContrail>>> apply(OrderDetailResult orderDetailResult) throws Exception {
                         showDate(orderDetailResult);
-                        String token = SessionManager.getInstance().getAuthorization();
-
                         return UdriveRestClient.getClentInstance()
-                                .originContrail(token, orderDetailResult.data.id)
+                                .originContrail(orderDetailResult.data.id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread());
                     }

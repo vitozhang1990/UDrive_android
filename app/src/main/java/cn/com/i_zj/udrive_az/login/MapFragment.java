@@ -81,6 +81,7 @@ import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
+import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.ParkAreaBean;
@@ -383,6 +384,31 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         }
     }
 
+    CityListResult mCityInfo;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CityListResult cityInfo) {
+        if (mCityInfo == null || !mCityInfo.getAreaCode().equals(cityInfo.getAreaCode())) {
+            mCityInfo = cityInfo;
+            updateCity();
+        }
+    }
+
+    //若是当前城市，则定位到手机位置，否则按给到的点显示
+    private void updateCity() {
+        try {
+            float longitude = Float.valueOf(mCityInfo.getCenter().split(",")[0]);
+            float latitude= Float.valueOf(mCityInfo.getCenter().split(",")[1]);
+            LatLng latLng = new LatLng(latitude, longitude);
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f));
+            reset();
+            mAmap.clear();
+            fetchAreas();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void fetchAreas() {
         if (disposable != null) {
             disposable.isDisposed();
@@ -553,7 +579,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void getUnPayOrder() {
-        UdriveRestClient.getClentInstance().getUnfinishedOrder(SessionManager.getInstance().getAuthorization())
+        showProgressDialog();
+        UdriveRestClient.getClentInstance().getUnfinishedOrder()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UnFinishOrderResult>() {
@@ -563,6 +590,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onNext(UnFinishOrderResult result) {
+                        dissmisProgressDialog();
                         if (result != null && result.getCode() == 1
                                 && result.getData() != null && result.getData().getId() > 0
                                 && result.getData().getStatus() == 1) {
@@ -581,6 +609,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                     @Override
                     public void onError(Throwable e) {
+                        dissmisProgressDialog();
                         e.printStackTrace();
                         if (bunldBean.isTrafficControl()) {
                             showTrafficControlDialog();
@@ -603,9 +632,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         Map<String, String> map = new HashMap<>();
         map.put("carId", carid);
         map.put("startParkId", parkid);
-        String token = SessionManager.getInstance().getAuthorization();
         showProgressDialog();
-        UdriveRestClient.getClentInstance().reservation(token, map)
+        UdriveRestClient.getClentInstance().reservation(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ReserVationBean>() {
@@ -842,9 +870,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 mAmap.setMyLocationEnabled(true);
 
                 mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
-                //将地图移动到定位点
-                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
+                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
                 isFirstLoc = false;
             } else {
                 //定位成功回调信息，设置相关消息

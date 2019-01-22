@@ -37,7 +37,6 @@ import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
@@ -147,8 +146,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
         map.put("orderNum", orderNum);
         map.put("photo", photoBean);
         showProgressDialog();
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().finishTripOrder(token, map)
+        UdriveRestClient.getClentInstance().finishTripOrder(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<OrderDetailResult>() {

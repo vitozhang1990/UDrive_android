@@ -59,7 +59,6 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
@@ -310,8 +309,7 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
         showProgressDialog();
         Map<String, String> map = new HashMap<>();
         map.put("reservationId", reservationID.trim());
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().cancelReservation(token, map)
+        UdriveRestClient.getClentInstance().cancelReservation(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DoorBean>() {
@@ -352,8 +350,7 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
 
     private void searchCarBySound() {
         showProgressDialog();
-        String token = SessionManager.getInstance().getAuthorization();
-        UdriveRestClient.getClentInstance().searchCarByReservation(token)
+        UdriveRestClient.getClentInstance().searchCarByReservation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DoorBean>() {
