@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.model.CityListResult;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -82,11 +85,18 @@ public class UdriveRestClient {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request.Builder builder = chain.request()
-                    .newBuilder();
+            Request.Builder builder = chain.request().newBuilder();
             String aAuthorization = SessionManager.getInstance().getAuthorization();
             if (!StringUtils.isEmpty(aAuthorization)) {
                 builder.addHeader("Authorization", aAuthorization);
+            }
+            try {
+                CityListResult cityInfo = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY);
+                if (cityInfo != null) {
+                    builder.addHeader("areaCode", cityInfo.getAreaCode());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return chain.proceed(builder.build());
         }

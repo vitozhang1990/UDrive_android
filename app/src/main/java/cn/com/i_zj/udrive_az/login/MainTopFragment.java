@@ -1,5 +1,6 @@
 package cn.com.i_zj.udrive_az.login;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -73,6 +74,13 @@ public class MainTopFragment extends DBSBaseFragment {
                     public <T> void logic(BaseViewHolder helper, T item) {
                         CityListResult ai = (CityListResult) item;
                         helper.setText(R.id.city_name, ai.getAreaName());
+                        if (cityInfo != null &&
+                                (cityInfo.getAreaCode().equals(ai.getAreaCode()))
+                                || cityInfo.getAreaName().equals(ai.getAreaName())) {
+                            ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT_BOLD);
+                        } else {
+                            ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT);
+                        }
                         Glide.with(getActivity()).load(ai.getImg()).crossFade().into((ImageView) helper.getView(R.id.city_pic));
                     }
                 }
@@ -86,6 +94,11 @@ public class MainTopFragment extends DBSBaseFragment {
                         updateUi();
                     }
                 });
+        updateUi();
+        requestCityList();
+    }
+
+    private void requestCityList() {
         UdriveRestClient.getClentInstance().getCityList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -130,6 +143,8 @@ public class MainTopFragment extends DBSBaseFragment {
         switch (view.getId()) {
             case R.id.city_layout:
                 pickModel = !pickModel;
+                cityInfo = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY);
+                mAdapter.notifyDataSetChanged();
                 break;
             case R.id.mengceng:
                 pickModel = false;

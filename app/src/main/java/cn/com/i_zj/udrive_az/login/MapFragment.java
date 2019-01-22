@@ -95,6 +95,7 @@ import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
@@ -109,6 +110,20 @@ import static android.widget.Toast.makeText;
 
 /**
  * 地图MapFragment
+ *
+ * 按钮点击效果：
+ *
+ *                       refreshBtn              locationBtn
+ *
+ * park-----selected------refresh-------------reset,location,zoom
+ *      |
+ *      |
+ *       ---normal--------refresh---------------location,zoom
+ *
+ * area-------------------refresh-----------------location
+ *
+ * 异地--------------------refresh-----reset,update to currentCity,zoom,park
+ *
  */
 public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         , RouteSearch.OnRouteSearchListener, EasyPermissions.PermissionCallbacks
@@ -183,6 +198,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private DecimalFormat df = new DecimalFormat("0.0");
     private boolean first = true;
 
+    private CityListResult mCityInfo;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_map;
@@ -228,6 +245,15 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         mLocationClient = new AMapLocationClient(getActivity().getApplicationContext());
         mLocationClient.setLocationListener(this);
         mLocationClient.startLocation();
+        //设置定位图标样式
+        MyLocationStyle myLocationStyle = new MyLocationStyle();
+        myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
+        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));//圆圈的颜色,设为透明的时候就可以去掉园区区域了
+        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_arrow));
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
+        mAmap.setMyLocationStyle(myLocationStyle);
+        mAmap.setMyLocationEnabled(true);
+
         mAmap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
@@ -289,32 +315,17 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 if (animRefresh != null) {
                     ivRefresh.startAnimation(animRefresh);
                 }
-                buldParkBean = null;
-                for (Marker marker : areaMarkers) {
-                    marker.remove();
-                }
-                areaMarkers.clear();
-                if (clickMarker != null) {
-                    clickMarker.setVisible(true);
-                }
-                removeAllOtherMarker();
-                fetchParks();
-                showArea(false);
-                if (mLocationClient != null) {
-                    mLocationClient.startLocation();
+                if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom) {
+                    fetchParks();
+                } else {
+                    fetchAreas();
                 }
                 break;
             case R.id.iv_mylocation:
-                buldParkBean = null;
-                if (clickMarker != null) {
-                    clickMarker.setVisible(true);
+                if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom && bunldBean != null) {
+                    reset();
                 }
-                removeAllOtherMarker();
-                fetchParks();
-                showArea(false);
-                if (mLocationClient != null) {
-                    mLocationClient.startLocation();
-                }
+                if (mLocationClient != null) mLocationClient.startLocation();
                 break;
             case R.id.tv_park_detail:
                 getParkRemark();
@@ -384,8 +395,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         }
     }
 
-    CityListResult mCityInfo;
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(CityListResult cityInfo) {
         if (mCityInfo == null || !mCityInfo.getAreaCode().equals(cityInfo.getAreaCode())) {
@@ -402,7 +411,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             LatLng latLng = new LatLng(latitude, longitude);
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f));
             reset();
-            mAmap.clear();
+
             fetchAreas();
         } catch (Exception e) {
             e.printStackTrace();
@@ -857,29 +866,16 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null && aMapLocation.getErrorCode() == 0) {
+            mLocationClient.stopLocation();
             mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-            if (isFirstLoc) {
-                //这段代码是修改样式去掉阴影圆圈地图的
-                MyLocationStyle myLocationStyle = new MyLocationStyle();
-                myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
-                myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));//圆圈的颜色,设为透明的时候就可以去掉园区区域了
-                myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(
-                        R.mipmap.ic_location_arrow));
-                myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
-                mAmap.setMyLocationStyle(myLocationStyle);
-                mAmap.setMyLocationEnabled(true);
-
-                mLocationClient.stopLocation();
+            CityListResult cityInfo = new CityListResult();
+            cityInfo.setAreaCode(aMapLocation.getCityCode());
+            cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
+            LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
+            if (mAmap.getCameraPosition().zoom > Constants2.AreaMarkerZoom || clickMarker != null) {
                 mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
-                isFirstLoc = false;
             } else {
-                //定位成功回调信息，设置相关消息
-                mLocationClient.stopLocation();
-                //然后可以移动到定位点,使用animateCamera就有动画效果
-                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
-                ll_info.setVisibility(View.GONE);
-                btn_yuding.setVisibility(View.GONE);
-                btn_yongche.setVisibility(View.VISIBLE);
+                mAmap.moveCamera(CameraUpdateFactory.newLatLng(mobileLocation));
             }
         }
     }
@@ -910,10 +906,45 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         first = false;
     }
 
+    /**
+     * 移除marker选中的一些东西
+     * 包含停车场范围，停车场车辆，导航线路
+     */
+    private void removeAllOtherMarker() {
+        if (circle != null) {
+            circle.remove();
+            circle = null;
+        }
+        if (polygon != null) {
+            polygon.remove();
+            polygon = null;
+        }
+        if (walkRouteOverlay != null) {
+            walkRouteOverlay.removeFromMap();
+            walkRouteOverlay = null;
+        }
+        for (Marker marker : carMarkers) {
+            marker.remove();
+        }
+        allLatLngs.clear();
+    }
+
+    /**
+     * 重置到没有任何东西的状态
+     */
     private void reset() {
         removeAllOtherMarker();
         clickMarker = null;
         buldParkBean = null;
+        for (Marker marker : areaMarkers) {
+            marker.remove();
+        }
+        for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+            entry.getValue().remove();
+        }
+        areaMarkers.clear();
+        markerMap.clear();
+
         ll_info.setVisibility(View.GONE);
         btn_yuding.setVisibility(View.GONE);
     }
@@ -1106,25 +1137,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         mAmap.animateCamera(CameraUpdateFactory.newLatLngBoundsRect(boundsBuilder.build(), paddingSize, paddingSize, paddingSize, bottomPadding));
     }
 
-    private void removeAllOtherMarker() {
-        if (circle != null) {
-            circle.remove();
-            circle = null;
-        }
-        if (polygon != null) {
-            polygon.remove();
-            polygon = null;
-        }
-        if (walkRouteOverlay != null) {
-            walkRouteOverlay.removeFromMap();
-            walkRouteOverlay = null;
-        }
-        for (Marker marker : carMarkers) {
-            marker.remove();
-        }
-        allLatLngs.clear();
-    }
-
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         ToastUtils.showShort("获取成功");
@@ -1233,9 +1245,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             removeAllOtherMarker();
             fetchParks();
             showArea(false);
-            if (mLocationClient != null) {
-                mLocationClient.startLocation();
-            }
+            ll_info.setVisibility(View.GONE);
+            btn_yuding.setVisibility(View.GONE);
+            btn_yongche.startAnimation(showAnim);
+            btn_yongche.setVisibility(View.VISIBLE);
         }
     }
 }
