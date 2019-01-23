@@ -1,6 +1,11 @@
 package cn.com.i_zj.udrive_az.login;
 
+import android.content.Context;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +22,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +32,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseFragment;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.CityUpdateEvent;
+import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.map.adapter.GlobalAdapter;
 import cn.com.i_zj.udrive_az.map.adapter.OnGlobalListener;
 import cn.com.i_zj.udrive_az.map.adapter.RecyclerViewUtils;
@@ -32,6 +41,7 @@ import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -96,6 +106,28 @@ public class MainTopFragment extends DBSBaseFragment {
                 });
         updateUi();
         requestCityList();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            connectivityManager.requestNetwork(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(Network network) {
+                    super.onAvailable(network);
+                    requestCityList();
+                }
+            });
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NetWorkEvent netWorkEvent) {
+        requestCityList();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CityUpdateEvent event) {
+        cityInfo = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY);
+        updateUi();
     }
 
     private void requestCityList() {
@@ -111,11 +143,9 @@ public class MainTopFragment extends DBSBaseFragment {
                     @Override
                     public void onNext(BaseRetObj<List<CityListResult>> listBaseRetObj) {
                         if (listBaseRetObj == null) {
-                            ToastUtils.showShort("请求错误");
                             return;
                         }
                         if (listBaseRetObj.getCode() != 1) {
-                            ToastUtils.showShort(listBaseRetObj.getMessage());
                             return;
                         }
                         if (listBaseRetObj.getDate().size() > 0) {
@@ -142,6 +172,10 @@ public class MainTopFragment extends DBSBaseFragment {
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.city_layout:
+                if (cityList.size() == 0) {
+                    ToastUtils.showShort("尚未请求到城市信息，请稍后再试");
+                    return;
+                }
                 pickModel = !pickModel;
                 cityInfo = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY);
                 mAdapter.notifyDataSetChanged();
