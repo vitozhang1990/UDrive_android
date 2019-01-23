@@ -278,9 +278,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                         }
                         if (result.getCode() == 1) {
                             if (result.getData() != null && result.getData().getId() > 0) {
-                                Intent intent = new Intent(PictureBeforeActivity.this, TravelingActivity.class);
-                                intent.putExtra("bunld", result);
-                                startActivity(intent);
+                                startActivity(TravelingActivity.class);
                             }
                         } else {
                             if (!TextUtils.isEmpty(result.getMessage())) {

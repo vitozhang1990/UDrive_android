@@ -154,35 +154,71 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
         header_title.setText("行程中");
         header_image.setImageResource(R.mipmap.ic_service);
         initMap();
+        getOrder();
+    }
 
-        if (getIntent() == null) {
-            return;
-        }
-        if (getIntent().getSerializableExtra("bunld") instanceof UnFinishOrderResult) {
-            unFinishOrderBean = (UnFinishOrderResult) getIntent().getSerializableExtra("bunld");
-            if (unFinishOrderBean == null) {
-                return;
-            }
-            carId = String.valueOf(unFinishOrderBean.getData().getCarId());
-            oderId = String.valueOf(unFinishOrderBean.getData().getId());
-            orderNum = String.valueOf(unFinishOrderBean.getData().getNumber());
+    private void getOrder() {
+        showProgressDialog();
+        UdriveRestClient.getClentInstance().getUnfinishedOrder()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<UnFinishOrderResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-            fromPark = unFinishOrderBean.getData().getFromPark();
+                    @Override
+                    public void onNext(UnFinishOrderResult result) {
+                        dissmisProgressDialog();
+                        if (result == null || result.getCode() != 1) {
+                            startActivity(MainActivity.class);
+                            finish();
+                            return;
+                        }
+                        if (result.getData() != null && result.getData().getId() > 0) {
+                            unFinishOrderBean = result;
+                            if (unFinishOrderBean == null) {
+                                return;
+                            }
+                            carId = String.valueOf(unFinishOrderBean.getData().getCarId());
+                            oderId = String.valueOf(unFinishOrderBean.getData().getId());
+                            orderNum = String.valueOf(unFinishOrderBean.getData().getNumber());
 
-            if (unFinishOrderBean.getData().getToPark() != null) {
-                toPark = unFinishOrderBean.getData().getToPark();
-                allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
-                tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
-            }
-            if (unFinishOrderBean.getData().getCar() != null) {
-                CarBean car = unFinishOrderBean.getData().getCar();
-                tvCarnum.setText(car.getPlateNumber());
-                tvColor.setText(car.getCarColor());
-                tvgonglishu.setText("" + car.getMaxDistance());
-                Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
-            }
-            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100);
-        }
+                            fromPark = unFinishOrderBean.getData().getFromPark();
+
+                            if (unFinishOrderBean.getData().getToPark() != null) {
+                                toPark = unFinishOrderBean.getData().getToPark();
+                                allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
+                                tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
+                            }
+                            if (unFinishOrderBean.getData().getCar() != null) {
+                                CarBean car = unFinishOrderBean.getData().getCar();
+                                tvCarnum.setText(car.getPlateNumber());
+                                tvColor.setText(car.getCarColor());
+                                tvgonglishu.setText("" + car.getMaxDistance());
+                                Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
+                            }
+                            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100);
+                            drawMap();
+                        } else {
+                            startActivity(MainActivity.class);
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                        startActivity(MainActivity.class);
+                        finish();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void initMap() {

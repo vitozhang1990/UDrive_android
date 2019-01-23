@@ -95,7 +95,7 @@
                         android:id="@+id/tv_carnum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="川A C2456"
+                        android:text="-"
                         android:textColor="#030303"
                         android:textSize="14sp" />
 
@@ -109,7 +109,7 @@
                         android:paddingTop="1dp"
                         android:paddingRight="3dp"
                         android:paddingBottom="1dp"
-                        android:text="白色"
+                        android:text="-"
                         android:textColor="#AFAFAF"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -144,7 +144,7 @@
                             android:id="@+id/tv_gonglishu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="216"
+                            android:text="-"
                             android:textColor="#030303"
                             android:textSize="@dimen/sp_12" />
 
@@ -182,7 +182,7 @@
                             android:id="@+id/tv_amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0.0"
+                            android:text="-.-"
                             android:textColor="#373737"
                             android:textSize="@dimen/sp_24"
                             android:textStyle="bold" />

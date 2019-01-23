@@ -76,6 +76,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private long time = 0;
     private boolean hasRequest; //网络变化后只请求一次
+    private UnFinishOrderResult unFinishOrderResult;
 
     @Override
     protected int getLayoutResource() {
@@ -91,6 +92,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         versionCheck();
         getActivity();
 
+        if (SessionManager.getInstance().getAuthorization() != null) {
+            getUnfinishedOrder();
+        }
         startService(new Intent(this, BackService.class));
     }
 
@@ -105,10 +109,13 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @Override
     protected void onResume() {
         super.onResume();
-        if (SessionManager.getInstance().getAuthorization() != null) {
-            getReservation();
-            getUnfinishedOrder();
+        if (SessionManager.getInstance().getAuthorization() == null) {
+            return;
         }
+        if (hasRequest) {
+            getUnfinishedOrder1();
+        }
+        getReservation();
     }
 
     @OnClick({R.id.main_tv_msg, R.id.rl_note, R.id.main_tv_personal_info})
@@ -120,6 +127,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
             case R.id.rl_note:
                 if (homeNote != null) {
                     WebActivity.startWebActivity(MainActivity.this, homeNote.getHref(), homeNote.getTitle());
+                } else if (unFinishOrderResult != null) {
+                    startActivity(TravelingActivity.class);
                 }
                 break;
             case R.id.main_tv_personal_info:
@@ -143,7 +152,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
             if (SessionManager.getInstance().getAuthorization() != null) {
                 hasRequest = true;
                 getReservation();
-                getUnfinishedOrder();
             }
         }
     }
@@ -193,6 +201,44 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 });
     }
 
+    private void getUnfinishedOrder1() {
+        if (homeNote != null) {
+            return;
+        }
+        UdriveRestClient.getClentInstance().getUnfinishedOrder()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<UnFinishOrderResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(UnFinishOrderResult result) {
+                        if (result == null || result.getCode() != 1) {
+                            return;
+                        }
+                        if (result.getData() != null && result.getData().getId() > 0) {
+                            rlNote.setVisibility(View.VISIBLE);
+                            tvMsg.setText("您有一个订单正在进行中，点击进入");
+                            unFinishOrderResult = result;
+                        } else {
+                            rlNote.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private void getUnfinishedOrder() {
         UdriveRestClient.getClentInstance().getUnfinishedOrder()
                 .subscribeOn(Schedulers.io())
@@ -213,9 +259,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                             homeAdvDialog.dismiss();
                                             homeAdvDialog = null;
                                         }
-                                        Intent intent = new Intent(MainActivity.this, TravelingActivity.class);
-                                        intent.putExtra("bunld", result);
-                                        startActivity(intent);
+                                        startActivity(TravelingActivity.class);
                                     } else if (result.getData().getStatus() == 1) {
                                         showUnfinishedOrderDialog();
                                     }
@@ -273,7 +317,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private void getActivity() {
         UdriveRestClient.getClentInstance().activity()
-                .delay(1, TimeUnit.SECONDS)
+                .delay(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<BaseRetObj<HomeActivityEntity>>bindUntilEvent(ActivityEvent.DESTROY))
