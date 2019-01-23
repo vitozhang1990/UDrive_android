@@ -273,6 +273,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                                 ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
                                 if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
                                     continue;
+                                } else {
+                                    markerMap.get(parkKey).remove();
+                                    markerMap.remove(parkKey);
                                 }
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));

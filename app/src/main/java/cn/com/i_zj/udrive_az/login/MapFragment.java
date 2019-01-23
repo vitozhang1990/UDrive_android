@@ -511,6 +511,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                 ParksResult.DataBean temp = (ParksResult.DataBean) parkMarkerMap.get(parkKey).getObject();
                                 if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
                                     continue;
+                                } else {
+                                    parkMarkerMap.get(parkKey).remove();
+                                    parkMarkerMap.remove(parkKey);
                                 }
                             }
                             MarkerOptions markerOptions = new MarkerOptions().position(latLng);
