@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AddressInfo;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
+import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.FromParkBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
@@ -56,7 +57,9 @@ import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
+import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
@@ -82,7 +85,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
 
     private AMap mAmap;
     public AMapLocationClient mLocationClient = null;
-    private boolean isFirstLoc = true;
     private Map<ParkKey, Marker> markerMap = new HashMap();
     private Circle circle;
     private Polygon polygon;
@@ -91,6 +93,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private FromParkBean fromPark;
 
     private ParkDetailDialog parkDetailDialog;
+    private List<CityListResult> mCityList;
+    private boolean requestOnce;
 
     @Override
     protected int getLayoutResource() {
@@ -102,7 +106,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
         initViewstMap(savedInstanceState);
-        fetchParks();
+        mCityList = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY_LIST);
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -114,14 +118,17 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         uiSettings.setTiltGesturesEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(this, mAmap);
-        //初始化定位
-        mLocationClient = new AMapLocationClient(getApplicationContext());
-        //设置定位回调监听
-        mLocationClient.setLocationListener(this);
-        //启动定位
-        mLocationClient.startLocation();
 
-        //测试marker
+        MyLocationStyle myLocationStyle = new MyLocationStyle();
+        myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
+        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));//圆圈的颜色,设为透明的时候就可以去掉园区区域了
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
+        mAmap.setMyLocationStyle(myLocationStyle);
+        mAmap.setMyLocationEnabled(true);
+
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        mLocationClient.setLocationListener(this);
+        mLocationClient.startLocation();
         mAmap.setOnMarkerClickListener(this);
     }
 
@@ -196,6 +203,55 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 e.printStackTrace();
             }
         }
+    }
+
+    private void fetchParks(String areaCode) {
+        UdriveRestClient.getClentInstance().getParks(areaCode)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ParksResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(ParksResult result) {
+                        List<ParksResult.DataBean> dataBeans = result.getData();
+                        for (int i = 0; i < dataBeans.size(); i++) {
+                            ParksResult.DataBean dataBean = dataBeans.get(i);
+                            ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
+                            if (markerMap.containsKey(parkKey)) {
+                                ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
+                                if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
+                                    continue;
+                                }
+                            }
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
+                            int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
+                            StringBuilder sb = new StringBuilder();
+                            if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
+                                sb.append("起");
+                            } else {
+                                sb.append("P");
+                            }
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()), true)));
+
+                            Marker marker = mAmap.addMarker(markerOptions);
+                            marker.setObject(dataBean);
+                            markerMap.put(parkKey, marker);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void fetchParks() {
@@ -388,26 +444,40 @@ public class ChooseParkActivity extends DBSBaseActivity implements
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null && aMapLocation.getErrorCode() == 0) {
-            LatLng mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-            if (isFirstLoc) {
-//                这段代码是修改样式去掉阴影圆圈地图的
-                MyLocationStyle myLocationStyle = new MyLocationStyle();
-                myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
-                myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));//圆圈的颜色,设为透明的时候就可以去掉园区区域了
-                myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
-                mAmap.setMyLocationStyle(myLocationStyle);
-                mAmap.setMyLocationEnabled(true);
+        if (aMapLocation == null || aMapLocation.getErrorCode() != 0) {
+            return;
+        }
+        mLocationClient.stopLocation();
+        LatLng mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
 
-                mLocationClient.stopLocation();
-                mAmap.moveCamera(CameraUpdateFactory.zoomTo(Constants2.LocationZoom));
-                //将地图移动到定位点
-                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(mobileLocation));
-                isFirstLoc = false;
-            } else {
-                mLocationClient.stopLocation();
-                mAmap.animateCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.LocationZoom));
+        if (requestOnce) { //第一次才会去请求，之后都是直接定位
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
+            return;
+        }
+        requestOnce = true;
+
+
+        //逻辑：没有则正常请求，若在白名单内，则使用当前定位请求，否则使用白名单第一个城市请求
+        CityListResult cityInfo = new CityListResult();
+        cityInfo.setAreaCode(aMapLocation.getCityCode());
+        cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
+        if (mCityList == null || mCityList.size() == 0) {
+            fetchParks();
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
+            return;
+        }
+        for (CityListResult bean : mCityList) {
+            if (bean.getAreaName().equals(cityInfo.getAreaName())
+                    || bean.getAreaCode().equals(cityInfo.getAreaCode())) {
+                fetchParks(cityInfo.getAreaCode());
+                mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
+                return;
             }
         }
+        fetchParks(mCityList.get(0).getAreaCode());
+        float longitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[0]);
+        float latitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[1]);
+        LatLng latLng = new LatLng(latitude, longitude);
+        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants2.AreaMarkerZoom));
     }
 }

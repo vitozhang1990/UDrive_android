@@ -213,6 +213,10 @@ public interface UdriveRestAPI {
 
     //获取停车场
     @GET("/mobile/park/findRelativeParks")
+    Observable<ParksResult> getParks(@Query("areaCode") String areaCode);
+
+    //获取停车场
+    @GET("/mobile/park/findRelativeParks")
     Observable<BaseRetObj<List<ParksResult.DataBean>>> getParkslll();
 
     //获取停车场明细

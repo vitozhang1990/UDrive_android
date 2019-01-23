@@ -109,7 +109,7 @@ public class ChooseStartEndActivity extends DBSBaseActivity implements
      * 开始进行poi搜索
      */
     protected void doSearchQuery() {
-        query = new PoiSearch.Query(keyWord, "", "成都");
+        query = new PoiSearch.Query(keyWord, "");
         query.setPageSize(15);
         query.setPageNum(0);
 
