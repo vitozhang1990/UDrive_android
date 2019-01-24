@@ -174,6 +174,7 @@ public class MainTopFragment extends DBSBaseFragment {
             case R.id.city_layout:
                 if (cityList.size() == 0) {
                     ToastUtils.showShort("尚未请求到城市信息，请稍后再试");
+                    requestCityList();
                     return;
                 }
                 pickModel = !pickModel;

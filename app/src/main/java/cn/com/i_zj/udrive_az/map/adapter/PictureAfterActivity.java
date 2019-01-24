@@ -40,11 +40,9 @@ import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
-import cn.com.i_zj.udrive_az.map.ReserveActivity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.PhotoBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
 import io.reactivex.Observer;
@@ -163,7 +161,6 @@ public class PictureAfterActivity extends DBSBaseActivity {
                                 Intent intent1 = new Intent(PictureAfterActivity.this, ActConfirmOrder.class);
                                 intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
                                 startActivity(intent1);
-                                ScreenManager.getScreenManager().popActivity(ReserveActivity.class);
                                 EventBus.getDefault().post(new WebSocketEvent());
                                 finish();
                             } else if (bean.code == 1002) {

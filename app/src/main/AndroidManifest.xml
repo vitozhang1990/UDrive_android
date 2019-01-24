@@ -158,9 +158,6 @@
             android:name=".lz.ui.payment.PaymentActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".map.ReserveActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".map.WaitingActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

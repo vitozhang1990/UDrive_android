@@ -19,7 +19,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
-import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
@@ -28,7 +27,6 @@ import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentDialogFragment;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.OrderResult;
-import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
@@ -85,6 +83,12 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
     protected void onStart() {
         super.onStart();
         getFindTripOrders();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ScreenManager.getScreenManager().popActivity(this);
     }
 
     @Override

@@ -57,7 +57,7 @@ android {
             buildConfigField 'String', 'API_BASE_URL', '"http://test.zaijianchuxing.com:8088/"'
             buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zaijianchuxing.com:8888?orderNum="'
             buildConfigField 'String', 'SHARE_URL', '"http://test.zaijianchuxing.com?ref?referral="'
-            buildConfigField 'String', 'SHARE_AMOUNT', '"http://zaijianchuxing.com/costdetail"'
+            buildConfigField 'String', 'SHARE_AMOUNT', '"http://test.zaijianchuxing.com/costdetail"'
         }
     }
     signingConfigs {

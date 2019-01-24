@@ -33,10 +33,12 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
+import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
@@ -51,6 +53,7 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
@@ -119,6 +122,9 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
             @Override
             public void onClick(View view) {
+                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)) {
+                    startActivity(MainActivity.class);
+                }
                 finish();
             }
         });
