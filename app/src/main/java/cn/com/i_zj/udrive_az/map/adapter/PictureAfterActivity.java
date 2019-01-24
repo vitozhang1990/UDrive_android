@@ -36,6 +36,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
@@ -162,6 +163,7 @@ public class PictureAfterActivity extends DBSBaseActivity {
                                 intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
                                 startActivity(intent1);
                                 EventBus.getDefault().post(new WebSocketEvent());
+                                EventBus.getDefault().post(new OrderFinishEvent());
                                 finish();
                             } else if (bean.code == 1002) {
                                 ToastUtils.showShort(bean.message);

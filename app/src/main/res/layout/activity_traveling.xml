@@ -69,138 +69,143 @@
             android:background="@drawable/bg_map_white"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="73dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="22dp"
+                android:paddingLeft="12dp"
+                android:paddingTop="10dp"
                 android:paddingRight="12dp">
 
                 <ImageView
                     android:id="@+id/iv_car"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:src="@mipmap/pic_cartype_baolai" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_above="@+id/rl7"
-                    android:layout_marginLeft="@dimen/dp_14"
-                    android:layout_marginBottom="@dimen/dp_5"
-                    android:layout_toRightOf="@id/iv_car">
-
-                    <TextView
-                        android:id="@+id/tv_carnum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-"
-                        android:textColor="#030303"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tv_color"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:background="@drawable/bg_gray_stroke"
-                        android:paddingLeft="3dp"
-                        android:paddingTop="1dp"
-                        android:paddingRight="3dp"
-                        android:paddingBottom="1dp"
-                        android:text="-"
-                        android:textColor="#AFAFAF"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/rl7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginLeft="14dp"
-                    android:layout_toRightOf="@id/iv_car">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@mipmap/ic_refuel" />
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/tv_xinghao"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp">
+                        android:layout_marginBottom="@dimen/dp_5">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="续航约"
-                            android:textColor="#AFAFAF"
-                            android:textSize="@dimen/sp_12" />
-
-                        <TextView
-                            android:id="@+id/tv_gonglishu"
+                            android:id="@+id/tv_carnum"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="-"
                             android:textColor="#030303"
-                            android:textSize="@dimen/sp_12" />
+                            android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/tv_color"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="公里"
+                            android:layout_marginLeft="8dp"
+                            android:background="@drawable/bg_gray_stroke"
+                            android:paddingLeft="3dp"
+                            android:paddingTop="1dp"
+                            android:paddingRight="3dp"
+                            android:paddingBottom="1dp"
+                            android:text="-"
                             android:textColor="#AFAFAF"
-                            android:textSize="@dimen/sp_12" />
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@mipmap/ic_refuel" />
+
+                        <LinearLayout
+                            android:id="@+id/tv_xinghao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="续航约"
+                                android:textColor="#AFAFAF"
+                                android:textSize="@dimen/sp_12" />
+
+                            <TextView
+                                android:id="@+id/tv_gonglishu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="#030303"
+                                android:textSize="@dimen/sp_12" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="公里"
+                                android:textColor="#AFAFAF"
+                                android:textSize="@dimen/sp_12" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerVertical="true"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="费用预估"
-                        android:textColor="#AFAFAF"
-                        android:textSize="@dimen/sp_12" />
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:gravity="right">
 
                     <LinearLayout
-                        android:id="@+id/amount_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="bottom">
-
-                        <TextView
-                            android:id="@+id/tv_amount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="-.-"
-                            android:textColor="#373737"
-                            android:textSize="@dimen/sp_24"
-                            android:textStyle="bold" />
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="元"
+                            android:text="费用预估"
                             android:textColor="#AFAFAF"
                             android:textSize="@dimen/sp_12" />
 
-                        <ImageView
+                        <LinearLayout
+                            android:id="@+id/amount_detail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_details" />
+                            android:gravity="bottom">
+
+                            <TextView
+                                android:id="@+id/tv_amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-.-"
+                                android:textColor="#373737"
+                                android:textSize="@dimen/sp_24"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="元"
+                                android:textColor="#AFAFAF"
+                                android:textSize="@dimen/sp_12" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_details" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
 
             <View
                 android:id="@+id/v2"

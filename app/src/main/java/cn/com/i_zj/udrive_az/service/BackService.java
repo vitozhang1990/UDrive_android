@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
@@ -140,6 +141,7 @@ public class BackService extends BaseService {
                     }
                     break;
                 case 6000://推送强制结束订单信息
+                    EventBus.getDefault().post(new OrderFinishEvent());
                     if (!getRunningAppProcesses(BackService.this, getPackageName())) {
                         return;
                     }

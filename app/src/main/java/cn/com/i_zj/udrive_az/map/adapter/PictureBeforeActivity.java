@@ -19,6 +19,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +32,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
@@ -279,6 +281,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                         if (result.getCode() == 1) {
                             if (result.getData() != null && result.getData().getId() > 0) {
                                 startActivity(TravelingActivity.class);
+                                EventBus.getDefault().post(new OrderFinishEvent(true));
                             }
                         } else {
                             if (!TextUtils.isEmpty(result.getMessage())) {

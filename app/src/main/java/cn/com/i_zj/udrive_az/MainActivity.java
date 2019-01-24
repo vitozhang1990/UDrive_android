@@ -30,6 +30,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.NetWorkEvent;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
@@ -76,7 +77,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private long time = 0;
     private boolean hasRequest; //网络变化后只请求一次
-    private UnFinishOrderResult unFinishOrderResult;
 
     @Override
     protected int getLayoutResource() {
@@ -112,9 +112,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         if (SessionManager.getInstance().getAuthorization() == null) {
             return;
         }
-        if (hasRequest) {
-            getUnfinishedOrder1();
-        }
+//        if (hasRequest) {
+//            getUnfinishedOrder1();
+//        }
         getReservation();
     }
 
@@ -127,7 +127,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
             case R.id.rl_note:
                 if (homeNote != null) {
                     WebActivity.startWebActivity(MainActivity.this, homeNote.getHref(), homeNote.getTitle());
-                } else if (unFinishOrderResult != null) {
+                } else {
                     startActivity(TravelingActivity.class);
                 }
                 break;
@@ -152,6 +152,18 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
             if (SessionManager.getInstance().getAuthorization() != null) {
                 hasRequest = true;
                 getReservation();
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(OrderFinishEvent event) {
+        if (homeNote == null) {
+            if (event.isAbc()) {
+                rlNote.setVisibility(View.VISIBLE);
+                tvMsg.setText("您有一个订单正在进行中，点击进入");
+            } else {
+                rlNote.setVisibility(View.GONE);
             }
         }
     }
@@ -221,7 +233,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                         if (result.getData() != null && result.getData().getId() > 0) {
                             rlNote.setVisibility(View.VISIBLE);
                             tvMsg.setText("您有一个订单正在进行中，点击进入");
-                            unFinishOrderResult = result;
                         } else {
                             rlNote.setVisibility(View.GONE);
                         }
@@ -330,6 +341,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 rlNote.setVisibility(View.VISIBLE);
                                 tvMsg.setText(homeNote.getTitle());
                             } else {
+                                getUnfinishedOrder1();
                                 rlNote.setVisibility(View.GONE);
                             }
                             if (!StringUtils.isEmpty(homeActivityEntity.getActivitys())) {
@@ -341,15 +353,13 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                     homeAdvDialog.show();
                                 }
                             }
-
                         } else {
                             if (rlNote.getVisibility() == View.VISIBLE) {
                                 rlNote.setVisibility(View.GONE);
                                 homeNote = null;
+                                getUnfinishedOrder1();
                             }
                         }
-
-
                     }
 
                     @Override

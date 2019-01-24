@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,6 +127,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
     //TODO 为啥要全局变量
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>(); //所有停车场信息
+    private DecimalFormat df = new DecimalFormat("#.00");
 
     @Override
     protected int getLayoutResource() {
@@ -198,7 +200,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                 tvgonglishu.setText("" + car.getMaxDistance());
                                 Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
                             }
-                            tv_amount.setText("" + unFinishOrderBean.getData().getOrder().getTotalAmount() / 100);
+                            tv_amount.setText("" + df.format(unFinishOrderBean.getData().getOrder().getTotalAmount() / 100));
                             drawMap();
                         } else {
                             startActivity(MainActivity.class);
@@ -637,12 +639,15 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(WebSocketPrice event) {
         if (event != null) {
+            if (unFinishOrderBean == null || unFinishOrderBean.getData() == null) {
+                return;
+            }
             if (unFinishOrderBean.getData().getId() == event.getOrderId()) {
                 unFinishOrderBean.getData().getOrder().setMileageAmount(event.getMileageAmount());
                 unFinishOrderBean.getData().getOrder().setTimeAmount(event.getTimeAmount());
                 unFinishOrderBean.getData().getOrder().setTotalAmount(event.getTotalAmount());
                 unFinishOrderBean.getData().getOrder().setDeductible(event.getDeductible());
-                tv_amount.setText("" + event.getTotalAmount() / 100);
+                tv_amount.setText("" + df.format(event.getTotalAmount() / 100));
             }
         }
     }
