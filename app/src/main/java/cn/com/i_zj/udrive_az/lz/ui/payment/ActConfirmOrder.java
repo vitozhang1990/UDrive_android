@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
+import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AliPayResult;
@@ -122,7 +124,8 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
             @Override
             public void onClick(View view) {
-                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)) {
+                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)
+                        || ScreenManager.getScreenManager().isHaveActivity(TravelingActivity.class)) {
                     startActivity(MainActivity.class);
                 }
                 finish();
@@ -585,5 +588,19 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)
+                    || ScreenManager.getScreenManager().isHaveActivity(TravelingActivity.class)) {
+                startActivity(MainActivity.class);
+            }
+            finish();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
     }
 }

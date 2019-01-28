@@ -38,6 +38,7 @@ import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.login.WalletActivity;
@@ -106,6 +107,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAppView();
+        getUnfinishedOrder();
     }
 
     @Override
@@ -115,9 +117,6 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         if (SessionManager.getInstance().isLogin()) {
             //获取用户信息
             getUserInfo();
-
-            //获取我的行程
-            getUnfinishedOrder();
         }
         AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
         if (accountInfo != null) {
@@ -375,13 +374,19 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(OrderFinishEvent event) {
+        if (event.isAbc()) {
+            mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
+        } else {
+            mDiMyType.setRightText("");
+        }
+    }
 
     /**
      * 获取我的行程状态
      */
     private void getUnfinishedOrder() {
-
         UdriveRestClient.getClentInstance().getUnfinishedOrder()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -393,10 +398,12 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onNext(UnFinishOrderResult value) {
-                        if (value == null || value.getData() == null) {
-
-                        } else {
+                        if (value != null && value.getCode() == 1
+                                && value.getData() != null
+                                && value.getData().getId() == Constants.ORDER_MOVE) {
                             mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
+                        } else {
+                            mDiMyType.setRightText("");
                         }
                     }
 

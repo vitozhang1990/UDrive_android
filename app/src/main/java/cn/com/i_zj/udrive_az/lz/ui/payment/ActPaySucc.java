@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 
 import butterknife.OnClick;
@@ -45,7 +46,18 @@ public class ActPaySucc extends DBSBaseActivity {
 
     @OnClick(R.id.tv_to_home)
     public void onClick() {
-        startActivity(new Intent(ActPaySucc.this,MainActivity.class));
+        startActivity(MainActivity.class);
         finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            startActivity(MainActivity.class);
+            finish();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
     }
 }

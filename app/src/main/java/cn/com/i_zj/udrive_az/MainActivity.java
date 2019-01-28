@@ -49,6 +49,7 @@ import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.service.BackService;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
+import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
@@ -87,6 +88,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ScreenManager.getScreenManager().clearActivity();
         ScreenManager.getScreenManager().pushActivity(MainActivity.this);
         checkPermission();
         versionCheck();
@@ -230,7 +232,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                         if (result == null || result.getCode() != 1) {
                             return;
                         }
-                        if (result.getData() != null && result.getData().getId() > 0) {
+                        if (result.getData() != null && result.getData().getId() == Constants.ORDER_MOVE) {
                             rlNote.setVisibility(View.VISIBLE);
                             tvMsg.setText("您有一个订单正在进行中，点击进入");
                         } else {

@@ -26,12 +26,18 @@ public class OrderAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseVi
         helper.setText(R.id.tv_part_name, item.startParkName + "-" + item.destinationParkName)
                 .setText(R.id.tv_type, getStatus(item.status))
                 .setText(R.id.tv_car_number, item.plateNumber)
-                .setText(R.id.tv_money, String.format(Locale.getDefault(), "¥  %.2f", item.realPayAmount / 100f))
                 .setText(R.id.tv_car_color, item.carColor)
                 .setText(R.id.tv_car_type, item.brand)
                 .setText(R.id.tv_time, String.format(Locale.getDefault(), "%tm月%<te日 %<tR", item.startTime))
                 .setTextColor(R.id.tv_type, item.status == 0 || item.status == 1 ? Color.RED : Color.GRAY)
                 .setText(R.id.btn_pay_or_finish, "立即付款");
+
+        if (item.status == Constants.ORDER_MOVE) {
+            helper.setVisible(R.id.tv_money, false);
+        } else {
+            helper.setVisible(R.id.tv_money, true);
+            helper.setText(R.id.tv_money, String.format(Locale.getDefault(), "¥  %.2f", item.realPayAmount / 100f));
+        }
 
         LinearLayout lineBottom = helper.getView(R.id.line_bottom);
 

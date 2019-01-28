@@ -48,6 +48,12 @@ public class ScreenManager {
         activityStack.add(activity);
     }
 
+    public void clearActivity() {
+        if (activityStack != null) {
+            activityStack.clear();
+        }
+    }
+
     // 退出栈中指定Activity
     public void popAllActivityExceptOne(Class cls) {
         while (true) {
