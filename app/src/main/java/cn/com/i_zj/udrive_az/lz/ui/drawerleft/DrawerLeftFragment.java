@@ -375,6 +375,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
+    @Subscribe
+
     /**
      * 获取我的行程状态
      */
@@ -394,8 +396,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                         if (value == null || value.getData() == null) {
 
                         } else {
-//                            mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
-//                            mDiMyType.setRightTextColor(Color.RED);
+                            mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
                         }
                     }
 
