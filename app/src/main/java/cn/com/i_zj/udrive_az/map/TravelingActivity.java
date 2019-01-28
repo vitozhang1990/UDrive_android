@@ -39,10 +39,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -128,7 +128,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
     //TODO 为啥要全局变量
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>(); //所有停车场信息
-    private DecimalFormat df = new DecimalFormat("#.00");
 
     @Override
     protected int getLayoutResource() {
@@ -201,7 +200,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                                 tvgonglishu.setText("" + car.getMaxDistance());
                                 Glide.with(TravelingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(car.getBrand(), car.getCarColor())).into(mIvCar);
                             }
-                            tv_amount.setText("" + df.format(unFinishOrderBean.getData().getOrder().getTotalAmount() / 100));
+                            tv_amount.setText(String.format(Locale.getDefault(), "%.2f", unFinishOrderBean.getData().getOrder().getTotalAmount() / 100f));
                             drawMap();
                         } else {
                             startActivity(MainActivity.class);
@@ -648,7 +647,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 unFinishOrderBean.getData().getOrder().setTimeAmount(event.getTimeAmount());
                 unFinishOrderBean.getData().getOrder().setTotalAmount(event.getTotalAmount());
                 unFinishOrderBean.getData().getOrder().setDeductible(event.getDeductible());
-                tv_amount.setText("" + df.format(event.getTotalAmount() / 100));
+                tv_amount.setText(String.format(Locale.getDefault(), "%.2f", event.getTotalAmount() / 100f));
             }
         }
     }

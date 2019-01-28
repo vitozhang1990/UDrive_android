@@ -403,15 +403,19 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                                 || value.getData() == null) {
                             return;
                         }
-                        switch (value.getData().getStatus()) {
-                            case Constants.ORDER_MOVE:
-                                mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
-                                break;
-                            case Constants.ORDER_WAIT_PAY:
-                                mDiMyType.setRightText(getString(R.string.order_wait_pay));
-                                break;
-                            default:
-                                mDiMyType.setRightText("");
+                        if(value.getData().getId() > 0 && value.getData().getStatus() != null) {
+                            switch (value.getData().getStatus()) {
+                                case Constants.ORDER_MOVE:
+                                    mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
+                                    break;
+                                case Constants.ORDER_WAIT_PAY:
+                                    mDiMyType.setRightText(getString(R.string.order_wait_pay));
+                                    break;
+                                default:
+                                    mDiMyType.setRightText("");
+                            }
+                        } else {
+                            mDiMyType.setRightText("");
                         }
                     }
 

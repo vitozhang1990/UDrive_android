@@ -2,10 +2,15 @@ package cn.com.i_zj.udrive_az.map.adapter;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,11 +30,15 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
+import com.bumptech.glide.Glide;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -83,6 +92,17 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     @BindView(R.id.stop_amount)
     TextView stop_amount;
 
+    @BindView(R.id.tv_city)
+    TextView city;
+    @BindView(R.id.rl_head)
+    LinearLayout toolBar;
+    @BindView(R.id.city_list)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.mengceng)
+    View mengceng;
+    @BindView(R.id.city_checkbox)
+    CheckBox checkBox;
+
     private AMap mAmap;
     public AMapLocationClient mLocationClient = null;
     private Map<ParkKey, Marker> markerMap = new HashMap();
@@ -93,8 +113,11 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private FromParkBean fromPark;
 
     private ParkDetailDialog parkDetailDialog;
-    private List<CityListResult> mCityList;
+    private CityListResult cityInfo;
+    private ArrayList<CityListResult> mCityList;
+    private GlobalAdapter mAdapter;
     private boolean requestOnce;
+    private boolean pickModel;
 
     @Override
     protected int getLayoutResource() {
@@ -107,6 +130,56 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         MapUtils.statusBarColor(this);
         initViewstMap(savedInstanceState);
         mCityList = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY_LIST);
+        if (mCityList == null) {
+            mCityList = new ArrayList<>();
+        }
+
+        mAdapter = RecyclerViewUtils.initRecycler(
+                this
+                , mRecyclerView
+                , new GridLayoutManager(this, 3)
+                , R.layout.item_city, mCityList
+                , new OnGlobalListener() {
+                    @Override
+                    public <T> void logic(BaseViewHolder helper, T item) {
+                        CityListResult ai = (CityListResult) item;
+                        helper.setText(R.id.city_name, ai.getAreaName());
+                        if (cityInfo != null &&
+                                (cityInfo.getAreaCode().equals(ai.getAreaCode()))
+                                || cityInfo.getAreaName().equals(ai.getAreaName())) {
+                            ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT_BOLD);
+                        } else {
+                            ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT);
+                        }
+                        Glide.with(ChooseParkActivity.this).load(ai.getImg()).crossFade().into((ImageView) helper.getView(R.id.city_pic));
+                    }
+                }
+                , new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        cityInfo = mCityList.get(position);
+                        LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
+                        EventBus.getDefault().post(cityInfo);
+                        pickModel = false;
+                        updateUi();
+                    }
+                });
+        updateUi();
+    }
+
+    private void updateUi() {
+        checkBox.setChecked(pickModel);
+        mengceng.setVisibility(pickModel ? View.VISIBLE : View.GONE);
+        mRecyclerView.setVisibility(pickModel ? View.VISIBLE : View.GONE);
+        if (pickModel) {
+            toolBar.setBackgroundResource(R.drawable.bg_map_top1);
+        } else {
+            toolBar.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
+
+        if (cityInfo != null) {
+            city.setText(cityInfo.getAreaName());
+        }
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -132,7 +205,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         mAmap.setOnMarkerClickListener(this);
     }
 
-    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.iv_mylocation, R.id.park_detail, R.id.amount})
+    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.iv_mylocation, R.id.park_detail, R.id.amount, R.id.city_layout})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -157,6 +230,13 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 break;
             case R.id.amount:
                 WebActivity.startWebActivity(ChooseParkActivity.this, BuildConfig.SHARE_AMOUNT, "费用说明");
+                break;
+            case R.id.city_layout:
+                if (mCityList == null || mCityList.size() == 0) {
+                    return;
+                }
+                pickModel = !pickModel;
+                updateUi();
                 break;
         }
     }
@@ -465,18 +545,23 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         cityInfo.setAreaCode(aMapLocation.getCityCode());
         cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
         if (mCityList == null || mCityList.size() == 0) {
-            fetchParks();
+            fetchParks(cityInfo.getAreaCode());
+            this.cityInfo = cityInfo;
+            updateUi();
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
             return;
         }
         for (CityListResult bean : mCityList) {
             if (bean.getAreaName().equals(cityInfo.getAreaName())
                     || bean.getAreaCode().equals(cityInfo.getAreaCode())) {
+                this.cityInfo = cityInfo;
                 fetchParks(cityInfo.getAreaCode());
+                updateUi();
                 mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
                 return;
             }
         }
+        this.cityInfo = mCityList.get(0);
         fetchParks(mCityList.get(0).getAreaCode());
         float longitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[0]);
         float latitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[1]);
