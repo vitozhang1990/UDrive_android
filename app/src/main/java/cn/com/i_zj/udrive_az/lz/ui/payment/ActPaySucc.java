@@ -8,10 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.PayFinishEvent;
 
 /**
  * @author JayQiu
@@ -46,6 +49,7 @@ public class ActPaySucc extends DBSBaseActivity {
 
     @OnClick(R.id.tv_to_home)
     public void onClick() {
+        EventBus.getDefault().post(new PayFinishEvent());
         startActivity(MainActivity.class);
         finish();
     }
@@ -53,6 +57,7 @@ public class ActPaySucc extends DBSBaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            EventBus.getDefault().post(new PayFinishEvent());
             startActivity(MainActivity.class);
             finish();
             return true;

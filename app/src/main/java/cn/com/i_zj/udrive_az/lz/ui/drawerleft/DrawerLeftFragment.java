@@ -39,6 +39,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
+import cn.com.i_zj.udrive_az.event.PayFinishEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.login.WalletActivity;
@@ -381,7 +382,13 @@ public class DrawerLeftFragment extends DBSBaseFragment {
             mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
         } else {
             mDiMyType.setRightText("");
+            getUnfinishedOrder();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(PayFinishEvent event) {
+        mDiMyType.setRightText("");
     }
 
     /**
@@ -403,7 +410,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                                 || value.getData() == null) {
                             return;
                         }
-                        if(value.getData().getId() > 0 && value.getData().getStatus() != null) {
+                        if (value.getData().getId() > 0 && value.getData().getStatus() != null) {
                             switch (value.getData().getStatus()) {
                                 case Constants.ORDER_MOVE:
                                     mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
