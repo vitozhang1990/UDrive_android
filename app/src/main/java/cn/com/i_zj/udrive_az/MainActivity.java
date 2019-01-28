@@ -232,7 +232,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                         if (result == null || result.getCode() != 1) {
                             return;
                         }
-                        if (result.getData() != null && result.getData().getId() == Constants.ORDER_MOVE) {
+                        if (result.getData() != null && result.getData().getStatus() == Constants.ORDER_MOVE) {
                             rlNote.setVisibility(View.VISIBLE);
                             tvMsg.setText("您有一个订单正在进行中，点击进入");
                         } else {

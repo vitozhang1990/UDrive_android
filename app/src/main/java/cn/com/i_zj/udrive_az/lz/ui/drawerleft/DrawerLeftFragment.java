@@ -107,7 +107,6 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAppView();
-        getUnfinishedOrder();
     }
 
     @Override
@@ -117,6 +116,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         if (SessionManager.getInstance().isLogin()) {
             //获取用户信息
             getUserInfo();
+
+            getUnfinishedOrder();
         }
         AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
         if (accountInfo != null) {
@@ -398,12 +399,19 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onNext(UnFinishOrderResult value) {
-                        if (value != null && value.getCode() == 1
-                                && value.getData() != null
-                                && value.getData().getId() == Constants.ORDER_MOVE) {
-                            mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
-                        } else {
-                            mDiMyType.setRightText("");
+                        if (value == null || value.getCode() != 1
+                                || value.getData() == null) {
+                            return;
+                        }
+                        switch (value.getData().getStatus()) {
+                            case Constants.ORDER_MOVE:
+                                mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
+                                break;
+                            case Constants.ORDER_WAIT_PAY:
+                                mDiMyType.setRightText(getString(R.string.order_wait_pay));
+                                break;
+                            default:
+                                mDiMyType.setRightText("");
                         }
                     }
 
