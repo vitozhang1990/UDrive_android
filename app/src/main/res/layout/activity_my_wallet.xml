@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".lz.ui.wallet.MyWalletActivity">
 
-    <include layout="@layout/layout_lz_toolbar" />
+    <include layout="@layout/layout_header" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -48,10 +48,10 @@
                     android:id="@+id/tv_yu_msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_yu_e"
                     android:layout_below="@id/tv_yu_e"
-                    android:layout_marginBottom="20dp"
+                    android:layout_alignLeft="@id/tv_yu_e"
                     android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
                     android:ellipsize="end"
                     android:maxLength="13"
                     android:maxLines="1"
@@ -82,8 +82,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
                     android:layout_toRightOf="@id/tv_zeng_e"
                     android:gravity="right"
                     android:text="¥ 0.00"
@@ -94,8 +94,8 @@
                     android:id="@+id/tv_ben_jin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_zeng_e"
                     android:layout_below="@id/tv_zeng_e"
+                    android:layout_alignLeft="@id/tv_zeng_e"
                     android:layout_marginTop="5dp"
                     android:text="本金"
                     android:textColor="@color/white" />
@@ -104,8 +104,8 @@
                     android:id="@+id/tv_ben_jin_msg"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
                     android:layout_alignTop="@id/tv_ben_jin"
+                    android:layout_alignParentRight="true"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="10dp"
                     android:layout_toRightOf="@id/tv_ben_jin"
@@ -120,8 +120,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -132,8 +132,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_lz_money"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="30元"
 
                     android:textColor="@color/btn_bg" />
@@ -146,8 +146,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_lz_money"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="50元"
 
                     android:textColor="@color/btn_bg" />
@@ -159,8 +159,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_lz_money"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="100元"
 
                     android:textColor="@color/btn_bg" />
@@ -171,8 +171,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -183,8 +183,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_lz_money"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="300元"
 
                     android:textColor="@color/btn_bg" />
@@ -197,8 +197,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_lz_money"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="1000元"
 
                     android:textColor="@color/btn_bg" />
@@ -208,12 +208,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:inputType="number"
                     android:background="@drawable/selector_lz_money"
-                    android:paddingTop="10dp"
+                    android:gravity="center"
                     android:hint="手动输入"
+                    android:inputType="number"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:textColor="@color/btn_bg" />
             </LinearLayout>
 
@@ -222,8 +222,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/shape_et_bg"
                 android:inputType="number"
                 android:paddingLeft="5dp"
@@ -246,14 +246,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginRight="10dp"
                 android:gravity="center"
-                android:paddingBottom="5dp"
-                android:layout_marginTop="15dp"
                 android:paddingTop="5dp"
-                android:visibility="gone"
+                android:paddingBottom="5dp"
                 android:text=""
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
 
             <Button
@@ -261,8 +261,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/shape_lz_btn_bg"
                 android:text="去充值"
                 android:textColor="@color/white" />

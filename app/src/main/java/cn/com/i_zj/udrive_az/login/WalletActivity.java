@@ -5,10 +5,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -19,6 +19,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.coupons.CouponsActivity;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.WalletResult;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
@@ -35,7 +36,8 @@ import io.reactivex.schedulers.Schedulers;
 public class WalletActivity extends DBSBaseActivity {
 
     public static final int PAY_BALANCE = 1001;
-
+    @BindView(R.id.header_title)
+    TextView header_title;
     @BindView(R.id.wallet_tv_balance)
     AppCompatTextView balanceView;
 
@@ -47,14 +49,8 @@ public class WalletActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.activity_wallet);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        MapUtils.statusBarColor(this);
+        header_title.setText(R.string.activity_wallet);
     }
 
     @Override
@@ -75,9 +71,16 @@ public class WalletActivity extends DBSBaseActivity {
     }
 
 
-    @OnClick(R.id.wallet_layout_balance)
-    public void onBalanceClick(View view) {
-        startActivityForResult(MyWalletActivity.class, PAY_BALANCE);
+    @OnClick({R.id.header_left, R.id.wallet_layout_balance})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.header_left:
+                finish();
+                break;
+            case R.id.wallet_layout_balance:
+                startActivityForResult(MyWalletActivity.class, PAY_BALANCE);
+                break;
+        }
     }
 
     @Override

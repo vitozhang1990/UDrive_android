@@ -1,15 +1,17 @@
 package cn.com.i_zj.udrive_az.lz.ui.wallet;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AliPayResult;
 import cn.com.i_zj.udrive_az.model.RechargeOrder;
@@ -55,6 +58,11 @@ public class MyWalletActivity extends DBSBaseActivity {
     private static final int SDK_PAY_FLAG = 1;
     private static final int ALI = 1;
     private static final int WECHAT = 2;
+
+    @BindView(R.id.header_title)
+    TextView header_title;
+    @BindView(R.id.header_image)
+    ImageView header_image;
 
     @BindView(R.id.tv_yu_msg)
     TextView tv_yu_msg;
@@ -97,16 +105,7 @@ public class MyWalletActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("账单");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
+        MapUtils.statusBarColor(this);
         bind = ButterKnife.bind(this);
         SpannableString spannableString = SpannableStringUtil.setColorAndSizeSpan("点击充值即表示你已同意", Color.GRAY, UIUtils.dp2px(15));
         tv_msg.append(spannableString);
@@ -116,6 +115,8 @@ public class MyWalletActivity extends DBSBaseActivity {
 
         tVArray = new TextView[]{tv30, tv50, tv100, tv300, tv1000, etCustom};
 
+        header_title.setText("账单");
+        header_image.setImageResource(R.mipmap.ic_service);
 
         pay_alipay.setView(R.mipmap.zhifub, "支付宝", true);
         pay_wechat.setView(R.mipmap.weixinzhi, "微信", !pay_alipay.isCheck());
@@ -140,58 +141,56 @@ public class MyWalletActivity extends DBSBaseActivity {
         return R.layout.activity_my_wallet;
     }
 
-    @OnClick(R.id.tv30)
-    public void click30(View view) {
-        setSelect(0, 30);
-    }
-
-    @OnClick(R.id.tv50)
-    public void click50(View view) {
-        setSelect(1, 50);
-    }
-
-    @OnClick(R.id.tv100)
-    public void click100(View view) {
-        setSelect(2, 100);
-    }
-
-    @OnClick(R.id.tv300)
-    public void click300(View view) {
-        setSelect(3, 300);
-    }
-
-    @OnClick(R.id.tv1000)
-    public void click1000(View view) {
-        setSelect(4, 1000);
-    }
-
-    @OnClick(R.id.et_custom)
-    public void clickCustom(View view) {
-        setSelect(5, -1);
-    }
-
-    @OnClick(R.id.pay_alipay)
-    public void clickAlipay(View view) {
-        selectPay(ALI);
-    }
-
-    @OnClick(R.id.pay_wechat)
-    public void clickWechat(View view) {
-        selectPay(WECHAT);
-    }
-
-    @OnClick(R.id.btn_commit)
-    public void clickCommit(View view) {
-        if (payMoney == -1) {
-            String s = etCustom.getText().toString();
-            if (TextUtils.isEmpty(s)) {
-                Toast.makeText(this, "数据不能为空", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            payMoney = Integer.parseInt(s);
+    @OnClick({R.id.header_left, R.id.header_right, R.id.tv30, R.id.tv50, R.id.tv100, R.id.tv300,
+            R.id.tv1000, R.id.et_custom, R.id.pay_alipay, R.id.pay_wechat, R.id.btn_commit})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.header_left:
+                finish();
+                break;
+            case R.id.header_right:
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
+                intent.setData(data);
+                startActivity(intent);
+                break;
+            case R.id.tv30:
+                setSelect(0, 30);
+                break;
+            case R.id.tv50:
+                setSelect(1, 50);
+                break;
+            case R.id.tv100:
+                setSelect(2, 100);
+                break;
+            case R.id.tv300:
+                setSelect(3, 300);
+                break;
+            case R.id.tv1000:
+                setSelect(4, 1000);
+                break;
+            case R.id.et_custom:
+                setSelect(5, -1);
+                break;
+            case R.id.pay_alipay:
+                selectPay(ALI);
+                break;
+            case R.id.pay_wechat:
+                selectPay(WECHAT);
+                break;
+            case R.id.btn_commit:
+                if (payMoney == -1) {
+                    String s = etCustom.getText().toString();
+                    if (TextUtils.isEmpty(s)) {
+                        Toast.makeText(this, "数据不能为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    payMoney = Integer.parseInt(s);
+                }
+                showProgressDialog(true);
+                createOrder(payMoney * 100, pay_alipay.isCheck() ? ALI : WECHAT);
+                break;
         }
-        showProgressDialog(true);
-        createOrder(payMoney * 100, pay_alipay.isCheck() ? ALI : WECHAT);
     }
 
     private void setSelect(int number, int money) {
