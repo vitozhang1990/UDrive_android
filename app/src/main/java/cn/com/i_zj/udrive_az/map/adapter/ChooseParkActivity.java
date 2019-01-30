@@ -229,6 +229,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 if (mLocationClient != null) {
                     mLocationClient.startLocation();
                 }
+                parkPickLayout.setVisibility(View.GONE);
                 break;
             case R.id.park_detail:
                 getParkRemark();
