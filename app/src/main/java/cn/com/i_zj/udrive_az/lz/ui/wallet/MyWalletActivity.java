@@ -213,6 +213,7 @@ public class MyWalletActivity extends DBSBaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         if (eventPaySuccessEvent.payMethod == EventPaySuccessEvent.PayMethod.WEICHAT) {
+            setResult(RESULT_OK);
             dissmisProgressDialog();
         }
     }
@@ -407,6 +408,7 @@ public class MyWalletActivity extends DBSBaseActivity {
                         // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
                         showToast("支付成功");
                         getMyWallet();
+                        setResult(RESULT_OK);
                         dissmisProgressDialog();
                     } else {
                         // 该笔订单真实的支付结果，需要依赖服务端的异步通知。

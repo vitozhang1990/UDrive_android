@@ -74,6 +74,7 @@ import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AmountDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
+import cn.com.i_zj.udrive_az.utils.dialog.OffPowerDialogActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -173,6 +174,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                     public void onNext(UnFinishOrderResult result) {
                         dissmisProgressDialog();
                         if (result == null || result.getCode() != 1) {
+                            ToastUtils.showShort("行程信息获取失败");
                             startActivity(MainActivity.class);
                             finish();
                             return;
@@ -182,6 +184,11 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                             if (unFinishOrderBean == null) {
                                 return;
                             }
+                            if (unFinishOrderBean.getData().getOrder() != null
+                                    && unFinishOrderBean.getData().getOrder().getPowerFlag() == 1) { //直接显示断电信息
+                                startActivity(OffPowerDialogActivity.class);
+                            }
+
                             carId = String.valueOf(unFinishOrderBean.getData().getCarId());
                             oderId = String.valueOf(unFinishOrderBean.getData().getId());
                             orderNum = String.valueOf(unFinishOrderBean.getData().getNumber());
