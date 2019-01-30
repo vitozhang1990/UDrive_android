@@ -709,6 +709,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         Intent intent = new Intent(getActivity(), WaitingActivity.class);
                         intent.putExtra("bunld", result);
                         startActivity(intent);
+                        resetAndShowYongChe();
                     }
 
                     @Override

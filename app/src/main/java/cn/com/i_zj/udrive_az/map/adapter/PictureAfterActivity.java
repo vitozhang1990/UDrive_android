@@ -6,13 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.ToastUtils;
@@ -62,20 +59,12 @@ public class PictureAfterActivity extends DBSBaseActivity {
     @BindView(R.id.iv_tail)
     ImageView iv_tail;
 
-    @BindView(R.id.btnSubmit)
-    Button btnSubmit;
-
     private Context mContext;
     private String orderNum;
     private int REQUEST_CODE = 1002;
     private String backPath, rightFrontPath, leftFrontPath, innerPath;
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            btnSubmit.setEnabled(true);
-        }
-    };
+    private Map<String, String> picMap = new HashMap<>();
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
     @Override
     protected int getLayoutResource() {
@@ -122,7 +111,12 @@ public class PictureAfterActivity extends DBSBaseActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
-                finishOder();
+                showProgressDialog();
+                picMap.clear();
+                uploadImg2QiNiu("innerPath", innerPath);
+                uploadImg2QiNiu("backPath", backPath);
+                uploadImg2QiNiu("rightFrontPath", rightFrontPath);
+                uploadImg2QiNiu("leftFrontPath", leftFrontPath);
                 break;
         }
     }
@@ -144,7 +138,6 @@ public class PictureAfterActivity extends DBSBaseActivity {
         Map<String, Object> map = new HashMap<>();
         map.put("orderNum", orderNum);
         map.put("photo", photoBean);
-        showProgressDialog();
         UdriveRestClient.getClentInstance().finishTripOrder(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -209,33 +202,25 @@ public class PictureAfterActivity extends DBSBaseActivity {
         if (requestCode == REQUEST_CODE) {
             if (!TextUtils.isEmpty(data.getStringExtra("backPath"))) {
                 backPath = data.getStringExtra("backPath");
-                uploadImg2QiNiu("backPath", backPath);
             }
             if (!TextUtils.isEmpty(data.getStringExtra("rightFrontPath"))) {
                 rightFrontPath = data.getStringExtra("rightFrontPath");
-                uploadImg2QiNiu("rightFrontPath", rightFrontPath);
             }
             if (!TextUtils.isEmpty(data.getStringExtra("leftFrontPath"))) {
                 leftFrontPath = data.getStringExtra("leftFrontPath");
-                uploadImg2QiNiu("leftFrontPath", leftFrontPath);
             }
             if (!TextUtils.isEmpty(data.getStringExtra("innerPath"))) {
                 innerPath = data.getStringExtra("innerPath");
-                uploadImg2QiNiu("innerPath", innerPath);
             }
             updateUI();
         }
     }
 
-    private Map<String, String> picMap = new HashMap<>();
-
     private void uploadImg2QiNiu(final String type, final String path) {
-        showProgressDialog();
         new Thread() {
             public void run() {
                 UploadManager uploadManager = new UploadManager();
                 // 设置图片名字
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
                 String key = type + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
                 uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
                     @Override
@@ -245,12 +230,14 @@ public class PictureAfterActivity extends DBSBaseActivity {
                             try {
                                 picMap.put(type, res.getString("key"));
                                 if (picMap.size() == 4) {
-                                    dissmisProgressDialog();
-                                    mHandler.sendEmptyMessage(0);
+                                    finishOder();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        } else {
+                            dissmisProgressDialog();
+                            ToastUtils.showShort("图片上传失败，请重试");
                         }
                     }
                 }, null);

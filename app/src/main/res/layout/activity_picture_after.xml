@@ -265,7 +265,6 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/bg_bottom_radius"
-            android:enabled="false"
             android:text="还车"
             android:textColor="@color/white"
             android:textSize="16sp" />
