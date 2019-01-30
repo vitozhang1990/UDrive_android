@@ -42,6 +42,8 @@ public class ActPaySucc extends DBSBaseActivity {
 
             @Override
             public void onClick(View view) {
+                EventBus.getDefault().post(new PayFinishEvent());
+                startActivity(MainActivity.class);
                 finish();
             }
         });

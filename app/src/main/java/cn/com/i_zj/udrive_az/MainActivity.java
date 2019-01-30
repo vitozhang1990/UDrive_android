@@ -193,9 +193,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                             homeAdvDialog = null;
                                         }
                                         Intent intent = new Intent(MainActivity.this, WaitingActivity.class);
-                                        intent.putExtra("type", "2");
                                         intent.putExtra("bunld", result);
-                                        intent.putExtra("id", result.getData().getReservationId() + "");
                                         startActivity(intent);
                                     }
                                 }

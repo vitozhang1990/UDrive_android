@@ -38,7 +38,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -157,11 +156,16 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 , new BaseQuickAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        parkPickLayout.setVisibility(View.GONE);
                         cityInfo = mCityList.get(position);
-                        LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
-                        EventBus.getDefault().post(cityInfo);
                         pickModel = false;
                         updateUi();
+                        fetchParks(cityInfo.getAreaCode());
+
+                        float longitude = Float.valueOf(cityInfo.getCenter().split(",")[0]);
+                        float latitude = Float.valueOf(cityInfo.getCenter().split(",")[1]);
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants2.AreaMarkerZoom));
                     }
                 });
         updateUi();
@@ -205,7 +209,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         mAmap.setOnMarkerClickListener(this);
     }
 
-    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.iv_mylocation, R.id.park_detail, R.id.amount, R.id.city_layout})
+    @OnClick({R.id.iv_back, R.id.ed_search, R.id.btn_pick, R.id.iv_mylocation, R.id.park_detail
+            , R.id.amount, R.id.city_layout, R.id.mengceng})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -236,6 +241,11 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                     return;
                 }
                 pickModel = !pickModel;
+                mAdapter.notifyDataSetChanged();
+                updateUi();
+                break;
+            case R.id.mengceng:
+                pickModel = false;
                 updateUi();
                 break;
         }
@@ -296,16 +306,14 @@ public class ChooseParkActivity extends DBSBaseActivity implements
 
                     @Override
                     public void onNext(ParksResult result) {
+                        for (Map.Entry<ParkKey, Marker> entry : markerMap.entrySet()) {
+                            entry.getValue().remove();
+                        }
+                        markerMap.clear();
                         List<ParksResult.DataBean> dataBeans = result.getData();
                         for (int i = 0; i < dataBeans.size(); i++) {
                             ParksResult.DataBean dataBean = dataBeans.get(i);
                             ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
-                            if (markerMap.containsKey(parkKey)) {
-                                ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
-                                if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
-                                    continue;
-                                }
-                            }
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
                             int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                             StringBuilder sb = new StringBuilder();
@@ -548,6 +556,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
             fetchParks(cityInfo.getAreaCode());
             this.cityInfo = cityInfo;
             updateUi();
+            mAdapter.notifyDataSetChanged();
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
             return;
         }
@@ -557,6 +566,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 this.cityInfo = cityInfo;
                 fetchParks(cityInfo.getAreaCode());
                 updateUi();
+                mAdapter.notifyDataSetChanged();
                 mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
                 return;
             }
@@ -566,6 +576,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         float longitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[0]);
         float latitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[1]);
         LatLng latLng = new LatLng(latitude, longitude);
+        mAdapter.notifyDataSetChanged();
         mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants2.AreaMarkerZoom));
     }
 }

@@ -82,6 +82,7 @@ import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDr
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
@@ -89,6 +90,7 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
 import cn.com.i_zj.udrive_az.model.CityListResult;
+import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.ParkAreaBean;
@@ -107,9 +109,12 @@ import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -645,33 +650,65 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         UdriveRestClient.getClentInstance().reservation(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ReserVationBean>() {
+                .filter(new Predicate<ReserVationBean>() {
+                    @Override
+                    public boolean test(ReserVationBean reserVationBean) throws Exception {
+                        if (reserVationBean == null) {
+                            ToastUtils.showShort("数据请求失败");
+                            return false;
+                        }
+                        if (reserVationBean.getCode() != 1) {
+                            ToastUtils.showShort(reserVationBean.getMessage());
+                            return false;
+                        }
+                        if (reserVationBean.getData() == null) {
+                            ToastUtils.showShort("数据返回错误");
+                            return false;
+                        }
+                        if (reserVationBean.getData().getOrderType() != 0) {
+                            showUnfinshOrder();
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .flatMap(new Function<ReserVationBean, ObservableSource<GetReservation>>() {
+                    @Override
+                    public ObservableSource<GetReservation> apply(ReserVationBean reserVationBean) throws Exception {
+                        return UdriveRestClient.getClentInstance().getReservation()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
+                    }
+                })
+                .filter(new Predicate<GetReservation>() {
+                    @Override
+                    public boolean test(GetReservation reserVationBean) throws Exception {
+                        if (reserVationBean == null) {
+                            ToastUtils.showShort("数据请求失败");
+                            return false;
+                        }
+                        if (reserVationBean.getCode() != 1) {
+                            ToastUtils.showShort(reserVationBean.getMessage());
+                            return false;
+                        }
+                        if (reserVationBean.getData() == null) {
+                            ToastUtils.showShort("数据返回错误");
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .subscribe(new Observer<GetReservation>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(ReserVationBean result) {
+                    public void onNext(GetReservation result) {
                         dissmisProgressDialog();
-                        if (result != null) {
-                            if (result.getCode() == 1) {
-                                if (!"".equals(result.getData()) && result.getData() != null) {
-                                    if (result.getData().getOrderType() != 0) {
-                                        showUnfinshOrder();
-                                    } else {
-                                        Intent intent = new Intent(getActivity(), WaitingActivity.class);
-                                        intent.putExtra("type", "1");
-                                        intent.putExtra("bunld", bunldBean);
-                                        intent.putExtra("bunldPark", buldParkBean);
-                                        intent.putExtra("id", result.getData().getReservationId() + "");
-                                        startActivity(intent);
-                                        resetAndShowYongChe();
-                                    }
-                                }
-                            } else {
-                                ToastUtils.showShort(result.getMessage());
-                            }
-                        }
+                        Intent intent = new Intent(getActivity(), WaitingActivity.class);
+                        intent.putExtra("bunld", result);
+                        startActivity(intent);
                     }
 
                     @Override
@@ -1099,16 +1136,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 .setTitle("提示")
                 .setMessage("您还有未完成的订单，请完成订单")
                 .setCancelable(false)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
+                .setNegativeButton("取消", null)
                 .setPositiveButton("去完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(OrderActivity.class);
+                        startActivity(TravelingActivity.class);
                     }
                 })
                 .create().show();

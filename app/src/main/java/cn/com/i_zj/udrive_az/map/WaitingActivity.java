@@ -119,9 +119,6 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
     private int paddingSize = 150;
     private List<LatLng> allLatLngs = new ArrayList<>();
 
-    //判断从那个界面进来
-    private String type; //1：预约  2：重新进入APP 进入预约界面
-    private String reservationID;
     //从预约界面进来的值
     private CarVosBean bunldBean;  //车辆信息
     private ParksResult.DataBean fromPark;  //停车场信息
@@ -196,44 +193,25 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
         header_title.setText("等待用车");
         header_image.setImageResource(R.mipmap.ic_service);
 
-        final Intent intent = getIntent();
-        if (intent != null) {
-            type = intent.getStringExtra("type");
-            if (type.equals("1")) {// 预约
-                bunldBean = (CarVosBean) intent.getSerializableExtra("bunld");
-                fromPark = (ParksResult.DataBean) intent.getSerializableExtra("bunldPark");
-                if (fromPark.getParkID() == 0) {
-                    fromPark.setParkID(fromPark.getId());
-                }
-                reservationID = intent.getStringExtra("id");
-                if (bunldBean != null && fromPark != null) {
-                    tvCarnum.setText(bunldBean.getPlateNumber());
-                    tvColor.setText(bunldBean.getCarColor());
-                    tvgonglishu.setText("" + bunldBean.getMaxDistance());
-                    tv_address.setText(fromPark.getName());
-                    startTime = System.currentTimeMillis();
-                    Glide.with(WaitingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(bunldBean.getBrand(), bunldBean.getCarColor())).into(mIvCar);
-                    startTimerCount();
-                }
-            } else if (type.equals("2")) {// 重新进入APP 进入预约界面
-                reservationBean = (GetReservation) intent.getSerializableExtra("bunld");
-                reservationID = intent.getStringExtra("id");
-                if (reservationBean != null) {
-                    fromPark = new ParksResult.DataBean();
-                    fromPark.setId(reservationBean.getData().getParkId());
-                    fromPark.setParkID(reservationBean.getData().getParkId());
-                    fromPark.setLongitude(reservationBean.getData().getLongitude());
-                    fromPark.setLatitude(reservationBean.getData().getLatitude());
-                    tvCarnum.setText(reservationBean.getData().getPlateNumber());
-                    tvColor.setText(reservationBean.getData().getCarColor());
-                    tvgonglishu.setText("" + reservationBean.getData().getRemainderRange());
-                    tv_address.setText(reservationBean.getData().getName());
-                    startTime = reservationBean.getData().getCreateTime();
-                    Glide.with(WaitingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(reservationBean.getData().getBrand(), reservationBean.getData().getCarColor())).into(mIvCar);
-                    startTimerCount();
-                }
-            }
+        reservationBean = (GetReservation) getIntent().getSerializableExtra("bunld");
+        if (reservationBean == null) {
+            ToastUtils.showShort("预约信息获取失败");
+            startActivity(MainActivity.class);
+            finish();
+            return;
         }
+        fromPark = new ParksResult.DataBean();
+        fromPark.setId(reservationBean.getData().getParkId());
+        fromPark.setParkID(reservationBean.getData().getParkId());
+        fromPark.setLongitude(reservationBean.getData().getLongitude());
+        fromPark.setLatitude(reservationBean.getData().getLatitude());
+        tvCarnum.setText(reservationBean.getData().getPlateNumber());
+        tvColor.setText(reservationBean.getData().getCarColor());
+        tvgonglishu.setText("" + reservationBean.getData().getRemainderRange());
+        tv_address.setText(reservationBean.getData().getName());
+        startTime = reservationBean.getData().getCreateTime();
+        Glide.with(WaitingActivity.this).load(CarTypeImageUtils.getCarImageByBrand(reservationBean.getData().getBrand(), reservationBean.getData().getCarColor())).into(mIvCar);
+        startTimerCount();
         tv_time.setText("00 : " + minute + " : " + second);
         initMap();
     }
@@ -308,7 +286,7 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
     private void cancelReservation() {
         showProgressDialog();
         Map<String, String> map = new HashMap<>();
-        map.put("reservationId", reservationID.trim());
+        map.put("reservationId", reservationBean.getData().getReservationId() + "");
         UdriveRestClient.getClentInstance().cancelReservation(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
