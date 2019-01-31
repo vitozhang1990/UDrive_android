@@ -78,4 +78,13 @@
         <!-- 是否模糊 -->
         <item name="android:backgroundDimEnabled">true</item>
     </style>
+
+    <declare-styleable name="ScaleBar">
+        <attr name="scaleNum" format="integer" />
+        <attr name="scaleWidth" format="dimension" />
+        <attr name="scaleHeight" format="dimension" />
+        <attr name="scaleDistance" format="dimension" />
+        <attr name="scaleBackground" format="reference" />
+        <attr name="scaleDrawBackground" format="reference" />
+    </declare-styleable>
 </resources>

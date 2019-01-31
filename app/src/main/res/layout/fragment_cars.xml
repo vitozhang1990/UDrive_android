@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="cn.com.i_zj.udrive_az.map.fragment.CarsFragment">
 
     <RelativeLayout
@@ -77,7 +78,7 @@
         <View
             android:id="@+id/v1"
             android:layout_width="@dimen/dp_1"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_marginLeft="@dimen/dp_20"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="40dp"
@@ -89,9 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dp_20"
-            android:layout_toRightOf="@+id/v1"
-
-            >
+            android:layout_toRightOf="@+id/v1">
 
             <LinearLayout
                 android:id="@+id/ll_carnum"
@@ -114,13 +113,22 @@
                     android:id="@+id/tv_traffic_control"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_fifteen"
                     android:background="@drawable/btn_traffic_control"
                     android:text="今日限行"
-                    android:visibility="gone"
-                    android:layout_marginLeft="@dimen/margin_fifteen"
                     android:textColor="@color/traffic_control"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:visibility="gone" />
 
+                <cn.com.i_zj.udrive_az.widget.ScaleBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:scaleBackground="@drawable/shape_scale_gery"
+                    app:scaleDistance="2dp"
+                    app:scaleDrawBackground="@drawable/shape_scale_black"
+                    app:scaleHeight="10dp"
+                    app:scaleWidth="2dp"
+                    app:scaleNum="10" />
             </LinearLayout>
 
             <RelativeLayout
