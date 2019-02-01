@@ -158,7 +158,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(OrderFinishEvent event) {
         if (homeNote == null) {
             if (event.isAbc()) {

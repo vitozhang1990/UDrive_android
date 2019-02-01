@@ -376,7 +376,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(OrderFinishEvent event) {
         if (event.isAbc()) {
             mDiMyType.setRightText(getString(R.string.lz_have_no_complete_order));
@@ -386,7 +386,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(PayFinishEvent event) {
         mDiMyType.setRightText("");
     }

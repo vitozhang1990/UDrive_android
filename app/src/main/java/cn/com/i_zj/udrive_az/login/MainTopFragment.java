@@ -64,6 +64,7 @@ public class MainTopFragment extends DBSBaseFragment {
     private CityListResult cityInfo;
     private GlobalAdapter mAdapter;
     private ArrayList<CityListResult> cityList = new ArrayList<>();
+    private boolean hasRequest = false;
 
     @Override
     protected int getLayoutResource() {
@@ -150,6 +151,7 @@ public class MainTopFragment extends DBSBaseFragment {
                         if (listBaseRetObj.getDate().size() > 0) {
                             LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY_LIST, listBaseRetObj.getDate());
                         }
+                        hasRequest = true;
                         cityList.clear();
                         cityList.addAll(listBaseRetObj.getDate());
                         mAdapter.notifyDataSetChanged();
@@ -171,7 +173,7 @@ public class MainTopFragment extends DBSBaseFragment {
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.city_layout:
-                if (cityList.size() == 0) {
+                if (!hasRequest) {
                     ToastUtils.showShort("尚未请求到城市信息，请稍后再试");
                     requestCityList();
                     return;
