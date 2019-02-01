@@ -62,12 +62,11 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.WebSocketPark;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
-import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
-import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
@@ -90,6 +89,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     TextView tv_address;
     @BindView(R.id.stop_amount)
     TextView stop_amount;
+    @BindView(R.id.city_amount)
+    TextView city_amount;
 
     @BindView(R.id.tv_city)
     TextView city;
@@ -110,10 +111,11 @@ public class ChooseParkActivity extends DBSBaseActivity implements
 
     private ParksResult.DataBean pickPark;
     private FromParkBean fromPark;
+    private int orderId;
 
     private ParkDetailDialog parkDetailDialog;
     private CityListResult cityInfo;
-    private ArrayList<CityListResult> mCityList;
+    private ArrayList<CityListResult> mCityList = new ArrayList<>();
     private GlobalAdapter mAdapter;
     private boolean requestOnce;
     private boolean pickModel;
@@ -128,10 +130,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
         initViewstMap(savedInstanceState);
-        mCityList = LocalCacheUtils.getDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY_LIST);
-        if (mCityList == null) {
-            mCityList = new ArrayList<>();
-        }
 
         mAdapter = RecyclerViewUtils.initRecycler(
                 this
@@ -167,8 +165,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                         LatLng latLng = new LatLng(latitude, longitude);
                         mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants2.AreaMarkerZoom));
                     }
-                });
+                }, R.layout.item_city_empty);
         updateUi();
+        getSysCity(orderId);
     }
 
     private void updateUi() {
@@ -188,6 +187,8 @@ public class ChooseParkActivity extends DBSBaseActivity implements
 
     private void initViewstMap(Bundle savedInstanceState) {
         fromPark = (FromParkBean) getIntent().getSerializableExtra("fromPark");
+        String idStr = getIntent().getStringExtra("oderId");
+        orderId = Integer.valueOf(idStr);
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
         mAmap = mMapView.getMap();
         UiSettings uiSettings = mAmap.getUiSettings();
@@ -238,9 +239,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 WebActivity.startWebActivity(ChooseParkActivity.this, BuildConfig.SHARE_AMOUNT, "费用说明");
                 break;
             case R.id.city_layout:
-                if (mCityList == null || mCityList.size() == 0) {
-                    return;
-                }
                 pickModel = !pickModel;
                 mAdapter.notifyDataSetChanged();
                 updateUi();
@@ -296,6 +294,44 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         }
     }
 
+    private void getSysCity(int orderId) {
+        showProgressDialog();
+        UdriveRestClient.getClentInstance().getSysCity(orderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<List<CityListResult>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<List<CityListResult>> listBaseRetObj) {
+                        dissmisProgressDialog();
+                        if (listBaseRetObj == null || listBaseRetObj.getCode() != 1
+                                || listBaseRetObj.getDate() == null) {
+                            return;
+                        }
+                        mCityList.clear();
+                        mCityList.addAll(listBaseRetObj.getDate());
+                        if (mapLocation != null) {
+                            doSomeThing();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private void fetchParks(String areaCode) {
         UdriveRestClient.getClentInstance().getParks(areaCode)
                 .subscribeOn(Schedulers.io())
@@ -315,58 +351,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                         for (int i = 0; i < dataBeans.size(); i++) {
                             ParksResult.DataBean dataBean = dataBeans.get(i);
                             ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
-                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-                            int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
-                            StringBuilder sb = new StringBuilder();
-                            if (fromPark != null && dataBean.getId() == fromPark.getParkID()) {
-                                sb.append("起");
-                            } else {
-                                sb.append("P");
-                            }
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(AMapUtil.bitmapWithShortCut(ChooseParkActivity.this, bitmapId, sb.toString(), String.valueOf(dataBean.getParkCountBalance()), true)));
-
-                            Marker marker = mAmap.addMarker(markerOptions);
-                            marker.setObject(dataBean);
-                            markerMap.put(parkKey, marker);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
-    private void fetchParks() {
-        UdriveRestClient.getClentInstance().getParks()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ParksResult>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(ParksResult result) {
-                        List<ParksResult.DataBean> dataBeans = result.getData();
-                        for (int i = 0; i < dataBeans.size(); i++) {
-                            ParksResult.DataBean dataBean = dataBeans.get(i);
-                            ParkKey parkKey = new ParkKey(dataBean.getId(), dataBean.getLongitude(), dataBean.getLatitude());
-                            if (markerMap.containsKey(parkKey)) {
-                                ParksResult.DataBean temp = (ParksResult.DataBean) markerMap.get(parkKey).getObject();
-                                if (temp.getValidCarCount() == dataBean.getValidCarCount()) {
-                                    continue;
-                                } else {
-                                    markerMap.get(parkKey).remove();
-                                    markerMap.remove(parkKey);
-                                }
-                            }
                             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
                             int bitmapId = dataBean.getCooperate() > 0 ? R.mipmap.ic_cheweishu_monthly : R.mipmap.ic_cheweishu_llinshi;
                             StringBuilder sb = new StringBuilder();
@@ -457,6 +441,12 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         tv_name.setText(pickPark.getName());
         tv_address.setText(pickPark.getAddress());
         if (pickPark.getCooperate() > 0) {
+            if (cityInfo.getAmount() > 0) {
+                city_amount.setVisibility(View.VISIBLE);
+                city_amount.setText("异地还车费 " + cityInfo.getAmount() / 100 + " 元");
+            } else {
+                city_amount.setVisibility(View.GONE);
+            }
             if (pickPark.getStopedAmount() > 0) {
                 stop_amount.setText("该还车点无可用免费车位时将收取 " + pickPark.getStopedAmount() / 100 + " 元超停费");
             } else {
@@ -534,25 +524,34 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         return false;
     }
 
+    private AMapLocation mapLocation;
+
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation == null || aMapLocation.getErrorCode() != 0) {
             return;
         }
         mLocationClient.stopLocation();
-        LatLng mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-
+        mapLocation = aMapLocation;
         if (requestOnce) { //第一次才会去请求，之后都是直接定位
-            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(mobileLocation, Constants2.AreaMarkerZoom));
+            mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mapLocation.getLatitude(), mapLocation.getLongitude()), Constants2.AreaMarkerZoom));
             return;
         }
         requestOnce = true;
+        if (mCityList == null || mCityList.size() == 0) {
+            return;
+        }
+        doSomeThing();
+    }
 
-
+    private void doSomeThing() {
         //逻辑：没有则正常请求，若在白名单内，则使用当前定位请求，否则使用白名单第一个城市请求
         CityListResult cityInfo = new CityListResult();
-        cityInfo.setAreaCode(aMapLocation.getCityCode());
-        cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
+        cityInfo.setAreaCode(mapLocation.getCityCode());
+        cityInfo.setAreaName(mapLocation.getCity().replace("市", ""));
+        cityInfo.setAmount(0);
+        LatLng mobileLocation = new LatLng(mapLocation.getLatitude(), mapLocation.getLongitude());
         if (mCityList == null || mCityList.size() == 0) {
             fetchParks(cityInfo.getAreaCode());
             this.cityInfo = cityInfo;
@@ -564,7 +563,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         for (CityListResult bean : mCityList) {
             if (bean.getAreaName().equals(cityInfo.getAreaName())
                     || bean.getAreaCode().equals(cityInfo.getAreaCode())) {
-                this.cityInfo = cityInfo;
+                this.cityInfo = bean;
                 fetchParks(cityInfo.getAreaCode());
                 updateUi();
                 mAdapter.notifyDataSetChanged();

@@ -8,6 +8,7 @@ public class CityListResult implements Serializable {
     private String areaName;
     private String center;
     private String img;
+    private int amount;
 
     public String getAreaCode() {
         return areaCode;
@@ -39,5 +40,13 @@ public class CityListResult implements Serializable {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }

@@ -278,6 +278,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
             case R.id.tv_address://更换地址提示
                 Intent intent1 = new Intent(TravelingActivity.this, ChooseParkActivity.class);
                 intent1.putExtra("fromPark", fromPark);
+                intent1.putExtra("oderId", oderId);
                 startActivityForResult(intent1, 101);
                 break;
             case R.id.iv_na:

@@ -25,13 +25,14 @@ import java.util.List;
 
 public class RecyclerViewUtils {
 
-    public static <T> GlobalAdapter initRecycler(Context context, RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager, int resId, ArrayList<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener) {
+    public static <T> GlobalAdapter initRecycler(Context context, RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager, int resId, ArrayList<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener, int emptyId) {
         GlobalAdapter adapter = new GlobalAdapter(resId, mList, onGlobalListener);
         if (null != onItemClickListener) {
             adapter.setOnItemClickListener(onItemClickListener);
         }
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        adapter.setEmptyView(emptyId, recyclerView);
         return adapter;
     }
 

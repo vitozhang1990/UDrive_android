@@ -41,7 +41,6 @@ import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -103,7 +102,7 @@ public class MainTopFragment extends DBSBaseFragment {
                         pickModel = false;
                         updateUi();
                     }
-                });
+                }, R.layout.item_city_empty);
         updateUi();
         requestCityList();
 

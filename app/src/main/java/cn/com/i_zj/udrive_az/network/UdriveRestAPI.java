@@ -155,6 +155,9 @@ public interface UdriveRestAPI {
     @GET("/mobile/v1/preferential/findAllPreferential")
     Observable<BaseRetObj<List<UnUseCouponResult.DataBean>>> v1FindAllPreferential(@Query("userId") String id);
 
+    @GET("/mobile/tripOrder/getSysCity/{orderId}")
+    Observable<BaseRetObj<List<CityListResult>>> getSysCity(@Path("orderId") int orderId);
+
     //获取押金订单号
     @GET("/mobile/deposit/refundDeposit")
     Observable<RefundDepositResult> refundDeposit();
