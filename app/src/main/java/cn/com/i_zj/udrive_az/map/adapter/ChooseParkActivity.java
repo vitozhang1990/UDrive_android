@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -443,18 +444,18 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         if (pickPark.getCooperate() > 0) {
             if (cityInfo.getAmount() > 0) {
                 city_amount.setVisibility(View.VISIBLE);
-                city_amount.setText("异地还车费 " + cityInfo.getAmount() / 100 + " 元");
+                city_amount.setText(Html.fromHtml("异地还车费 <font color='#000000'>" + cityInfo.getAmount() / 100 + "</font> 元"));
             } else {
                 city_amount.setVisibility(View.GONE);
             }
             if (pickPark.getStopedAmount() > 0) {
-                stop_amount.setText("该还车点无可用免费车位时将收取 " + pickPark.getStopedAmount() / 100 + " 元超停费");
+                stop_amount.setText(Html.fromHtml("该还车点无可用免费车位时将收取 <font color='#000000'>" + pickPark.getStopedAmount() / 100 + "</font> 元超停费"));
             } else {
                 stop_amount.setText("该还车点不收取停车费");
             }
         } else {
             if (pickPark.getStopInAmount() > 0) {
-                stop_amount.setText("该还车点将收取 " + pickPark.getStopInAmount() / 100 + " 元停车费");
+                stop_amount.setText(Html.fromHtml("该还车点将收取 <font color='#000000'>" + pickPark.getStopInAmount() / 100 + "</font> 元停车费"));
             } else {
                 stop_amount.setText("该还车点不收取停车费");
             }
