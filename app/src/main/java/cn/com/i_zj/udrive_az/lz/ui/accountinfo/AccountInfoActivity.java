@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +18,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
@@ -181,6 +184,7 @@ public class AccountInfoActivity extends DBSBaseActivity {
                     public void onSuccess(String response) {
                         Log.e("=====", "==============================");
                         SessionManager.getInstance().clearSession();
+                        EventBus.getDefault().post(new OrderFinishEvent());
                         finish();
                     }
 

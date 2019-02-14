@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent;
+import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.event.NetWorkEvent;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
@@ -168,6 +169,11 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 rlNote.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LoginSuccessEvent event) {
+        getUnfinishedOrder1();
     }
 
     private void getReservation() {

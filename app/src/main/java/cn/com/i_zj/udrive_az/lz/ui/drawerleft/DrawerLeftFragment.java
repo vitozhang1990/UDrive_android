@@ -289,7 +289,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         getUserInfo();
 
         //获取我的行程
-//        getUnfinishedOrder();
+        getUnfinishedOrder();
     }
 
     /**
