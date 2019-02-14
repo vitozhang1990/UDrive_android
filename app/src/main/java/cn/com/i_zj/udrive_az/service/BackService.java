@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
+import cn.com.i_zj.udrive_az.event.GongDianEvent;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
@@ -153,6 +154,8 @@ public class BackService extends BaseService {
                         intent.setClass(BackService.this, OffPowerDialogActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         BackService.this.startActivity(intent);
+                    } else {
+                        EventBus.getDefault().post(new GongDianEvent());
                     }
                     break;
                 case 6000://推送强制结束订单信息

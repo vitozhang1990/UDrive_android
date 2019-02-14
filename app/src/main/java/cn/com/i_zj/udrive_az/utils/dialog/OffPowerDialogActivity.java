@@ -8,7 +8,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.GongDianEvent;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
 
 public class OffPowerDialogActivity extends Activity {
@@ -34,6 +38,11 @@ public class OffPowerDialogActivity extends Activity {
         if (RESULT_OK == resultCode) {
             finish();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(GongDianEvent event) {
+        finish();
     }
 
     @Override
