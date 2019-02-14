@@ -85,8 +85,8 @@ public class MainTopFragment extends DBSBaseFragment {
                         CityListResult ai = (CityListResult) item;
                         helper.setText(R.id.city_name, ai.getAreaName());
                         if (cityInfo != null &&
-                                (cityInfo.getAreaCode().equals(ai.getAreaCode()))
-                                || cityInfo.getAreaName().equals(ai.getAreaName())) {
+                                ((cityInfo.getAreaCode().equals(ai.getAreaCode()))
+                                || cityInfo.getAreaName().equals(ai.getAreaName()))) {
                             ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT_BOLD);
                         } else {
                             ((TextView) helper.getView(R.id.city_name)).setTypeface(Typeface.DEFAULT);

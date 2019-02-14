@@ -74,7 +74,6 @@ import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AmountDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
-import cn.com.i_zj.udrive_az.utils.dialog.OffPowerDialogActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -186,7 +185,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                             }
                             if (unFinishOrderBean.getData().getOrder() != null
                                     && unFinishOrderBean.getData().getOrder().getPowerFlag() == 1) { //直接显示断电信息
-                                startActivity(OffPowerDialogActivity.class);
+//                                startActivity(OffPowerDialogActivity.class);
                             }
 
                             carId = String.valueOf(unFinishOrderBean.getData().getCarId());

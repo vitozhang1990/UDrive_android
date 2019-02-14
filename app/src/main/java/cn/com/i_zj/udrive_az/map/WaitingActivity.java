@@ -41,8 +41,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,10 +55,7 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.constant.ParkType;
-import cn.com.i_zj.udrive_az.event.WebSocketEvent;
-import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.map.adapter.PictureBeforeActivity;
-import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.DoorBean;
 import cn.com.i_zj.udrive_az.model.GetReservation;
@@ -139,7 +134,6 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
         if (time > 1000 * 60 * 15) {
             ToastUtils.showShort("预约结束");
             startActivity(new Intent(WaitingActivity.this, MainActivity.class));
-            EventBus.getDefault().post(new WebSocketEvent());
             finish();
             return;
         }
@@ -158,7 +152,6 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
             public void onFinish() {
                 if (null != tv_time) {
                     finish();// 预约时间结束
-                    EventBus.getDefault().post(new WebSocketEvent());
                     startActivity(new Intent(WaitingActivity.this, MainActivity.class));
                 }
             }
@@ -183,9 +176,6 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
         mMapView.onCreate(savedInstanceState);
         initViews();
         parkDetail();
-        //发送创建web socket event
-        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-        EventBus.getDefault().post(new WebSocketEvent(accountInfo.data.userId));
     }
 
     private void initViews() {
@@ -302,7 +292,6 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
                             if (bean.getCode() == 1) {
                                 ToastUtils.showShort("取消订单成功");
                                 startActivity(new Intent(WaitingActivity.this, MainActivity.class));
-                                EventBus.getDefault().post(new WebSocketEvent());
                                 finish();
                             } else {
                                 ToastUtils.showShort(bean.getMessage());

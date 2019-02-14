@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
+import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
@@ -40,6 +41,7 @@ public class BackService extends BaseService {
 
     private WebSocket mWebSocket;
     private MyWebSocketSubscriber socketSubscriber;
+    private int userId;
 
     @Override
     public boolean init() {
@@ -56,11 +58,24 @@ public class BackService extends BaseService {
     public void onEvent(WebSocketEvent webSocketEvent) {
         Log.d(TAG, "onEvent: " + webSocketEvent.getUserId());
         if (socketSubscriber != null) {
+            if (webSocketEvent.getUserId() == userId) {
+                return;
+            }
             socketSubscriber.dispose();
             socketSubscriber = null;
         }
         if (webSocketEvent.getUserId() != 0) { //取消所有webSocket
+            userId = webSocketEvent.getUserId();
             connect("app_" + webSocketEvent.getUserId());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEvent(WebSocketCloseEvent event) {
+        userId = 0;
+        if (socketSubscriber != null) {
+            socketSubscriber.dispose();
+            socketSubscriber = null;
         }
     }
 
@@ -81,7 +96,7 @@ public class BackService extends BaseService {
         @Override
         protected void onMessage(String text) {
             super.onMessage(text);
-            Log.d(TAG, text);
+            Log.e(TAG, text);
             GsonBuilder gb = new GsonBuilder();
             Gson gson = gb.create();
             WebSocketResult result = gson.fromJson(text, WebSocketResult.class);
@@ -149,6 +164,7 @@ public class BackService extends BaseService {
                     }.getType();
                     WebSocketResult<WebSocketOrder> kill = gson.fromJson(text, killType);
 
+                    EventBus.getDefault().post(new WebSocketCloseEvent());
                     if (kill.getData() != null) {
                         intent.setClass(BackService.this, ActConfirmOrder.class);
                         intent.putExtra(PaymentActivity.ORDER_NUMBER, kill.getData().getNumber());

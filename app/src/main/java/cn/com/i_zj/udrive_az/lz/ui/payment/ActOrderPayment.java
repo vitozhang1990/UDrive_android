@@ -28,7 +28,6 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -251,7 +250,7 @@ public class ActOrderPayment extends DBSBaseActivity {
         if (value.data != null) {
             tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             if (value.data.durationTime > 60) {
-                tvDurationTime.setText(String.format(Locale.getDefault(), "时长(%.1f小时)", value.data.durationTime / 60f));
+                tvDurationTime.setText("时长("+ value.data.durationTime / 60 +"小时" + (value.data.durationTime % 60 > 0 ? value.data.durationTime % 60 + "分钟)" : ")"));
             } else {
                 tvDurationTime.setText("时长(" + (value.data.durationTime) + "分钟)");
             }

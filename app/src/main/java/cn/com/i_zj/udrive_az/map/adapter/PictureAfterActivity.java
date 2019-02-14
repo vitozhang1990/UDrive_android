@@ -34,7 +34,7 @@ import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
-import cn.com.i_zj.udrive_az.event.WebSocketEvent;
+import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
@@ -155,8 +155,8 @@ public class PictureAfterActivity extends DBSBaseActivity {
                                 Intent intent1 = new Intent(PictureAfterActivity.this, ActConfirmOrder.class);
                                 intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
                                 startActivity(intent1);
-                                EventBus.getDefault().post(new WebSocketEvent());
                                 EventBus.getDefault().post(new OrderFinishEvent());
+                                EventBus.getDefault().post(new WebSocketCloseEvent());
                                 finish();
                             } else if (bean.code == 1002) {
                                 ToastUtils.showShort(bean.message);

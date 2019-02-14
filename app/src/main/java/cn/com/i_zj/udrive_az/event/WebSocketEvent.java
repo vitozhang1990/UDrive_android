@@ -4,10 +4,6 @@ public class WebSocketEvent {
 
     private int userId;
 
-    public WebSocketEvent() {
-
-    }
-
     public WebSocketEvent(int userId) {
         this.userId = userId;
     }
