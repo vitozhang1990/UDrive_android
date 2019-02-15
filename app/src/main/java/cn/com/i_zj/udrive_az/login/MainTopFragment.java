@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -98,6 +99,7 @@ public class MainTopFragment extends DBSBaseFragment {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         cityInfo = cityList.get(position);
+                        Log.e("zaijian", "11__》" + cityInfo.getAreaName());
                         LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
                         EventBus.getDefault().post(cityInfo);
                         pickModel = false;

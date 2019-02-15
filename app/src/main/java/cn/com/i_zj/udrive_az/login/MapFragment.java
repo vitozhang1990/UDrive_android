@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -915,6 +916,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         CityListResult cityInfo = new CityListResult();
         cityInfo.setAreaCode(aMapLocation.getCityCode());
         cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
+        Log.e("zaijian", "222__》" + cityInfo.getAreaName());
         LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);
 
         EventBus.getDefault().post(new CityUpdateEvent());

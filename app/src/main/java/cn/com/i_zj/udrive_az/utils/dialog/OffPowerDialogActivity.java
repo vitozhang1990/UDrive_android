@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -22,6 +23,7 @@ public class OffPowerDialogActivity extends Activity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_off_power);
         setFinishOnTouchOutside(false);
+        EventBus.getDefault().register(this);
 
         findViewById(R.id.sure).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -30,6 +32,12 @@ public class OffPowerDialogActivity extends Activity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
