@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -111,6 +110,7 @@ import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
+import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -150,8 +150,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
-    @BindView(R.id.tblayout)
-    TabLayout tabLayout;
+    @BindView(R.id.indicator_line)
+    ViewPagerIndicator mIndicatorCircleLine;
 
     @BindView(R.id.ll_info)
     LinearLayout ll_info;
@@ -404,7 +404,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private void updateCity() {
         try {
             float longitude = Float.valueOf(mCityInfo.getCenter().split(",")[0]);
-            float latitude= Float.valueOf(mCityInfo.getCenter().split(",")[1]);
+            float latitude = Float.valueOf(mCityInfo.getCenter().split(",")[1]);
             LatLng latLng = new LatLng(latitude, longitude);
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f));
             reset();
@@ -849,16 +849,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             carid = String.valueOf(bunldBean.getId());
                             BaseFragmentAdapter myPagerAdapter = new BaseFragmentAdapter(getFragmentManager(), fragments, imgs, getContext());
                             mViewPager.setAdapter(myPagerAdapter);
-
-                            tabLayout.setupWithViewPager(mViewPager);
-                            //增加指示器个数
-                            for (int i = 0; i < tabLayout.getTabCount(); i++) {
-                                TabLayout.Tab tab = tabLayout.getTabAt(i);
-                                if (tab != null) {
-                                    tab.setCustomView(myPagerAdapter.getTabView(i));
-                                }
-                            }
-
+                            mIndicatorCircleLine.setViewPager(mViewPager, fragments.size());
 
                             CarsFragment carsFragment = (CarsFragment) fragments.get(0);
                             carsFragment.refresh(carVosBeans.get(0));

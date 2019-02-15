@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +21,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_height="55dp"
                 android:layout_above="@+id/viewpager1"
                 android:layout_marginLeft="@dimen/dp_14"
                 android:layout_marginRight="@dimen/dp_14"
@@ -141,12 +140,12 @@
             <RelativeLayout
                 android:id="@+id/rl_car_info1"
                 android:layout_width="match_parent"
-                android:layout_height="160dp">
+                android:layout_height="120dp">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewpager1"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="match_parent"
                     android:layout_alignParentBottom="true"
                     android:layout_marginLeft="@dimen/dp_14"
                     android:layout_marginRight="@dimen/dp_14"
@@ -205,7 +204,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="75dp"
+                    android:layout_height="55dp"
                     android:layout_above="@+id/viewpager"
                     android:layout_marginLeft="@dimen/dp_14"
                     android:layout_marginRight="@dimen/dp_14"
@@ -230,10 +229,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginBottom="@dimen/dp_10"
                                 android:text="益阳停车场"
                                 android:textColor="@color/color_map_btn"
-                                android:textSize="16sp" />
+                                android:textSize="14sp" />
 
                             <ImageView
                                 android:id="@+id/park_explain"
@@ -319,27 +317,25 @@
                             android:textColor="#999999"
                             android:textSize="12sp" />
                     </RelativeLayout>
-
-
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/rl_car_info"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp">
+                    android:layout_height="120dp">
 
                     <android.support.v4.view.ViewPager
                         android:id="@+id/viewpager"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="match_parent"
                         android:layout_alignParentBottom="true"
                         android:layout_marginLeft="@dimen/dp_14"
                         android:layout_marginRight="@dimen/dp_14"
                         android:layout_marginBottom="@dimen/dp_5"
                         android:background="@drawable/bg_map_white" />
 
-                    <android.support.design.widget.TabLayout
-                        android:id="@+id/tblayout"
+                    <cn.com.i_zj.udrive_az.widget.ViewPagerIndicator
+                        android:id="@+id/indicator_line"
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
@@ -347,8 +343,12 @@
                         android:layout_marginLeft="@dimen/dp_14"
                         android:layout_marginRight="@dimen/dp_14"
                         android:layout_marginBottom="@dimen/dp_10"
-                        app:tabIndicatorColor="@color/white"
-                        app:tabMode="fixed" />
+                        app:vpi_default_color="#8033333D"
+                        app:vpi_distance="6dp"
+                        app:vpi_distanceType="BY_RADIUS"
+                        app:vpi_indicatorType="CIRCLE_LINE"
+                        app:vpi_radius="3dp"
+                        app:vpi_selected_color="#FF33333D" />
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>

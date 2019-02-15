@@ -42,24 +42,12 @@ public class CarsFragment extends Fragment {
     TextView tvZuowei;
     @BindView(R.id.tv_ranliao)
     TextView tvRanliao;
-    @BindView(R.id.rl1)
-    RelativeLayout rl1;
-    @BindView(R.id.v1)
-    View v1;
     @BindView(R.id.tv_carnum)
     TextView tvCarnum;
-    @BindView(R.id.tv1)
-    TextView tv1;
     @BindView(R.id.tv_xuhang)
     TextView tvXuhang;
-    @BindView(R.id.tv2)
-    TextView tv2;
-    @BindView(R.id.rl2)
-    RelativeLayout rl2;
     @BindView(R.id.tv_fenzhong)
     TextView tvFenzhong;
-    @BindView(R.id.tv3)
-    TextView tv3;
     @BindView(R.id.tv_gongli)
     TextView tvGongli;
     @BindView(R.id.tv4)
