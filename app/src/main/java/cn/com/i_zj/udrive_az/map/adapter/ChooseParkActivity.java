@@ -118,7 +118,6 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private CityListResult cityInfo;
     private ArrayList<CityListResult> mCityList = new ArrayList<>();
     private GlobalAdapter mAdapter;
-    private boolean requestOnce;
     private boolean pickModel;
 
     @Override
@@ -259,7 +258,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
             if (poiItem == null) {
                 return;
             }
-            ed_search.setText(poiItem.getTitle());
+            ed_search.setText(poiItem.getName());
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(poiItem.getLat(), poiItem.getLng())
                     , Constants2.AreaShowZoom));
@@ -534,13 +533,9 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         }
         mLocationClient.stopLocation();
         mapLocation = aMapLocation;
-        if (requestOnce) { //第一次才会去请求，之后都是直接定位
+        if (mCityList == null || mCityList.size() == 0) {
             mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(mapLocation.getLatitude(), mapLocation.getLongitude()), Constants2.AreaMarkerZoom));
-            return;
-        }
-        requestOnce = true;
-        if (mCityList == null || mCityList.size() == 0) {
             return;
         }
         doSomeThing();
@@ -577,6 +572,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
         float longitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[0]);
         float latitude = Float.valueOf(mCityList.get(0).getCenter().split(",")[1]);
         LatLng latLng = new LatLng(latitude, longitude);
+        updateUi();
         mAdapter.notifyDataSetChanged();
         mAmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants2.AreaMarkerZoom));
     }

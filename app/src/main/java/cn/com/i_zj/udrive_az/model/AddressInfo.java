@@ -3,18 +3,10 @@ package cn.com.i_zj.udrive_az.model;
 import java.io.Serializable;
 
 public class AddressInfo implements Serializable {
-    private String title;
     private String name;
+    private String address;
     private double lng;
     private double lat;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getName() {
         return name;
@@ -22,6 +14,14 @@ public class AddressInfo implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public double getLng() {

@@ -9,9 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
@@ -30,7 +30,7 @@ import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 
 public class ChooseStartEndActivity extends DBSBaseActivity implements
-        PoiSearch.OnPoiSearchListener, TextWatcher {
+        Inputtips.InputtipsListener, TextWatcher {
 
     @BindView(R.id.ed_search)
     EditText searchText;
@@ -41,10 +41,7 @@ public class ChooseStartEndActivity extends DBSBaseActivity implements
     @BindView(R.id.rv_address)
     RecyclerView rv_address;
 
-
     private String keyWord = "";// 要输入的poi搜索关键字
-    private PoiSearch.Query query;// Poi查询条件类
-    private PoiSearch poiSearch;// POI搜索
     private ArrayList<AddressInfo> historyAddress;
     private GlobalAdapter historyAdapter;
 
@@ -71,8 +68,8 @@ public class ChooseStartEndActivity extends DBSBaseActivity implements
                         @Override
                         public <T> void logic(BaseViewHolder helper, T item) {
                             AddressInfo ai = (AddressInfo) item;
-                            helper.setText(R.id.tv_name, ai.getTitle());
-                            helper.setText(R.id.tv_adress, ai.getName());
+                            helper.setText(R.id.tv_name, ai.getName());
+                            helper.setText(R.id.tv_adress, ai.getAddress());
                         }
                     }, new BaseQuickAdapter.OnItemClickListener() {
                         @Override
@@ -109,64 +106,11 @@ public class ChooseStartEndActivity extends DBSBaseActivity implements
      * 开始进行poi搜索
      */
     protected void doSearchQuery() {
-        query = new PoiSearch.Query(keyWord, "");
-        query.setPageSize(15);
-        query.setPageNum(0);
+        InputtipsQuery inputquery = new InputtipsQuery(keyWord, "");
 
-        poiSearch = new PoiSearch(this, query);
-        poiSearch.setOnPoiSearchListener(this);
-        poiSearch.searchPOIAsyn();
-    }
-
-    @Override
-    public void onPoiSearched(PoiResult poiResult, final int i) {
-        if (i == 1000) {
-            final ArrayList<PoiItem> poiItems = poiResult.getPois();
-            history_layout.setVisibility(View.GONE);
-            rv_address.setVisibility(View.VISIBLE);
-            RecyclerViewUtils.initLiner(
-                    ChooseStartEndActivity.this, rv_address,
-                    R.layout.item_poisearch, poiItems, new OnGlobalListener() {
-                        @Override
-                        public <T> void logic(BaseViewHolder helper, T item) {
-                            PoiItem poiItem = (PoiItem) item;
-                            helper.setText(R.id.tv_name, poiItem.getTitle());
-                            helper.setText(R.id.tv_adress, poiItem.getAdName());
-                        }
-                    }, new BaseQuickAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                            AddressInfo addressInfo = new AddressInfo();
-                            addressInfo.setName(poiItems.get(position).getAdName());
-                            addressInfo.setTitle(poiItems.get(position).getTitle());
-                            addressInfo.setLat(poiItems.get(position).getLatLonPoint().getLatitude());
-                            addressInfo.setLng(poiItems.get(position).getLatLonPoint().getLongitude());
-                            boolean same = false;
-                            if (historyAddress == null) {
-                                historyAddress = new ArrayList<>();
-                            }
-                            for (AddressInfo info : historyAddress) {
-                                if (info.same(addressInfo)) {
-                                    same = true;
-                                    break;
-                                }
-                            }
-                            if (!same) {
-                                historyAddress.add(addressInfo);
-                                LocalCacheUtils.savePersistentSettingString(Constants.SP_GLOBAL_NAME, Constants.SP_ADDRESS, new Gson().toJson(historyAddress));
-                            }
-                            Intent intent = getIntent();
-                            intent.putExtra("poiItem", addressInfo);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void onPoiItemSearched(PoiItem poiItem, int i) {
-
+        Inputtips inputTips = new Inputtips(this, inputquery);
+        inputTips.setInputtipsListener(this);
+        inputTips.requestInputtipsAsyn();
     }
 
     private String checkEditText(EditText editText) {
@@ -199,5 +143,51 @@ public class ChooseStartEndActivity extends DBSBaseActivity implements
     @Override
     public void afterTextChanged(Editable s) {
 
+    }
+
+    @Override
+    public void onGetInputtips(List<Tip> list, int i) {
+        if (i == 1000) {
+            history_layout.setVisibility(View.GONE);
+            rv_address.setVisibility(View.VISIBLE);
+            RecyclerViewUtils.initLiner(
+                    ChooseStartEndActivity.this, rv_address,
+                    R.layout.item_poisearch, list, new OnGlobalListener() {
+                        @Override
+                        public <T> void logic(BaseViewHolder helper, T item) {
+                            Tip poiItem = (Tip) item;
+                            helper.setText(R.id.tv_name, poiItem.getName());
+                            helper.setText(R.id.tv_adress, poiItem.getAddress());
+                        }
+                    }, new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                            Tip tip = (Tip) adapter.getItem(position);
+                            AddressInfo addressInfo = new AddressInfo();
+                            addressInfo.setAddress(tip.getAddress());
+                            addressInfo.setName(tip.getName());
+                            addressInfo.setLat(tip.getPoint().getLatitude());
+                            addressInfo.setLng(tip.getPoint().getLongitude());
+                            boolean same = false;
+                            if (historyAddress == null) {
+                                historyAddress = new ArrayList<>();
+                            }
+                            for (AddressInfo info : historyAddress) {
+                                if (info.same(addressInfo)) {
+                                    same = true;
+                                    break;
+                                }
+                            }
+                            if (!same) {
+                                historyAddress.add(addressInfo);
+                                LocalCacheUtils.savePersistentSettingString(Constants.SP_GLOBAL_NAME, Constants.SP_ADDRESS, new Gson().toJson(historyAddress));
+                            }
+                            Intent intent = getIntent();
+                            intent.putExtra("poiItem", addressInfo);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    });
+        }
     }
 }

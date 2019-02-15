@@ -36,7 +36,7 @@ public class RecyclerViewUtils {
         return adapter;
     }
 
-    public static <T> GlobalAdapter initLiner(Context context, RecyclerView recyclerView, int resId, ArrayList<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener){
+    public static <T> GlobalAdapter initLiner(Context context, RecyclerView recyclerView, int resId, List<T> mList, OnGlobalListener onGlobalListener, @Nullable BaseQuickAdapter.OnItemClickListener onItemClickListener){
         GlobalAdapter adapter = new GlobalAdapter(resId, mList, onGlobalListener);
         if (null != onItemClickListener){
             adapter.setOnItemClickListener(onItemClickListener);
