@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_scale_gery"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="vertical"
+            android:paddingLeft="12dp"
+            android:paddingTop="12dp"
+            android:paddingRight="12dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_carnum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="川**8765"
+                    android:textColor="#030303"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_traffic_control"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_fifteen"
+                    android:layout_toRightOf="@id/tv_carnum"
+                    android:background="@drawable/btn_traffic_control"
+                    android:text="限行"
+                    android:textColor="@color/traffic_control"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
+
+                        <cn.com.i_zj.udrive_az.widget.ScaleBar
+                            android:id="@+id/scale_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:scaleBackground="@drawable/shape_scale_gery"
+                            app:scaleDistance="2dp"
+                            app:scaleDrawBackground="@drawable/shape_scale_black"
+                            app:scaleHeight="10dp"
+                            app:scaleNum="10"
+                            app:scaleWidth="2dp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_xuhang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="5dp"
+                        android:text="51"
+                        android:textColor="#030303"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/car_limit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="km"
+                        android:textColor="#030303"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/rl3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_5">
+
+                        <TextView
+                            android:id="@+id/tv_fenzhong"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="0.01"
+                            android:textColor="#030303"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="3dp"
+                            android:layout_toRightOf="@+id/tv_fenzhong"
+                            android:text="元/分钟"
+                            android:textColor="#7A7A7A"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_gongli"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="3dp"
+                            android:layout_toRightOf="@+id/tv3"
+                            android:text="1.00"
+                            android:textColor="#030303"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="3dp"
+                            android:layout_toRightOf="@+id/tv_gongli"
+                            android:text="元/公里"
+                            android:textColor="#7A7A7A"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tv_carname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/iv_car"
+                            android:layout_centerHorizontal="true"
+                            android:text="奔驰 C200"
+                            android:textColor="#7A7A7A"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tv_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_carname"
+                            android:layout_marginLeft="6dp"
+                            android:background="@drawable/bag_carinfo"
+                            android:padding="@dimen/dp_3"
+                            android:text="白色"
+                            android:textColor="#AFAFAF"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:id="@+id/tv_zuowei"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_carname"
+                            android:layout_marginLeft="@dimen/dp_4"
+                            android:layout_toRightOf="@+id/tv_color"
+                            android:background="@drawable/bag_carinfo"
+                            android:padding="@dimen/dp_3"
+                            android:text="5座"
+                            android:textColor="#AFAFAF"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:id="@+id/tv_ranliao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_carname"
+                            android:layout_marginLeft="@dimen/dp_4"
+                            android:layout_toRightOf="@+id/tv_zuowei"
+                            android:background="@drawable/bag_carinfo"
+                            android:padding="@dimen/dp_3"
+                            android:text="燃油车"
+                            android:textColor="#AFAFAF"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_car"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:src="@mipmap/pic_cartype_baolai" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

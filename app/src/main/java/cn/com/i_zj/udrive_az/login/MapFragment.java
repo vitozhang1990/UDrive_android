@@ -1053,6 +1053,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @Override
     public void onDestroy() {
         super.onDestroy();
+        disposable.isDisposed();
         mMapView.onDestroy();
         disposable.dispose();
         mLocationClient.onDestroy();
