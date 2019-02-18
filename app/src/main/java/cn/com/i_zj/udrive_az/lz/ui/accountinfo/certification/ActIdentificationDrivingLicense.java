@@ -255,16 +255,16 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
         switch (view.getId()) {
             case R.id.iv_one:
                 if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
-                } else {
                     ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE);
+                } else {
+                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
                 }
                 break;
             case R.id.iv_two:
                 if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
-                } else {
                     ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE);
+                } else {
+                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
                 }
                 break;
             case R.id.btn_commit:
