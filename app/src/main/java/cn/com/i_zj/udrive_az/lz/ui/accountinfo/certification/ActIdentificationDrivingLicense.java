@@ -254,10 +254,18 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_one:
-                ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE);
+                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
+                } else {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE);
+                }
                 break;
             case R.id.iv_two:
-                ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE);
+                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
+                } else {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE);
+                }
                 break;
             case R.id.btn_commit:
                 uploadDriverInfo();

@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -912,6 +913,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             return;
         }
         mLocationClient.stopLocation();
+        if (TextUtils.isEmpty(aMapLocation.getCityCode())) {
+            mLocationClient.startLocation();
+            return;
+        }
+
         mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
         CityListResult cityInfo = new CityListResult();
         cityInfo.setAreaCode(aMapLocation.getCityCode());

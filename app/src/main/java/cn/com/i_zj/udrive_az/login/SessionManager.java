@@ -66,7 +66,7 @@ public class SessionManager {
    *
    * @return
    */
-  private boolean isNeedRefeshToken() {
+  public boolean isNeedRefeshToken() {
     if (null == sessionResult) {
       return false;
     }
@@ -76,6 +76,19 @@ public class SessionManager {
 
     long appRunSecound = System.currentTimeMillis() / 1000 - sessionResult.last_fetch_time;
     return (appRunSecound > sessionResult.expires_in / 2);
+  }
+
+  //超过29天，RefeshToken失效，需要用户重新登录
+  public boolean isNeedReLogin() {
+    if (null == sessionResult) {
+      return false;
+    }
+    if (0 == sessionResult.last_fetch_time) {
+      return true;
+    }
+
+    long appRunSecound = System.currentTimeMillis() / 1000 - sessionResult.last_fetch_time;
+    return (appRunSecound > 29*24*60*60);
   }
 
   /**

@@ -46,6 +46,7 @@ import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -79,6 +80,11 @@ public interface UdriveRestAPI {
     @Headers("Authorization: Basic dGVzdDp0ZXN0")
     @POST("/oauth/token")
     Observable<SessionResult> refreshToken(@Field("grant_type") String grant_type, @Field("refresh_token") String refresh_token);
+
+    @FormUrlEncoded
+    @Headers("Authorization: Basic dGVzdDp0ZXN0")
+    @POST("/oauth/token")
+    Call<SessionResult> refreshToken1(@Field("grant_type") String grant_type, @Field("refresh_token") String refresh_token);
 
     @GET("/code/sms")
     Observable<NetworkResult> requestSms(@Header("deviceId") String deviceId, @Query("mobile") String mobile);

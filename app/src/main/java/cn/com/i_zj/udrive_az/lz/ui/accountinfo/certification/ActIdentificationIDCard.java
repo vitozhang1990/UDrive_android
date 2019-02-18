@@ -187,10 +187,18 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_idcard_one:
-                ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
+                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
+                } else {
+                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
+                }
                 break;
             case R.id.iv_idcard_two:
-                ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_REVERSE);
+                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
+                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_REVERSE);
+                } else {
+                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
+                }
                 break;
             case R.id.tv_start_time:
                 showTimeDailog(true);

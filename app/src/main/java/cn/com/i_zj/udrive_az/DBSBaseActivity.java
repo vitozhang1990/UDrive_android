@@ -18,6 +18,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.event.EmptyEvent;
+import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent1;
+import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 
 /**
  * Created by wli on 2018/8/12.
@@ -113,6 +115,16 @@ public abstract class DBSBaseActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
 //    Bugtags.onPause(this);
+    }
+
+    LoginDialogFragment loginDialogFragment;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(GotoLoginDialogEvent1 loginEvent) {
+        if (loginDialogFragment == null) {
+            loginDialogFragment = new LoginDialogFragment();
+            loginDialogFragment.show(getSupportFragmentManager(), "login");
+        }
     }
 
     public boolean checkEmpty(EditText editText, String errorContent) {
