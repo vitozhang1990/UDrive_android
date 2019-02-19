@@ -190,6 +190,7 @@ public class ParkDetailResult implements Serializable {
             private int mileagePrice;
             private int timeFee;
             private int maxDistance;
+            private int totalMileage;
             private int parkId;
             private String parkName;
             private String parkAddress;
@@ -198,6 +199,7 @@ public class ParkDetailResult implements Serializable {
             private double longitude;
             private double latitude;
             private int direction;
+            private List<CarPackageVo> carPackageVos;
 
             public int getId() {
                 return id;
@@ -295,6 +297,14 @@ public class ParkDetailResult implements Serializable {
                 this.maxDistance = maxDistance;
             }
 
+            public int getTotalMileage() {
+                return totalMileage;
+            }
+
+            public void setTotalMileage(int totalMileage) {
+                this.totalMileage = totalMileage;
+            }
+
             public int getParkId() {
                 return parkId;
             }
@@ -357,6 +367,93 @@ public class ParkDetailResult implements Serializable {
 
             public void setDirection(int direction) {
                 this.direction = direction;
+            }
+
+            public static class CarPackageVo implements Serializable {
+
+                /**
+                 * id : 1
+                 * packageName : 全国大众宝来6小时套餐
+                 * mileage : 50
+                 * durationTime : 360
+                 * amount : 2000
+                 * isPreferential : 1
+                 * startTime : 00:00
+                 * endTime : 23:39
+                 */
+
+                private int id;
+                private String packageName;
+                private int mileage;
+                private int durationTime;
+                private int amount;
+                private int isPreferential;
+                private String startTime;
+                private String endTime;
+
+                public int getId() {
+                    return id;
+                }
+
+                public void setId(int id) {
+                    this.id = id;
+                }
+
+                public String getPackageName() {
+                    return packageName;
+                }
+
+                public void setPackageName(String packageName) {
+                    this.packageName = packageName;
+                }
+
+                public int getMileage() {
+                    return mileage;
+                }
+
+                public void setMileage(int mileage) {
+                    this.mileage = mileage;
+                }
+
+                public int getDurationTime() {
+                    return durationTime;
+                }
+
+                public void setDurationTime(int durationTime) {
+                    this.durationTime = durationTime;
+                }
+
+                public int getAmount() {
+                    return amount;
+                }
+
+                public void setAmount(int amount) {
+                    this.amount = amount;
+                }
+
+                public int getIsPreferential() {
+                    return isPreferential;
+                }
+
+                public void setIsPreferential(int isPreferential) {
+                    this.isPreferential = isPreferential;
+                }
+
+                public String getStartTime() {
+                    return startTime;
+                }
+
+                public void setStartTime(String startTime) {
+                    this.startTime = startTime;
+                }
+
+                public String getEndTime() {
+                    return endTime;
+                }
+
+                public void setEndTime(String endTime) {
+                    this.endTime = endTime;
+                }
             }
         }
     }

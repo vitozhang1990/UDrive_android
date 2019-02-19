@@ -15,9 +15,9 @@ import cn.com.i_zj.udrive_az.R;
 
 public class ScaleBar extends View {
     //评分
-    private float starMark = 5.6F;
+    private float starMark = 0F;
     //个数
-    private int starNum = 5;
+    private int starNum = 10;
     //高度
     private int starHeight;
     //宽度

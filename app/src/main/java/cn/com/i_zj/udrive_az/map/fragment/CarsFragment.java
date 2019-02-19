@@ -26,6 +26,7 @@ import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
 /**
  * 首页选择弹出汽车信息
@@ -54,20 +55,23 @@ public class CarsFragment extends Fragment {
     TextView tv4;
     @BindView(R.id.tv_traffic_control)
     TextView mTvTrafficControl;
-    Unbinder unbinder;
-    private TextView tvcarnum;
-    private View v;
-    CarInfoResult.DataBean carInfoResult;
+    @BindView(R.id.scale_bar)
+    ScaleBar scale_bar;
 
-    public CarsFragment() {
-        // Required empty public constructor
+    private View v;
+    private Unbinder unbinder;
+
+    public static CarsFragment newInstance(ParkDetailResult.DataBean.CarVosBean result) {
+        CarsFragment myFragment = new CarsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.INTENT_KEY_CAR_DATA, new Gson().toJson(result));
+        LogUtils.e("newInstance==+" + result.getPlateNumber());
+        myFragment.setArguments(bundle);
+        return myFragment;
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (null != v) {
             ViewGroup parent = (ViewGroup) v.getParent();
             if (null != parent) {
@@ -75,9 +79,6 @@ public class CarsFragment extends Fragment {
             }
         } else {
             v = inflater.inflate(R.layout.fragment_cars, container, false);
-            /**
-             * 控件的初始化
-             */
         }
         unbinder = ButterKnife.bind(this, v);
         return v;
@@ -108,8 +109,10 @@ public class CarsFragment extends Fragment {
             } else {
                 mTvTrafficControl.setVisibility(View.GONE);
             }
+            if (result.getTotalMileage() > 0) {
+                scale_bar.setMark(((float) result.getMaxDistance()) / result.getTotalMileage());
+            }
         }
-
     }
 
     private double deciMal(int top, int below) {
@@ -117,45 +120,9 @@ public class CarsFragment extends Fragment {
         return result;
     }
 
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        EventBus.getDefault().register(this);
-//    }
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void getResult(CarInfoResult.DataBean result) {
-//        this.carInfoResult=result;
-//        LogUtils.e(carInfoResult.getPlateNumber());
-//    }
-
-    /**
-     * @param carItem s
-     * @return fragment
-     */
-    public static CarsFragment newInstance(int carItem, ParkDetailResult.DataBean.CarVosBean result) {
-        //0, 单位名称, 单位Id, parent_current
-        CarsFragment myFragment = new CarsFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("carItem", carItem);
-        bundle.putString(Constants.INTENT_KEY_CAR_DATA, new Gson().toJson(result));
-        LogUtils.e("newInstance==+" + result.getPlateNumber());
-        myFragment.setArguments(bundle);
-        return myFragment;
-    }
-
-    public void refresh(ParkDetailResult.DataBean.CarVosBean result) {
-        if (result.getBrand() != null && !result.getBrand().equals("")) {
-
-        }
-
-
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-//        EventBus.getDefault().unregister(this);
         unbinder.unbind();
     }
-
 }

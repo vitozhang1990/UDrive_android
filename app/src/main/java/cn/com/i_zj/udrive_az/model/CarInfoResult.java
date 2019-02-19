@@ -75,6 +75,7 @@ public class CarInfoResult implements Serializable{
     private int mileagePrice;
     private int timeFee;
     private int maxDistance;
+    private int totalMileage;
     private int parkId;
     private String parkName;
     private String parkAddress;
@@ -166,6 +167,14 @@ public class CarInfoResult implements Serializable{
 
     public void setMaxDistance(int maxDistance) {
       this.maxDistance = maxDistance;
+    }
+
+    public int getTotalMileage() {
+      return totalMileage;
+    }
+
+    public void setTotalMileage(int totalMileage) {
+      this.totalMileage = totalMileage;
     }
 
     public int getParkId() {

@@ -845,11 +845,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             fragments = new ArrayList<>();
                             ArrayList<Integer> imgs = new ArrayList<>();
                             //for循环给list增加fragment
-                            for (int i = 0; i < carVosBeans.size(); i++) {
-                                CarsFragment carsFragment = CarsFragment.newInstance(i, carVosBeans.get(i));
+                            for (CarVosBean bean : carVosBeans) {
+                                CarsFragment carsFragment = CarsFragment.newInstance(bean);
                                 fragments.add(carsFragment);
                                 imgs.add(R.drawable.view_selector);
-
                             }
 
                             bunldBean = carVosBeans.get(0);
@@ -858,8 +857,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                             mViewPager.setAdapter(myPagerAdapter);
                             mIndicatorCircleLine.setViewPager(mViewPager, fragments.size());
 
-                            CarsFragment carsFragment = (CarsFragment) fragments.get(0);
-                            carsFragment.refresh(carVosBeans.get(0));
                             ll_info.setVisibility(View.VISIBLE);
                             rlCarinfo.setVisibility(View.VISIBLE);
                             btn_yongche.setVisibility(View.GONE);
@@ -1279,8 +1276,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onPageSelected(int i) {
         bunldBean = carBeans.get(i);
         carid = String.valueOf(bunldBean.getId());
-        CarsFragment carsFragment = (CarsFragment) fragments.get(i);
-        carsFragment.refresh(carBeans.get(i));
         position = i;
     }
 

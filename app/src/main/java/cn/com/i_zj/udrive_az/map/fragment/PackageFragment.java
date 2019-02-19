@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.math.BigDecimal;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
+import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
 public class PackageFragment extends Fragment {
 
@@ -37,14 +37,13 @@ public class PackageFragment extends Fragment {
     TextView tvCarnum;
     @BindView(R.id.tv_xuhang)
     TextView tvXuhang;
-    @BindView(R.id.tv_fenzhong)
-    TextView tvFenzhong;
-    @BindView(R.id.tv_gongli)
-    TextView tvGongli;
-    @BindView(R.id.tv4)
-    TextView tv4;
     @BindView(R.id.tv_traffic_control)
     TextView mTvTrafficControl;
+
+    @BindView(R.id.package_recycler)
+    RecyclerView recycler;
+    @BindView(R.id.scale_bar)
+    ScaleBar scale_bar;
 
     private View v;
     private Unbinder unbinder;
@@ -85,12 +84,8 @@ public class PackageFragment extends Fragment {
             tvColor.setText(mCarVosBean.getCarColor());
             tvZuowei.setText(String.valueOf(mCarVosBean.getSeatNumber()) + "座");
             tvXuhang.setText(String.valueOf(mCarVosBean.getMaxDistance()));
-            tvFenzhong.setText(deciMal(mCarVosBean.getTimeFee(), 100) + "");
-            tvGongli.setText(deciMal(mCarVosBean.getMileagePrice(), 100) + "");
             if ("北汽LITE".equals(mCarVosBean.getBrand())) {
                 tvRanliao.setText("电动车");
-                tvGongli.setVisibility(View.GONE);
-                tv4.setVisibility(View.GONE);
             }
 
             Glide.with(getActivity())
@@ -101,12 +96,10 @@ public class PackageFragment extends Fragment {
             } else {
                 mTvTrafficControl.setVisibility(View.GONE);
             }
+            if (mCarVosBean.getTotalMileage() > 0) {
+                scale_bar.setMark(((float) mCarVosBean.getMaxDistance()) / mCarVosBean.getTotalMileage());
+            }
         }
-    }
-
-    private double deciMal(int top, int below) {
-        double result = new BigDecimal((float) top / below).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        return result;
     }
 
     @Override
