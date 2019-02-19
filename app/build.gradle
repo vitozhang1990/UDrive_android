@@ -51,7 +51,6 @@ android {
             buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://prod.zaijianchuxing.com:8888?orderNum="'
             buildConfigField 'String', 'SHARE_URL', '"http://zaijianchuxing.com?ref?referral="'
             buildConfigField 'String', 'SHARE_AMOUNT', '"http://zaijianchuxing.com/costdetail"'
-            buildConfigField 'String', 'DOMAIN', '"http://zaijianchuxing.com"'
         }
         debug {
 
@@ -64,7 +63,6 @@ android {
             buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zaijianchuxing.com:8888?orderNum="'
             buildConfigField 'String', 'SHARE_URL', '"http://test.zaijianchuxing.com?ref?referral="'
             buildConfigField 'String', 'SHARE_AMOUNT', '"http://test.zaijianchuxing.com/costdetail"'
-            buildConfigField 'String', 'DOMAIN', '"http://test.zaijianchuxing.com"'
         }
     }
     signingConfigs {
@@ -189,8 +187,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
-
-    implementation 'com.github.LinweiJ:ViewPagerIndicator:0.1.0'
 
     //    implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation project(':facelibrary')
