@@ -417,7 +417,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private void fetchAreas() {
         if (disposable != null) {
-            disposable.isDisposed();
+            disposable.dispose();
             disposable = null;
         }
         UdriveRestClient.getClentInstance().getAreaTags()
@@ -486,7 +486,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
     private void fetchParks() {
         if (disposable != null) {
-            disposable.isDisposed();
+            disposable.dispose();
             disposable = null;
         }
         UdriveRestClient.getClentInstance().getParks()
@@ -1063,6 +1063,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        disposable.dispose();
         mLocationClient.onDestroy();
     }
 
