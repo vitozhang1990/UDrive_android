@@ -52,8 +52,6 @@ public class CarsFragment extends Fragment {
     TextView tvGongli;
     @BindView(R.id.tv4)
     TextView tv4;
-    @BindView(R.id.rl3)
-    RelativeLayout rl3;
     @BindView(R.id.tv_traffic_control)
     TextView mTvTrafficControl;
     Unbinder unbinder;

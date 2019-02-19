@@ -1,19 +1,12 @@
 package cn.com.i_zj.udrive_az.map.fragment;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import cn.com.i_zj.udrive_az.R;
 
 /**
  * Created by liuwei on 2018/8/13.
@@ -22,15 +15,11 @@ import cn.com.i_zj.udrive_az.R;
 public class BaseFragmentAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragments;
     private FragmentManager fm;
-    private ArrayList<Integer> imageResId ;
-    private Context context;
 
-    public BaseFragmentAdapter(FragmentManager fm, List<Fragment> fragments, ArrayList<Integer> imageResId, Context context) {
+    public BaseFragmentAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         this.fm = fm;
         this.fragments= fragments;
-        this.context=context;
-        this.imageResId=imageResId;
     }
 
 
@@ -83,11 +72,4 @@ public class BaseFragmentAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return null;
     }
-    public View getTabView(int position){
-        View view = LayoutInflater.from(context).inflate(R.layout.item_carbar, null);
-        ImageView img =view.findViewById(R.id.imageview);
-        img.setImageResource(imageResId.get(position));
-        return view;
-    }
-
 }

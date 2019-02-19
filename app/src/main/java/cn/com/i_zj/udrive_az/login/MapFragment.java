@@ -198,6 +198,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     private Map<ParkKey, Marker> areaMarkerMap = new HashMap();//所有区域
 
     private CarVosBean bunldBean; //当前选中的车辆
+    private int position; //当前选中的position
     private ParksResult.DataBean buldParkBean; //选中的停车场
     private ArrayList<CarVosBean> carBeans = new ArrayList<>(); //车辆列表
     private LatLng mobileLocation;
@@ -349,7 +350,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     ToastUtils.showShort("请先选择车辆");
                     return;
                 }
-                startActivity(PackageActivity.class);
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), PackageActivity.class);
+                intent.putExtra("list", carBeans);
+                intent.putExtra("position", position);
+                startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.bottom_in, R.anim.bottom_silent);
 //                reservationVerify();
                 break;
@@ -849,7 +854,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 
                             bunldBean = carVosBeans.get(0);
                             carid = String.valueOf(bunldBean.getId());
-                            BaseFragmentAdapter myPagerAdapter = new BaseFragmentAdapter(getFragmentManager(), fragments, imgs, getContext());
+                            BaseFragmentAdapter myPagerAdapter = new BaseFragmentAdapter(getFragmentManager(), fragments);
                             mViewPager.setAdapter(myPagerAdapter);
                             mIndicatorCircleLine.setViewPager(mViewPager, fragments.size());
 
@@ -1276,6 +1281,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         carid = String.valueOf(bunldBean.getId());
         CarsFragment carsFragment = (CarsFragment) fragments.get(i);
         carsFragment.refresh(carBeans.get(i));
+        position = i;
     }
 
     @Override
