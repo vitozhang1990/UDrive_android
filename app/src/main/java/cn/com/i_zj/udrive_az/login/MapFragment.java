@@ -349,7 +349,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     ToastUtils.showShort("请先选择车辆");
                     return;
                 }
-                reservationVerify();
+                startActivity(PackageActivity.class);
+                getActivity().overridePendingTransition(R.anim.bottom_in, R.anim.bottom_silent);
+//                reservationVerify();
                 break;
             case R.id.btn_yongche:
                 ParksResult.DataBean bestPark = null;

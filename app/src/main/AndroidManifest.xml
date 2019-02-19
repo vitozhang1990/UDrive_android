@@ -87,6 +87,9 @@
             android:label="@string/activity_balance"
             android:theme="@style/DBSActivity" />
         <activity
+            android:name=".login.PackageActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".lz.ui.deposit.DepositActivity"
             android:label="@string/activity_deposit"
             android:theme="@style/AppTheme.NoActionBar" />
