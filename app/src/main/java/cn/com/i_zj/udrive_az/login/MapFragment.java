@@ -353,6 +353,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), PackageActivity.class);
                 intent.putExtra("list", carBeans);
+                intent.putExtra("parkId", buldParkBean.getId());
                 intent.putExtra("position", position);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.bottom_in, R.anim.bottom_silent);

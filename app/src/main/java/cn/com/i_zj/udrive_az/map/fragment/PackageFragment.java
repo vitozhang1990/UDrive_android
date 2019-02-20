@@ -31,6 +31,7 @@ import cn.com.i_zj.udrive_az.map.adapter.RecyclerViewUtils;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean.CarPackageVo;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
+import cn.com.i_zj.udrive_az.utils.HtmlTagHandler;
 import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
 public class PackageFragment extends Fragment implements OnGlobalListener, BaseQuickAdapter.OnItemClickListener {
@@ -123,7 +124,16 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
         if (mCarVosBean.getCarPackageVos() == null) {
             mCarVosBean.setCarPackageVos(new ArrayList<>());
         }
-        mCarVosBean.getCarPackageVos().add(0, packageVo);
+        boolean has = false;
+        for (CarPackageVo cc : mCarVosBean.getCarPackageVos()) {
+            if (cc.isStandard()) {
+                has = true;
+                break;
+            }
+        }
+        if (!has) {
+            mCarVosBean.getCarPackageVos().add(0, packageVo);
+        }
 
         mAdapter = RecyclerViewUtils.initLiner(
                 getActivity(), recycler,
@@ -145,12 +155,18 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
 
         helper.setText(R.id.package_text_1, packageVo.isStandard() ? "标准" : packageVo.getPackageName());
         if (!packageVo.isStandard()) {
-            helper.setText(R.id.package_text_2, Html.fromHtml("<b>" + packageVo.getAmount() + "</b> 元"));
-            helper.setText(R.id.package_content, packageVo.getDurationTime() / 60 + " 小时时长费 + " + packageVo.getMileage() + " 公里里程费");
-            helper.setText(R.id.package_duration, packageVo.getStartTime() + "-" + packageVo.getEndTime());
-            helper.setGone(R.id.package_duration, !TextUtils.isEmpty(packageVo.getStartTime()) || !TextUtils.isEmpty(packageVo.getEndTime()));
+            helper.setText(R.id.package_text_2, Html.fromHtml("<b><myfont size='18sp'>"
+                            + packageVo.getAmount() + "</myfont></b> 元", null
+                    , new HtmlTagHandler("myfont")));
+            helper.setText(R.id.package_content, packageVo.getDurationTime() / 60 + " 小时时长费 + "
+                    + packageVo.getMileage() + " 公里里程费");
+            helper.setText(R.id.package_duration, packageVo.getStartTime() + " - " + packageVo.getEndTime());
+            helper.setGone(R.id.package_duration, !TextUtils.isEmpty(packageVo.getStartTime())
+                    || !TextUtils.isEmpty(packageVo.getEndTime()));
         } else {
-            helper.setText(R.id.package_text_2, Html.fromHtml("<b>" + packageVo.getStandardTime() + "</b> 元/分钟 + " + "<b>" + packageVo.getStandardMile() + "</b> 元/公里"));
+            helper.setText(R.id.package_text_2, Html.fromHtml("<b><myfont size='18sp'>" + packageVo.getStandardTime()
+                    + "</myfont></b> 元/分钟 + " + "<b><myfont size='18sp'>" + packageVo.getStandardMile()
+                    + "</myfont></b> 元/公里", null, new HtmlTagHandler("myfont")));
         }
     }
 
@@ -158,6 +174,9 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
         for (int i = 0; i < mCarVosBean.getCarPackageVos().size(); i++) {
             mCarVosBean.getCarPackageVos().get(i).setExpand(i == position);
+            if (listener != null && i == position) {
+                listener.onSelect(mCarVosBean);
+            }
         }
         mAdapter.notifyDataSetChanged();
     }
@@ -166,5 +185,19 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    private PackageSelect listener;
+
+    public PackageSelect getListener() {
+        return listener;
+    }
+
+    public void setListener(PackageSelect listener) {
+        this.listener = listener;
+    }
+
+    public interface PackageSelect {
+        void onSelect(CarVosBean carPackageVo);
     }
 }

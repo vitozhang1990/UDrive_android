@@ -38,7 +38,7 @@
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewpager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
@@ -56,7 +56,8 @@
                         android:id="@+id/checkbox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:button="@drawable/ic_selected_hook"
+                        android:button="@drawable/ic_hook"
+                        android:checked="true"
                         android:text="不计免赔"
                         android:textColor="#373737"
                         android:textSize="12sp" />
@@ -65,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/ic_details" />
+                        android:src="@drawable/ic_details1" />
                 </RelativeLayout>
 
                 <cn.com.i_zj.udrive_az.widget.ViewPagerIndicator
@@ -93,7 +94,8 @@
             android:layout_marginRight="@dimen/dp_12"
             android:layout_marginBottom="@dimen/dp_10"
             android:background="@drawable/bg_map_button"
-            android:text="@string/mashangyuding"
-            android:textColor="@color/white" />
+            android:text="确认"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>
