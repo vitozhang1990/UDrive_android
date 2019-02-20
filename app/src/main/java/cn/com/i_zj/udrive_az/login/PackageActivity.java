@@ -21,14 +21,21 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
+import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
 import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.PackageFragment;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
+import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -50,7 +57,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private ArrayList<CarVosBean> carBeans;
     private List<Fragment> fragments = new ArrayList<>();
     private int position;
-    private int parkId;
+    private ParksResult.DataBean parkBean;
     private CarVosBean selectCar;
 
     @Override
@@ -63,10 +70,10 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         super.onCreate(savedInstanceState);
         MapUtils.setStatusBar(this);
 
-        parkId = getIntent().getIntExtra("parkId", 0);
         position = getIntent().getIntExtra("position", 0);
+        parkBean = (ParksResult.DataBean) getIntent().getSerializableExtra("park");
         carBeans = (ArrayList<CarVosBean>) getIntent().getSerializableExtra("list");
-        if (carBeans == null || carBeans.size() == 0) {
+        if (carBeans == null || carBeans.size() == 0 || parkBean == null) {
             showToast("数据错误");
             finish();
             return;
@@ -92,15 +99,118 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_yuding:
-                reservation();
+                if (SessionManager.getInstance().getAuthorization() == null) {
+                    LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
+                    loginDialogFragment.show(getSupportFragmentManager(), "login");
+                    return;
+                }
+                if (selectCar.isTrafficControl()) {
+                    showTrafficControlDialog();
+                } else if (parkBean != null && parkBean.getCooperate() == 0
+                        && parkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                    showParkOutAmountDialog(parkBean.getStopInAmount() / 100);
+                } else {
+                    reservation();
+                }
                 break;
         }
+    }
+
+    //限行Dialog
+    private void showTrafficControlDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("限行提示")
+                .setMessage("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("继续使用", (dialog, which) -> {
+                    if (parkBean != null && parkBean.getCooperate() == 0
+                            && parkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
+                        showParkOutAmountDialog(parkBean.getStopInAmount() / 100);
+                    } else {
+                        reservation();
+                    }
+                })
+                .create().show();
+    }
+
+    //停车费Dialog
+    private void showParkOutAmountDialog(int cost) {
+        new AlertDialog.Builder(this)
+                .setTitle("支付提示")
+                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (dialog, which) -> reservation())
+                .create()
+                .show();
+    }
+
+    //实名Dialog
+    private void showIdCardStateDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage("您没还没有实名认证")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("立即认证", (dialog, which) -> {
+                    Intent intent = new Intent(PackageActivity.this, ActIdentificationIDCard.class);
+                    intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
+                    startActivity(intent);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    //驾照Dialog
+    private void showDriverStateDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage("您还没有绑定驾驶证")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("立即绑定", (dialog, which) -> {
+                    Intent intent = new Intent(PackageActivity.this, ActIdentificationDrivingLicense.class);
+                    intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
+                    startActivity(intent);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void showUnfinishedOrderDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("通知")
+                .setMessage("您有未付款的订单")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("去付款", (dialog, which) -> {
+                    startActivity(OrderActivity.class);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    //未完成订单Dialog
+    private void showUnfinshOrder() {
+        new AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("您还有未完成的订单，请完成订单")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("去完成", (dialog, which) -> {
+                    startActivity(TravelingActivity.class);
+                    finish();
+                })
+                .create()
+                .show();
     }
 
     private void reservation() {
         Map<String, String> map = new HashMap<>();
         map.put("carId", String.valueOf(selectCar.getId()));
-        map.put("startParkId", String.valueOf(parkId));
+        map.put("startParkId", String.valueOf(parkBean.getId()));
         map.put("deductibleStatus", checkbox.isChecked() ? "1" : "0");
         for (CarVosBean.CarPackageVo carPackageVo : selectCar.getCarPackageVos()) {
             if (carPackageVo.isExpand()) {
@@ -118,15 +228,36 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                         return false;
                     }
                     if (reserVationBean.getCode() != 1) {
-                        ToastUtils.showShort(reserVationBean.getMessage());
+                        switch (reserVationBean.getCode()) {
+                            case 1017://未进行身份认证
+                                showIdCardStateDialog();
+                                break;
+                            case 1018://未进行驾驶认证
+                                showDriverStateDialog();
+                                break;
+                            case 1019://未交纳押金
+                                ToastUtil.show(this, "请先缴纳押金");
+                                break;
+                            case 1024://驾驶认证审核中
+                                ToastUtil.show(this, "驾照认证正在审核中");
+                                break;
+                            case 1025://订单行程中
+                                showUnfinshOrder();
+                                break;
+                            case 1026://订单未支付
+                                showUnfinishedOrderDialog();
+                                break;
+                            case 1027://身份认证审核中
+                                ToastUtil.show(this, "实名认证正在审核中");
+                                break;
+                            default:
+                                ToastUtils.showShort(reserVationBean.getMessage());
+                                break;
+                        }
                         return false;
                     }
                     if (reserVationBean.getData() == null) {
                         ToastUtils.showShort("数据返回错误");
-                        return false;
-                    }
-                    if (reserVationBean.getData().getOrderType() != 0) {
-//                        showUnfinshOrder();
                         return false;
                     }
                     return true;
@@ -161,6 +292,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                         Intent intent = new Intent(PackageActivity.this, WaitingActivity.class);
                         intent.putExtra("bunld", result);
                         startActivity(intent);
+                        finish();
                     }
 
                     @Override
