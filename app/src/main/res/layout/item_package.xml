@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/package_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_package_black"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/package_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="标准"
+                android:textColor="#030303"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/package_text_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="99元"
+                android:textColor="#030303"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/package_detail"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/package_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6 小时时长费 + 30 公里里程费"
+                android:textColor="#EDEDED"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/package_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="估计最多两段文字"
+                android:textColor="#EDEDED"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

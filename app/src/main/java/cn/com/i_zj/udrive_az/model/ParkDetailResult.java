@@ -369,6 +369,14 @@ public class ParkDetailResult implements Serializable {
                 this.direction = direction;
             }
 
+            public List<CarPackageVo> getCarPackageVos() {
+                return carPackageVos;
+            }
+
+            public void setCarPackageVos(List<CarPackageVo> carPackageVos) {
+                this.carPackageVos = carPackageVos;
+            }
+
             public static class CarPackageVo implements Serializable {
 
                 /**
@@ -390,6 +398,10 @@ public class ParkDetailResult implements Serializable {
                 private int isPreferential;
                 private String startTime;
                 private String endTime;
+                private boolean standard;
+                private double standardTime;
+                private double standardMile;
+                private boolean expand;
 
                 public int getId() {
                     return id;
@@ -453,6 +465,38 @@ public class ParkDetailResult implements Serializable {
 
                 public void setEndTime(String endTime) {
                     this.endTime = endTime;
+                }
+
+                public boolean isStandard() {
+                    return standard;
+                }
+
+                public void setStandard(boolean standard) {
+                    this.standard = standard;
+                }
+
+                public double getStandardTime() {
+                    return standardTime;
+                }
+
+                public void setStandardTime(double standardTime) {
+                    this.standardTime = standardTime;
+                }
+
+                public double getStandardMile() {
+                    return standardMile;
+                }
+
+                public void setStandardMile(double standardMile) {
+                    this.standardMile = standardMile;
+                }
+
+                public boolean isExpand() {
+                    return expand;
+                }
+
+                public void setExpand(boolean expand) {
+                    this.expand = expand;
                 }
             }
         }

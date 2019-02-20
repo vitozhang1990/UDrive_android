@@ -1,10 +1,13 @@
 package cn.com.i_zj.udrive_az.map.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +15,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.map.adapter.GlobalAdapter;
+import cn.com.i_zj.udrive_az.map.adapter.OnGlobalListener;
+import cn.com.i_zj.udrive_az.map.adapter.RecyclerViewUtils;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
+import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean.CarPackageVo;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
-public class PackageFragment extends Fragment {
+public class PackageFragment extends Fragment implements OnGlobalListener, BaseQuickAdapter.OnItemClickListener {
 
     @BindView(R.id.iv_car)
     ImageView ivCar;
@@ -48,6 +60,7 @@ public class PackageFragment extends Fragment {
     private View v;
     private Unbinder unbinder;
     private CarVosBean mCarVosBean;
+    private GlobalAdapter mAdapter;
 
     public static PackageFragment newInstance(CarVosBean carVosBean) {
         Bundle args = new Bundle();
@@ -78,28 +91,75 @@ public class PackageFragment extends Fragment {
         Bundle bundle = getArguments();
 
         mCarVosBean = (CarVosBean) bundle.getSerializable("car");
-        if (mCarVosBean != null) {
-            tvCarnum.setText(mCarVosBean.getPlateNumber());
-            tvCarname.setText(mCarVosBean.getBrand());
-            tvColor.setText(mCarVosBean.getCarColor());
-            tvZuowei.setText(String.valueOf(mCarVosBean.getSeatNumber()) + "座");
-            tvXuhang.setText(String.valueOf(mCarVosBean.getMaxDistance()));
-            if ("北汽LITE".equals(mCarVosBean.getBrand())) {
-                tvRanliao.setText("电动车");
-            }
-
-            Glide.with(getActivity())
-                    .load(CarTypeImageUtils.getCarImageByBrand(mCarVosBean.getBrand(), mCarVosBean.getCarColor()))
-                    .into(ivCar);
-            if (mCarVosBean.isTrafficControl()) {
-                mTvTrafficControl.setVisibility(View.VISIBLE);
-            } else {
-                mTvTrafficControl.setVisibility(View.GONE);
-            }
-            if (mCarVosBean.getTotalMileage() > 0) {
-                scale_bar.setMark(((float) mCarVosBean.getMaxDistance()) / mCarVosBean.getTotalMileage());
-            }
+        if (mCarVosBean == null) {
+            return;
         }
+        tvCarnum.setText(mCarVosBean.getPlateNumber());
+        tvCarname.setText(mCarVosBean.getBrand());
+        tvColor.setText(mCarVosBean.getCarColor());
+        tvZuowei.setText(String.valueOf(mCarVosBean.getSeatNumber()) + "座");
+        tvXuhang.setText(String.valueOf(mCarVosBean.getMaxDistance()));
+        if ("北汽LITE".equals(mCarVosBean.getBrand())) {
+            tvRanliao.setText("电动车");
+        }
+
+        Glide.with(getActivity())
+                .load(CarTypeImageUtils.getCarImageByBrand(mCarVosBean.getBrand(), mCarVosBean.getCarColor()))
+                .into(ivCar);
+        if (mCarVosBean.isTrafficControl()) {
+            mTvTrafficControl.setVisibility(View.VISIBLE);
+        } else {
+            mTvTrafficControl.setVisibility(View.GONE);
+        }
+        if (mCarVosBean.getTotalMileage() > 0) {
+            scale_bar.setMark(((float) mCarVosBean.getMaxDistance()) / mCarVosBean.getTotalMileage());
+        }
+        //构造一个标准套餐
+        CarPackageVo packageVo = new CarPackageVo();
+        packageVo.setExpand(true);
+        packageVo.setStandard(true);
+        packageVo.setStandardTime(decimal(mCarVosBean.getTimeFee(), 100));
+        packageVo.setStandardMile(decimal(mCarVosBean.getMileagePrice(), 100));
+        if (mCarVosBean.getCarPackageVos() == null) {
+            mCarVosBean.setCarPackageVos(new ArrayList<>());
+        }
+        mCarVosBean.getCarPackageVos().add(0, packageVo);
+
+        mAdapter = RecyclerViewUtils.initLiner(
+                getActivity(), recycler,
+                R.layout.item_package, mCarVosBean.getCarPackageVos(),
+                this, this);
+    }
+
+    private double decimal(int top, int below) {
+        return new BigDecimal((float) top / below).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    @Override
+    public <T> void logic(BaseViewHolder helper, T item) {
+        CarPackageVo packageVo = (CarPackageVo) item;
+        helper.setBackgroundRes(R.id.package_root, packageVo.isExpand() ? R.drawable.shape_package_all_black : R.drawable.shape_package_black);
+        helper.setTextColor(R.id.package_text_1, packageVo.isExpand() ? Color.parseColor("#ffffff") : Color.parseColor("#030303"));
+        helper.setTextColor(R.id.package_text_2, packageVo.isExpand() ? Color.parseColor("#ffffff") : Color.parseColor("#030303"));
+        helper.setGone(R.id.package_detail, !packageVo.isStandard() && packageVo.isExpand());
+
+        helper.setText(R.id.package_text_1, packageVo.isStandard() ? "标准" : packageVo.getPackageName());
+        if (!packageVo.isStandard()) {
+            helper.setText(R.id.package_text_2, Html.fromHtml("<b>" + packageVo.getAmount() + "</b> 元"));
+            helper.setText(R.id.package_content, packageVo.getDurationTime() / 60 + " 小时时长费 + " + packageVo.getMileage() + " 公里里程费");
+            helper.setText(R.id.package_duration, packageVo.getStartTime() + "-" + packageVo.getEndTime());
+            helper.setGone(R.id.package_duration, !TextUtils.isEmpty(packageVo.getStartTime()) || !TextUtils.isEmpty(packageVo.getEndTime()));
+        } else {
+            helper.setText(R.id.package_text_2, Html.fromHtml("<b>" + packageVo.getStandardTime() + "</b> 元/分钟 + " + "<b>" + packageVo.getStandardMile() + "</b> 元/公里"));
+        }
+    }
+
+    @Override
+    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+        for (int i = 0; i < mCarVosBean.getCarPackageVos().size(); i++) {
+            mCarVosBean.getCarPackageVos().get(i).setExpand(i == position);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
