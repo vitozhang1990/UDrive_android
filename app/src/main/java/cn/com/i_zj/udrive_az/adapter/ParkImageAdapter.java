@@ -86,13 +86,9 @@ public class ParkImageAdapter extends PagerAdapter {
         }
     }
     private View.OnClickListener imgClickListener(final ActivityInfo slideImageEntity) {
-        return new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(slideImageEntity!=null){
-                    WebActivity.startWebActivity(mContext,slideImageEntity.getHref(),slideImageEntity.getTitle());
-                }
+        return v -> {
+            if(slideImageEntity!=null){
+                WebActivity.startWebActivity(mContext,slideImageEntity.getHref());
             }
         };
     }

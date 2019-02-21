@@ -269,6 +269,6 @@ public class ActOrderPayment extends DBSBaseActivity {
 
     @OnClick(R.id.tv_detail)
     public void onClick() {
-        WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber, "费用明细");
+        WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
     }
 }

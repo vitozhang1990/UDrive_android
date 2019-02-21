@@ -182,7 +182,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
                 showVipDialog();
                 break;
             case R.id.tv_detail:
-                WebActivity.startWebActivity(ActConfirmOrder.this, UdriveRestAPI.DETAIL_URL + orderNumber, "费用明细");
+                WebActivity.startWebActivity(ActConfirmOrder.this, UdriveRestAPI.DETAIL_URL + orderNumber);
                 break;
         }
     }

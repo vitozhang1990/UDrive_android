@@ -129,7 +129,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 break;
             case R.id.rl_note:
                 if (homeNote != null) {
-                    WebActivity.startWebActivity(MainActivity.this, homeNote.getHref(), homeNote.getTitle());
+                    WebActivity.startWebActivity(MainActivity.this, homeNote.getHref());
                 } else {
                     startActivity(TravelingActivity.class);
                 }

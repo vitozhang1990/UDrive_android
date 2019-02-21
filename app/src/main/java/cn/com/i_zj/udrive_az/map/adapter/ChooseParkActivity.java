@@ -236,7 +236,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
                 getParkRemark();
                 break;
             case R.id.amount:
-                WebActivity.startWebActivity(ChooseParkActivity.this, BuildConfig.SHARE_AMOUNT, "费用说明");
+                WebActivity.startWebActivity(ChooseParkActivity.this, BuildConfig.SHARE_AMOUNT);
                 break;
             case R.id.city_layout:
                 pickModel = !pickModel;

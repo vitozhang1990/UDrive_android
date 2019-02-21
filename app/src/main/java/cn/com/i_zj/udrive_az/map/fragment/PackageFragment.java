@@ -8,7 +8,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,7 +26,9 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.adapter.GlobalAdapter;
 import cn.com.i_zj.udrive_az.map.adapter.OnGlobalListener;
@@ -32,6 +37,7 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean.CarPackageVo;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.HtmlTagHandler;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
 public class PackageFragment extends Fragment implements OnGlobalListener, BaseQuickAdapter.OnItemClickListener {
@@ -141,6 +147,11 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
                 this, this);
     }
 
+    @OnClick(R.id.jifei_layout)
+    void jifeiClick() {
+        WebActivity.startWebActivity(getActivity(), BuildConfig.DOMAIN + "/cost/");
+    }
+
     private double decimal(int top, int below) {
         return new BigDecimal((float) top / below).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
@@ -156,7 +167,7 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
         helper.setText(R.id.package_text_1, packageVo.isStandard() ? "标准" : packageVo.getPackageName());
         if (!packageVo.isStandard()) {
             helper.setText(R.id.package_text_2, Html.fromHtml("<b><myfont size='18sp'>"
-                            + packageVo.getAmount() + "</myfont></b> 元", null
+                            + packageVo.getAmount() / 100 + "</myfont></b> 元", null
                     , new HtmlTagHandler("myfont")));
             helper.setText(R.id.package_content, packageVo.getDurationTime() / 60 + " 小时时长费 + "
                     + packageVo.getMileage() + " 公里里程费");

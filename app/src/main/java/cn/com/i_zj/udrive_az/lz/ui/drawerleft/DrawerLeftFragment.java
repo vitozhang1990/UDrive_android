@@ -192,7 +192,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @OnClick(R.id.share)
     public void activity(View view) {
         if (activityResultInfo != null) {
-            WebActivity.startWebActivity(getActivity(), activityResultInfo.getData().get(0).getViewUrl(), "回家过年免费用车");
+            WebActivity.startWebActivity(getActivity(), activityResultInfo.getData().get(0).getViewUrl());
         }
     }
 

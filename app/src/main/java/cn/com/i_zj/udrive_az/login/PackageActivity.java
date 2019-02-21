@@ -19,6 +19,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
@@ -36,6 +37,7 @@ import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -95,7 +97,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         checkbox.setOnCheckedChangeListener(this);
     }
 
-    @OnClick({R.id.btn_yuding})
+    @OnClick({R.id.btn_yuding, R.id.bujimianpei})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_yuding:
@@ -112,6 +114,9 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                 } else {
                     reservation();
                 }
+                break;
+            case R.id.bujimianpei:
+                WebActivity.startWebActivity(PackageActivity.this, BuildConfig.DOMAIN + "/deductible/");
                 break;
         }
     }

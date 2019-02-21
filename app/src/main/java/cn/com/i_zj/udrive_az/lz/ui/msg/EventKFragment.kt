@@ -56,7 +56,7 @@ class EventKFragment : DBSBaseFragment() {
         eventListAdapter.setOnItemClickListener { adapter, view, position ->
             val activityInfo = list[position]
             if (activityInfo != null) {
-                WebActivity.startWebActivity(this@EventKFragment.context, activityInfo.href, activityInfo.title)
+                WebActivity.startWebActivity(this@EventKFragment.context, activityInfo.href)
             }
         }
         swipeRefresh.autoRefresh()

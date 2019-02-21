@@ -1,17 +1,25 @@
 package cn.com.i_zj.udrive_az.web;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -28,10 +36,12 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
+import com.umeng.socialize.shareboard.ShareBoardConfig;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -77,14 +87,12 @@ public class WebActivity extends DBSBaseActivity {
     private Context mContext;
     private Disposable disposable;
     private String url;
-    private String title;
     private int index = 10;
     private CallBackFunction callBackFunction;
 
-    public static void startWebActivity(Context context, String url, String title) {
+    public static void startWebActivity(Context context, String url) {
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra("url", url);
-        intent.putExtra("title", title);
         context.startActivity(intent);
     }
 
@@ -99,8 +107,6 @@ public class WebActivity extends DBSBaseActivity {
         MapUtils.statusBarColor(this);
         mContext = this;
 
-        title = getIntent().getStringExtra("title");
-        tv_title.setText(title);
         url = getIntent().getStringExtra("url");
         if (!StringUtils.isEmpty(url)) {
             if (!url.startsWith("http")) {
@@ -129,6 +135,14 @@ public class WebActivity extends DBSBaseActivity {
         progressBar.setProgress(0);
         webView.setDefaultHandler(new DefaultHandler());
         webView.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                if (!TextUtils.isEmpty(title)) {
+                    tv_title.setText(title);
+                }
+            }
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -182,143 +196,170 @@ public class WebActivity extends DBSBaseActivity {
         //默认接收
         webView.setDefaultHandler(new DefaultHandler());
 
-        webView.registerHandler("JS_UserLogin", new BridgeHandler() {
-            @Override
-            public void handler(String data, CallBackFunction function) {
-                callBackFunction = function;
-                LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
-                loginDialogFragment.setListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                });
-                loginDialogFragment.show(getSupportFragmentManager(), "login");
-            }
+        webView.registerHandler("JS_UserLogin", (data, function) -> {
+            callBackFunction = function;
+            LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
+            loginDialogFragment.setListener(dialog -> finish());
+            loginDialogFragment.show(getSupportFragmentManager(), "login");
         });
 
-        webView.registerHandler("JS_Phone", new BridgeHandler() {
-            @Override
-            public void handler(String data, CallBackFunction function) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                Uri uri = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
-                intent.setData(uri);
-                startActivity(intent);
-            }
+        webView.registerHandler("JS_Phone", (data, function) -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            Uri uri = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
+            intent.setData(uri);
+            startActivity(intent);
         });
 
-        webView.registerHandler("JS_UsingCar", new BridgeHandler() {
-            @Override
-            public void handler(String data, CallBackFunction function) {
-                startActivity(MainActivity.class);
-                finish();
-            }
+        webView.registerHandler("JS_UsingCar", (data, function) -> {
+            startActivity(MainActivity.class);
+            finish();
         });
 
-        webView.registerHandler("JS_Pay", new BridgeHandler() {
+        webView.registerHandler("JS_Pay", (data, function) -> {
+            JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
+            String orderNum = circleObject.get("orderNum").getAsString();
+            if (TextUtils.isEmpty(orderNum)) {
+                function.onCallBack("0");
+                return;
+            }
+
+            callBackFunction = function;
+            UdriveRestClient.getClentInstance().getWechatRentApp(orderNum)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<WeichatPayOrder>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(WeichatPayOrder value) {
+                            dissmisProgressDialog();
+                            if (value != null && value.code == 1 || value.code == 1012) {
+                                IWXAPI iwxapi = WXAPIFactory.createWXAPI(mContext, Constants.WEIXIN_APP_ID, false);
+                                iwxapi.registerApp(Constants.WEIXIN_APP_ID);
+                                PayReq payReq = new PayReq();
+                                payReq.appId = value.data.appid;
+                                payReq.partnerId = value.data.partnerid;
+                                payReq.prepayId = value.data.prepayid;
+                                payReq.packageValue = value.data.packageValue;
+                                payReq.nonceStr = value.data.noncestr;
+                                payReq.timeStamp = value.data.timestamp;
+                                payReq.sign = value.data.sign;
+                                boolean result = iwxapi.sendReq(payReq);
+                            } else {
+                                ToastUtils.showShort("微信支付失败了");
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            dissmisProgressDialog();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            dissmisProgressDialog();
+                        }
+                    });
+        });
+
+        webView.registerHandler("JS_WXShare", (data, function) -> {
+            callBackFunction = function;
+            Gson gson = new GsonBuilder().create();
+            ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
+
+            UMWeb web = new UMWeb(shareInfo.getShareUrl());
+            web.setTitle(shareInfo.getShareTitle());
+            web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+            web.setDescription(shareInfo.getShareDescr());
+
+            showShareDialog(web);
+        });
+    }
+
+    private void share(UMWeb web, SHARE_MEDIA type) {
+        ShareAction shareAction = new ShareAction(WebActivity.this);
+        shareAction.withMedia(web);
+        shareAction.setDisplayList(type);
+        shareAction.setCallback(new UMShareListener() {
             @Override
-            public void handler(String data, CallBackFunction function) {
-                JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
-                String orderNum = circleObject.get("orderNum").getAsString();
-                if (TextUtils.isEmpty(orderNum)) {
-                    function.onCallBack("0");
-                    return;
+            public void onStart(SHARE_MEDIA share_media) {
+
+            }
+
+            @Override
+            public void onResult(SHARE_MEDIA share_media) {
+                Token token = new Token();
+                if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
+                    token.setPlatformType("0");
+                } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
+                    token.setPlatformType("1");
                 }
-
-                callBackFunction = function;
-                UdriveRestClient.getClentInstance().getWechatRentApp(orderNum)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Observer<WeichatPayOrder>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-
-                            }
-
-                            @Override
-                            public void onNext(WeichatPayOrder value) {
-                                dissmisProgressDialog();
-                                if (value != null && value.code == 1 || value.code == 1012) {
-                                    IWXAPI iwxapi = WXAPIFactory.createWXAPI(mContext, Constants.WEIXIN_APP_ID, false);
-                                    iwxapi.registerApp(Constants.WEIXIN_APP_ID);
-                                    PayReq payReq = new PayReq();
-                                    payReq.appId = value.data.appid;
-                                    payReq.partnerId = value.data.partnerid;
-                                    payReq.prepayId = value.data.prepayid;
-                                    payReq.packageValue = value.data.packageValue;
-                                    payReq.nonceStr = value.data.noncestr;
-                                    payReq.timeStamp = value.data.timestamp;
-                                    payReq.sign = value.data.sign;
-                                    boolean result = iwxapi.sendReq(payReq);
-                                } else {
-                                    ToastUtils.showShort("微信支付失败了");
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                dissmisProgressDialog();
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                dissmisProgressDialog();
-                            }
-                        });
+                if (callBackFunction != null) {
+                    callBackFunction.onCallBack(new Gson().toJson(token));
+                }
             }
-        });
 
-        webView.registerHandler("JS_WXShare", new BridgeHandler() {
             @Override
-            public void handler(String data, CallBackFunction function) {
-                callBackFunction = function;
-                Gson gson = new GsonBuilder().create();
-                ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
+            public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+                Token token = new Token();
+                token.setPlatformType("1");
+                if (callBackFunction != null) {
+                    callBackFunction.onCallBack(new Gson().toJson(token));
+                }
+            }
 
-                UMWeb web = new UMWeb(shareInfo.getShareUrl());
-                web.setTitle(shareInfo.getShareTitle());
-                web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
-                web.setDescription(shareInfo.getShareDescr());
+            @Override
+            public void onCancel(SHARE_MEDIA share_media) {
 
-                ShareAction shareAction = new ShareAction(WebActivity.this);
-                shareAction.withMedia(web);
-                shareAction.setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE);
-                shareAction.setCallback(new UMShareListener() {
-                    @Override
-                    public void onStart(SHARE_MEDIA share_media) {
-
-                    }
-
-                    @Override
-                    public void onResult(SHARE_MEDIA share_media) {
-                        Token token = new Token();
-                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                            token.setPlatformType("0");
-                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                            token.setPlatformType("1");
-                        }
-                        if (callBackFunction != null) {
-                            callBackFunction.onCallBack(new Gson().toJson(token));
-                        }
-                    }
-
-                    @Override
-                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                        Token token = new Token();
-                        token.setPlatformType("1");
-                        if (callBackFunction != null) {
-                            callBackFunction.onCallBack(new Gson().toJson(token));
-                        }
-                    }
-
-                    @Override
-                    public void onCancel(SHARE_MEDIA share_media) {
-
-                    }
-                });
-                shareAction.open();
             }
         });
+        shareAction.share();
+    }
+
+    private void showShareDialog(UMWeb web) {
+        View view = LayoutInflater.from(this).inflate(R.layout.customshare_layout, null);
+        final Dialog dialog = new Dialog(this, R.style.UpdateDialogStytle);
+        dialog.setContentView(view);
+        dialog.show();
+        View.OnClickListener listener = v -> {
+            switch (v.getId()) {
+                case R.id.view_share_weixin:
+                    // 分享到微信
+                    share(web, SHARE_MEDIA.WEIXIN);
+                    break;
+                case R.id.view_share_oyq:
+                    // 分享到朋友圈
+                    share(web, SHARE_MEDIA.WEIXIN_CIRCLE);
+                    break;
+                case R.id.share_cancel_btn:
+                    // 取消
+                    break;
+            }
+            dialog.dismiss();
+        };
+        ViewGroup mViewWeixin = view.findViewById(R.id.view_share_weixin);
+        ViewGroup mViewPengyou = view.findViewById(R.id.view_share_oyq);
+        TextView mBtnCancel = view.findViewById(R.id.share_cancel_btn);
+        mViewWeixin.setOnClickListener(listener);
+        mViewPengyou.setOnClickListener(listener);
+        mBtnCancel.setOnClickListener(listener);
+
+        // 设置相关位置，一定要在 show()之后
+        Window window = dialog.getWindow();
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.gravity = Gravity.BOTTOM;
+        window.setAttributes(params);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(this).onActivityResult(requestCode,resultCode,data);
     }
 
     private void sendToken() {
@@ -332,11 +373,8 @@ public class WebActivity extends DBSBaseActivity {
         if (token != null) {
             gsonString.append(new Gson().toJson(token));
         }
-        webView.callHandler("App_TokenParameters", gsonString.toString(), new CallBackFunction() {
-            @Override
-            public void onCallBack(String data) { //处理js回传的数据
+        webView.callHandler("App_TokenParameters", gsonString.toString(), data -> { //处理js回传的数据
 
-            }
         });
     }
 
