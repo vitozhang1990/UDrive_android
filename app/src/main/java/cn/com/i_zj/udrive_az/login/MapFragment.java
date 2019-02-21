@@ -990,18 +990,53 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void updateParkOnly() {
-        fetchParks();
-        showArea(false);
-        if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
-            btn_yongche.startAnimation(showAnim);
-            btn_yongche.setVisibility(View.VISIBLE);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> {
+                try {
+                    fetchParks();
+                    showArea(false);
+                    if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                        btn_yongche.startAnimation(showAnim);
+                        btn_yongche.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            try {
+                fetchParks();
+                showArea(false);
+                if (btn_yuding.getVisibility() != View.VISIBLE && btn_yongche.getVisibility() != View.VISIBLE) {
+                    btn_yongche.startAnimation(showAnim);
+                    btn_yongche.setVisibility(View.VISIBLE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void updateAreaOnly() {
-        showArea(true);
-        btn_yongche.setVisibility(View.GONE);
-        fetchAreas();
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> {
+                try {
+                    showArea(true);
+                    btn_yongche.setVisibility(View.GONE);
+                    fetchAreas();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            try {
+                showArea(true);
+                btn_yongche.setVisibility(View.GONE);
+                fetchAreas();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

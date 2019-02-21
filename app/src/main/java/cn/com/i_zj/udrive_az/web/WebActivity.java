@@ -2,10 +2,8 @@ package cn.com.i_zj.udrive_az.web;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,12 +17,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.github.lzyzsd.jsbridge.BridgeHandler;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.github.lzyzsd.jsbridge.DefaultHandler;
@@ -41,7 +37,6 @@ import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
-import com.umeng.socialize.shareboard.ShareBoardConfig;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -56,6 +51,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.EventPayFailureEvent;
 import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.map.MapUtils;
@@ -270,7 +266,9 @@ public class WebActivity extends DBSBaseActivity {
             Gson gson = new GsonBuilder().create();
             ShareBean shareInfo = gson.fromJson(data, ShareBean.class);
 
-            UMWeb web = new UMWeb(shareInfo.getShareUrl());
+            UMWeb web = new UMWeb(shareInfo.getShareUrl().replace("{userName}",
+                    SessionManager.getInstance().isLogin() && AccountInfoManager.getInstance().getAccountInfo() != null
+                            ? AccountInfoManager.getInstance().getAccountInfo().data.username : "notLogin"));
             web.setTitle(shareInfo.getShareTitle());
             web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
             web.setDescription(shareInfo.getShareDescr());
