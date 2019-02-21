@@ -59,6 +59,7 @@ import cn.com.i_zj.udrive_az.model.CarBean;
 import cn.com.i_zj.udrive_az.model.CheckCarResult;
 import cn.com.i_zj.udrive_az.model.DoorBean;
 import cn.com.i_zj.udrive_az.model.FromParkBean;
+import cn.com.i_zj.udrive_az.model.OrderBean;
 import cn.com.i_zj.udrive_az.model.ParkKey;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ToParkBean;
@@ -298,11 +299,15 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 }
                 break;
             case R.id.amount_detail:
+                OrderBean orderBean = unFinishOrderBean.getData().getOrder();
                 WebSocketPrice price = new WebSocketPrice();
-                price.setTotalAmount(unFinishOrderBean.getData().getOrder().getTotalAmount());
-                price.setMileageAmount(unFinishOrderBean.getData().getOrder().getMileageAmount());
-                price.setTimeAmount(unFinishOrderBean.getData().getOrder().getTimeAmount());
-                price.setDeductible(unFinishOrderBean.getData().getOrder().getDeductible());
+                price.setTotalAmount(orderBean.getTotalAmount());
+                price.setMileageAmount(orderBean.getMileageAmount());
+                price.setTimeAmount(orderBean.getTimeAmount());
+                price.setDeductible(orderBean.getDeductible());
+
+                price.setPackageName(orderBean.getPackageName());
+                price.setPackageAmount(orderBean.getPackageAmount());
                 AmountDialog dialog = new AmountDialog(this);
                 dialog.setAmount(price);
                 dialog.show();
@@ -654,6 +659,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 unFinishOrderBean.getData().getOrder().setTimeAmount(event.getTimeAmount());
                 unFinishOrderBean.getData().getOrder().setTotalAmount(event.getTotalAmount());
                 unFinishOrderBean.getData().getOrder().setDeductible(event.getDeductible());
+                unFinishOrderBean.getData().getOrder().setPackageAmount(event.getPackageAmount());
                 tv_amount.setText(String.format(Locale.getDefault(), "%.2f", event.getTotalAmount() / 100f));
             }
         }

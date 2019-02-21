@@ -41,72 +41,10 @@
                 android:paddingRight="@dimen/dp_16"
                 android:paddingBottom="5dp">
 
-                <RelativeLayout
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/amount_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_30"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="时长费"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-
-                    <TextView
-                        android:id="@+id/shichang"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:text="- 元"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_30"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="里程费"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-
-                    <TextView
-                        android:id="@+id/licheng"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:text="- 元"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/mianpei_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_30"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="不计免赔"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-
-                    <TextView
-                        android:id="@+id/mianpei"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:text="- 元"
-                        android:textColor="#373737"
-                        android:textSize="@dimen/sp_14" />
-                </RelativeLayout>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <TextView

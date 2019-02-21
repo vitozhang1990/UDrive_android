@@ -176,31 +176,14 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btnSubmit:
-                new AlertDialog.Builder(PictureBeforeActivity.this)
-                        .setTitle("不计免赔")
-                        .setMessage("出现车辆故障或者碰撞免赔偿")
-                        .setCancelable(false)
-                        .setNegativeButton("不需要", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                createTripOrder("0");
-                            }
-                        })
-                        .setPositiveButton("购买", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                createTripOrder("1");
-                            }
-                        })
-                        .create().show();
+                createTripOrder();
                 break;
         }
     }
 
-    private void createTripOrder(String type) {
+    private void createTripOrder() {
         Map<String, Object> map = new HashMap<>();
         map.put("destinationParkId", destinationParkId);
-        map.put("deductibleStatus", type);
         boolean hasPhoto = false;
         PhotoBean photoBean = new PhotoBean();
         for (Map.Entry<String, CarPartPicture> entry : mCarParts.entrySet()) {

@@ -4,26 +4,32 @@ import java.io.Serializable;
 
 public class OrderBean implements Serializable {
     /**
-     * number : 536942869194621393000
-     * totalAmount : 806
-     * reservationId : reservation_car:3972
-     * orderId : 856
+     * number : 537008417094507287001
+     * totalAmount : 600
+     * reservationId : reservation_car:3987
+     * orderId : 1202
      * mileageAmount : 0
      * deductible : 500
+     * packageId : 2
      * powerFlag : 0
-     * timeAmount : 306
+     * timeAmount : 0
+     * packageName : 全国吉普6小时套餐
      * amountFlag : 0
+     * packageAmount : 100
      */
 
     private String number;
-    private float totalAmount;
+    private int totalAmount;
     private String reservationId;
     private int orderId;
-    private float mileageAmount;
-    private float deductible;
+    private int mileageAmount;
+    private int deductible;
+    private int packageId;
     private int powerFlag;
-    private float timeAmount;
+    private int timeAmount;
+    private String packageName;
     private int amountFlag;
+    private int packageAmount;
 
     public String getNumber() {
         return number;
@@ -31,6 +37,14 @@ public class OrderBean implements Serializable {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public int getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(int totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public String getReservationId() {
@@ -49,12 +63,28 @@ public class OrderBean implements Serializable {
         this.orderId = orderId;
     }
 
-    public float getDeductible() {
+    public int getMileageAmount() {
+        return mileageAmount;
+    }
+
+    public void setMileageAmount(int mileageAmount) {
+        this.mileageAmount = mileageAmount;
+    }
+
+    public int getDeductible() {
         return deductible;
     }
 
-    public void setDeductible(float deductible) {
+    public void setDeductible(int deductible) {
         this.deductible = deductible;
+    }
+
+    public int getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
     }
 
     public int getPowerFlag() {
@@ -65,6 +95,22 @@ public class OrderBean implements Serializable {
         this.powerFlag = powerFlag;
     }
 
+    public int getTimeAmount() {
+        return timeAmount;
+    }
+
+    public void setTimeAmount(int timeAmount) {
+        this.timeAmount = timeAmount;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
     public int getAmountFlag() {
         return amountFlag;
     }
@@ -73,27 +119,11 @@ public class OrderBean implements Serializable {
         this.amountFlag = amountFlag;
     }
 
-    public float getTotalAmount() {
-        return totalAmount;
+    public int getPackageAmount() {
+        return packageAmount;
     }
 
-    public void setTotalAmount(float totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public float getMileageAmount() {
-        return mileageAmount;
-    }
-
-    public void setMileageAmount(float mileageAmount) {
-        this.mileageAmount = mileageAmount;
-    }
-
-    public float getTimeAmount() {
-        return timeAmount;
-    }
-
-    public void setTimeAmount(float timeAmount) {
-        this.timeAmount = timeAmount;
+    public void setPackageAmount(int packageAmount) {
+        this.packageAmount = packageAmount;
     }
 }
