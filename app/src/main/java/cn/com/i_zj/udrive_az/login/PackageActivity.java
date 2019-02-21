@@ -97,7 +97,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         checkbox.setOnCheckedChangeListener(this);
     }
 
-    @OnClick({R.id.btn_yuding, R.id.bujimianpei})
+    @OnClick({R.id.btn_yuding, R.id.bujimianpei, R.id.down_image})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_yuding:
@@ -117,6 +117,9 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                 break;
             case R.id.bujimianpei:
                 WebActivity.startWebActivity(PackageActivity.this, BuildConfig.DOMAIN + "/deductible/");
+                break;
+            case R.id.down_image:
+                finish();
                 break;
         }
     }

@@ -280,43 +280,43 @@ public class WebActivity extends DBSBaseActivity {
     }
 
     private void share(UMWeb web, SHARE_MEDIA type) {
-        ShareAction shareAction = new ShareAction(WebActivity.this);
-        shareAction.withMedia(web);
-        shareAction.setDisplayList(type);
-        shareAction.setCallback(new UMShareListener() {
-            @Override
-            public void onStart(SHARE_MEDIA share_media) {
+        new ShareAction(WebActivity.this)
+                .withMedia(web)
+                .setPlatform(type)
+                .setCallback(new UMShareListener() {
+                    @Override
+                    public void onStart(SHARE_MEDIA share_media) {
 
-            }
+                    }
 
-            @Override
-            public void onResult(SHARE_MEDIA share_media) {
-                Token token = new Token();
-                if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                    token.setPlatformType("0");
-                } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                    token.setPlatformType("1");
-                }
-                if (callBackFunction != null) {
-                    callBackFunction.onCallBack(new Gson().toJson(token));
-                }
-            }
+                    @Override
+                    public void onResult(SHARE_MEDIA share_media) {
+                        Token token = new Token();
+                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
+                            token.setPlatformType("0");
+                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
+                            token.setPlatformType("1");
+                        }
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
+                    }
 
-            @Override
-            public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                Token token = new Token();
-                token.setPlatformType("1");
-                if (callBackFunction != null) {
-                    callBackFunction.onCallBack(new Gson().toJson(token));
-                }
-            }
+                    @Override
+                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+                        Token token = new Token();
+                        token.setPlatformType("1");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
+                    }
 
-            @Override
-            public void onCancel(SHARE_MEDIA share_media) {
+                    @Override
+                    public void onCancel(SHARE_MEDIA share_media) {
 
-            }
-        });
-        shareAction.share();
+                    }
+                })
+                .share();
     }
 
     private void showShareDialog(UMWeb web) {
@@ -359,7 +359,7 @@ public class WebActivity extends DBSBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        UMShareAPI.get(this).onActivityResult(requestCode,resultCode,data);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
     }
 
     private void sendToken() {

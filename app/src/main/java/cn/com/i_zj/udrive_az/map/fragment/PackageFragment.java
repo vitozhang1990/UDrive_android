@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -30,6 +31,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.login.PackageActivity;
 import cn.com.i_zj.udrive_az.map.adapter.GlobalAdapter;
 import cn.com.i_zj.udrive_az.map.adapter.OnGlobalListener;
 import cn.com.i_zj.udrive_az.map.adapter.RecyclerViewUtils;
@@ -37,6 +39,7 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean.CarPackageVo;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.HtmlTagHandler;
+import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.ScaleBar;
 
@@ -58,6 +61,8 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
     TextView tvXuhang;
     @BindView(R.id.tv_traffic_control)
     TextView mTvTrafficControl;
+    @BindView(R.id.package_layout_root)
+    LinearLayout rootLayout;
 
     @BindView(R.id.package_recycler)
     RecyclerView recycler;
@@ -68,6 +73,7 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
     private Unbinder unbinder;
     private CarVosBean mCarVosBean;
     private GlobalAdapter mAdapter;
+    private float mPosX, mCurPosX, mPosY, mCurPosY;
 
     public static PackageFragment newInstance(CarVosBean carVosBean) {
         Bundle args = new Bundle();
@@ -145,6 +151,30 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
                 getActivity(), recycler,
                 R.layout.item_package, mCarVosBean.getCarPackageVos(),
                 this, this);
+
+        rootLayout.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mPosX = event.getX();
+                    mPosY = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mCurPosX = event.getX();
+                    mCurPosY = event.getY();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (mCurPosX - mPosX > 0
+                            && (Math.abs(mCurPosX - mPosX) > 200)) {
+                    } else if (mCurPosX - mPosX < 0
+                            && (Math.abs(mCurPosX - mPosX) > 200)) {
+                    } else if (mCurPosY - mPosY > 0
+                            && (Math.abs(mCurPosY - mPosY) > 100)) {
+                        getActivity().finish();
+                    }
+                    break;
+            }
+            return true;
+        });
     }
 
     @OnClick(R.id.jifei_layout)
