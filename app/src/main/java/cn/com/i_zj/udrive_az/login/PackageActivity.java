@@ -22,8 +22,8 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
+import cn.com.i_zj.udrive_az.lz.ui.accountinfo.AccountInfoActivity;
+import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
@@ -32,10 +32,10 @@ import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 import cn.com.i_zj.udrive_az.map.fragment.PackageFragment;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
+import cn.com.i_zj.udrive_az.model.ParkOutAmount;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
@@ -61,6 +61,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private int position;
     private ParksResult.DataBean parkBean;
     private CarVosBean selectCar;
+    private Disposable disposable;
 
     @Override
     protected int getLayoutResource() {
@@ -97,6 +98,15 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         checkbox.setOnCheckedChangeListener(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+            disposable = null;
+        }
+    }
+
     @OnClick({R.id.btn_yuding, R.id.bujimianpei, R.id.down_image})
     void onClick(View view) {
         switch (view.getId()) {
@@ -108,11 +118,8 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                 }
                 if (selectCar.isTrafficControl()) {
                     showTrafficControlDialog();
-                } else if (parkBean != null && parkBean.getCooperate() == 0
-                        && parkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                    showParkOutAmountDialog(parkBean.getStopInAmount() / 100);
                 } else {
-                    reservation();
+                    reservation(true);
                 }
                 break;
             case R.id.bujimianpei:
@@ -127,17 +134,12 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //限行Dialog
     private void showTrafficControlDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("限行提示")
+                .setTitle("提示")
                 .setMessage("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("继续使用", (dialog, which) -> {
-                    if (parkBean != null && parkBean.getCooperate() == 0
-                            && parkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                        showParkOutAmountDialog(parkBean.getStopInAmount() / 100);
-                    } else {
-                        reservation();
-                    }
+                    reservation(true);
                 })
                 .create().show();
     }
@@ -145,11 +147,11 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //停车费Dialog
     private void showParkOutAmountDialog(int cost) {
         new AlertDialog.Builder(this)
-                .setTitle("支付提示")
+                .setTitle("提示")
                 .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("确定", (dialog, which) -> reservation())
+                .setPositiveButton("确定", (dialog, which) -> reservation(false))
                 .create()
                 .show();
     }
@@ -157,13 +159,12 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //实名Dialog
     private void showIdCardStateDialog() {
         new AlertDialog.Builder(this)
-                .setMessage("您没还没有实名认证")
+                .setTitle("提示")
+                .setMessage("请先完成实名认证")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("立即认证", (dialog, which) -> {
-                    Intent intent = new Intent(PackageActivity.this, ActIdentificationIDCard.class);
-                    intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
-                    startActivity(intent);
+                .setPositiveButton("去认证", (dialog, which) -> {
+                    startActivity(AccountInfoActivity.class);
                     finish();
                 })
                 .create()
@@ -173,13 +174,27 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //驾照Dialog
     private void showDriverStateDialog() {
         new AlertDialog.Builder(this)
-                .setMessage("您还没有绑定驾驶证")
+                .setTitle("提示")
+                .setMessage("请先完成驾驶认证")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("立即绑定", (dialog, which) -> {
-                    Intent intent = new Intent(PackageActivity.this, ActIdentificationDrivingLicense.class);
-                    intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
-                    startActivity(intent);
+                .setPositiveButton("去认证", (dialog, which) -> {
+                    startActivity(AccountInfoActivity.class);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    //押金Dialog
+    private void showDepositDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("请先交纳押金")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("去交纳", (dialog, which) -> {
+                    startActivity(DepositActivity.class);
                     finish();
                 })
                 .create()
@@ -188,11 +203,11 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
 
     private void showUnfinishedOrderDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("通知")
-                .setMessage("您有未付款的订单")
+                .setTitle("提示")
+                .setMessage("您有未支付的订单，请先支付")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去付款", (dialog, which) -> {
+                .setPositiveButton("去支付", (dialog, which) -> {
                     startActivity(OrderActivity.class);
                     finish();
                 })
@@ -204,10 +219,10 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showUnfinshOrder() {
         new AlertDialog.Builder(this)
                 .setTitle("提示")
-                .setMessage("您还有未完成的订单，请完成订单")
+                .setMessage("您有一个订单正在进行中，是否进入")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去完成", (dialog, which) -> {
+                .setPositiveButton("进入", (dialog, which) -> {
                     startActivity(TravelingActivity.class);
                     finish();
                 })
@@ -215,7 +230,39 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                 .show();
     }
 
-    private void reservation() {
+    private void showIdCardFailure() {
+        new AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("您的实名认证审核失败")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("重新认证", (dialog, which) -> {
+                    startActivity(AccountInfoActivity.class);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void showDriverFailure() {
+        new AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("您的驾照认证审核失败")
+                .setCancelable(false)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("重新认证", (dialog, which) -> {
+                    startActivity(AccountInfoActivity.class);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void reservation(boolean showParkOutAmountDialog) {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+            disposable = null;
+        }
         Map<String, String> map = new HashMap<>();
         map.put("carId", String.valueOf(selectCar.getId()));
         map.put("startParkId", String.valueOf(parkBean.getId()));
@@ -227,9 +274,21 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
             }
         }
         showProgressDialog();
-        UdriveRestClient.getClentInstance().reservation(map)
+        UdriveRestClient.getClentInstance().getParkOutAmount(String.valueOf(parkBean.getId()), String.valueOf(selectCar.getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .filter(parkOutAmount -> {
+                    if (parkOutAmount != null && parkOutAmount.getData() != null
+                            && parkOutAmount.getData() > 0 && showParkOutAmountDialog) {
+                        showParkOutAmountDialog(parkOutAmount.getData() / 100);
+                        return false;
+                    }
+                    return true;
+                })
+                .flatMap((Function<ParkOutAmount, ObservableSource<ReserVationBean>>) parkOutAmount ->
+                        UdriveRestClient.getClentInstance().reservation(map)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread()))
                 .filter(reserVationBean -> {
                     if (reserVationBean == null) {
                         ToastUtils.showShort("数据请求失败");
@@ -244,7 +303,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 showDriverStateDialog();
                                 break;
                             case 1019://未交纳押金
-                                ToastUtil.show(this, "请先缴纳押金");
+                                showDepositDialog();
                                 break;
                             case 1024://驾驶认证审核中
                                 ToastUtil.show(this, "驾照认证正在审核中");
@@ -257,6 +316,12 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 break;
                             case 1027://身份认证审核中
                                 ToastUtil.show(this, "实名认证正在审核中");
+                                break;
+                            case 1028://身份证认证失败
+                                showIdCardFailure();
+                                break;
+                            case 1029://驾驶证认证失败
+                                showDriverFailure();
                                 break;
                             default:
                                 ToastUtils.showShort(reserVationBean.getMessage());
@@ -292,6 +357,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                 .subscribe(new Observer<GetReservation>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        disposable = d;
                     }
 
                     @Override

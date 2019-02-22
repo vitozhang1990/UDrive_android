@@ -16,15 +16,16 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
             <TextView
                 android:id="@+id/package_text_1"
                 android:layout_width="wrap_content"
+                android:layout_marginRight="60dp"
+                android:layout_centerVertical="true"
                 android:layout_height="wrap_content"
-                android:text="标准"
+                android:ellipsize="end"
                 android:textColor="#030303"
                 android:textSize="14sp" />
 
@@ -33,6 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:text="99元"
                 android:textColor="#030303"
                 android:textSize="14sp" />

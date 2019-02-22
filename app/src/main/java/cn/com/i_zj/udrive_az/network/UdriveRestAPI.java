@@ -27,6 +27,7 @@ import cn.com.i_zj.udrive_az.model.NetworkResult;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
+import cn.com.i_zj.udrive_az.model.ParkOutAmount;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
 import cn.com.i_zj.udrive_az.model.RechargeOrder;
@@ -143,6 +144,9 @@ public interface UdriveRestAPI {
     //获取订单详情
     @GET("/mobile/tripOrder/{orderNum}")
     Observable<OrderDetailResult> tripOrderDetail(@Path("orderNum") String orderNum);
+
+    @GET("/mobile/park/getParkOutAmount/{parkId}/{carId}")
+    Observable<ParkOutAmount> getParkOutAmount(@Path("parkId") String parkId, @Path("carId") String carId);
 
     //获取订单轨迹
     @GET("/mobile/tripOrder/originContrail/{orderId}")

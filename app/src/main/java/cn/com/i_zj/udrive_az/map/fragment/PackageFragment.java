@@ -195,6 +195,7 @@ public class PackageFragment extends Fragment implements OnGlobalListener, BaseQ
         helper.setGone(R.id.package_detail, !packageVo.isStandard() && packageVo.isExpand());
 
         helper.setText(R.id.package_text_1, packageVo.isStandard() ? "标准" : packageVo.getPackageName());
+        ((TextView)helper.getView(R.id.package_text_1)).setMaxLines(packageVo.isExpand() ? 2 : 1);
         if (!packageVo.isStandard()) {
             helper.setText(R.id.package_text_2, Html.fromHtml("<b><myfont size='18sp'>"
                             + packageVo.getAmount() / 100 + "</myfont></b> 元", null
