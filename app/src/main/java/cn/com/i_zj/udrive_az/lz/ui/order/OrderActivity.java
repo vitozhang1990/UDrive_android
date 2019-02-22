@@ -136,6 +136,7 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
     }
 
     private void getFindTripOrders() {
+        showProgressDialog();
         UdriveRestClient.getClentInstance().queryAllOrdersByUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -146,6 +147,7 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
 
                     @Override
                     public void onNext(OrderResult value) {
+                        dissmisProgressDialog();
                         smartRefreshLayout.finishRefresh(true);
                         list.clear();
                         orderAdapter.setNewData(list);
@@ -166,13 +168,14 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        dissmisProgressDialog();
                         smartRefreshLayout.finishRefresh(true);
                         orderAdapter.setEmptyView(R.layout.layout_error);
                     }
 
                     @Override
                     public void onComplete() {
-
+                        dissmisProgressDialog();
                     }
                 });
     }
