@@ -190,10 +190,10 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showDepositDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("提示")
-                .setMessage("请先交纳押金")
+                .setMessage("请先缴纳押金")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去交纳", (dialog, which) -> {
+                .setPositiveButton("去缴纳", (dialog, which) -> {
                     startActivity(DepositActivity.class);
                     finish();
                 })
@@ -247,7 +247,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showDriverFailure() {
         new AlertDialog.Builder(this)
                 .setTitle("提示")
-                .setMessage("您的驾照认证审核失败")
+                .setMessage("您的驾驶证审核失败")
                 .setCancelable(false)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("重新认证", (dialog, which) -> {
@@ -302,11 +302,11 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                             case 1018://未进行驾驶认证
                                 showDriverStateDialog();
                                 break;
-                            case 1019://未交纳押金
+                            case 1019://未缴纳押金
                                 showDepositDialog();
                                 break;
                             case 1024://驾驶认证审核中
-                                ToastUtil.show(this, "驾照认证正在审核中");
+                                ToastUtil.show(this, "驾驶证正在审核中");
                                 break;
                             case 1025://订单行程中
                                 showUnfinshOrder();
