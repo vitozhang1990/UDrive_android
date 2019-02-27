@@ -197,8 +197,10 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
                             if (unFinishOrderBean.getData().getToPark() != null) {
                                 toPark = unFinishOrderBean.getData().getToPark();
-                                allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
-                                tv_address.setText(toPark.getName().isEmpty() ? "" : toPark.getName());
+                                if (toPark.getLatitude() > 0 && toPark.getLongtitude() > 0) {
+                                    allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
+                                }
+                                tv_address.setText(TextUtils.isEmpty(toPark.getName()) ? "" : toPark.getName());
                             }
                             if (unFinishOrderBean.getData().getCar() != null) {
                                 CarBean car = unFinishOrderBean.getData().getCar();
@@ -609,7 +611,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                             toPark.setParkID(retParkObj.getDate().getId());
                             toPark.setName(retParkObj.getDate().getName());
                             allLatLngs.clear();
-                            allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
+                            if (toPark.getLatitude() > 0 && toPark.getLongtitude() > 0) {
+                                allLatLngs.add(new LatLng(toPark.getLatitude(), toPark.getLongtitude()));
+                            }
                             //2.更新界面地址
                             tv_address.setText(toPark.getName());
                             //3.更新图标

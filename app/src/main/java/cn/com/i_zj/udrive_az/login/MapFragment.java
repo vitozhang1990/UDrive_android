@@ -424,7 +424,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void fetchAreas() {
-        if (disposable != null) {
+        if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
             disposable = null;
         }
@@ -493,7 +493,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     }
 
     private void fetchParks() {
-        if (disposable != null) {
+        if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
             disposable = null;
         }
@@ -796,7 +796,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                                 case ParkType.Circle:
                                     JsonObject circleObject = (JsonObject) new JsonParser().parse(parkAreaBean.getArea());
                                     String center = circleObject.get("center").getAsString();
-                                    if (center.isEmpty()) {
+                                    if (TextUtils.isEmpty(center)) {
                                         return;
                                     }
                                     LatLng latLng = new LatLng(Double.parseDouble(center.split(",")[1]), Double.parseDouble(center.split(",")[0]));
@@ -1093,9 +1093,10 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        disposable.isDisposed();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
         mMapView.onDestroy();
-        disposable.dispose();
         mLocationClient.onDestroy();
     }
 

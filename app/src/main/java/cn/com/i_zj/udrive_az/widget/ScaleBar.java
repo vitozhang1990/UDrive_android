@@ -123,7 +123,7 @@ public class ScaleBar extends View {
      * 设置分数
      */
     public void setMark(Float mark) {
-        starMark = Math.round(mark * 10) * 1.0f / 10;
+        starMark = Math.round(mark * 10) * 1.0f;
         if (null != changeListener) {
             changeListener.onStarChange(starMark);
         }

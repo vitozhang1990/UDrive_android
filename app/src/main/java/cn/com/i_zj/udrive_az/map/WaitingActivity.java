@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -378,7 +379,7 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
                                 case ParkType.Circle:
                                     JsonObject circleObject = (JsonObject) new JsonParser().parse(parkAreaBean.getArea());
                                     String center = circleObject.get("center").getAsString();
-                                    if (center.isEmpty()) {
+                                    if (TextUtils.isEmpty(center)) {
                                         return;
                                     }
                                     LatLng latLng = new LatLng(Double.parseDouble(center.split(",")[1]), Double.parseDouble(center.split(",")[0]));
