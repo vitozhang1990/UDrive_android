@@ -15,6 +15,13 @@ android {
 
     }
 
+    lintOptions {
+        disable 'InvalidPackage'
+        disable "ResourceType"
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
