@@ -83,7 +83,11 @@ android {
             v2SigningEnabled false
         }
     }
-
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "cn.com.i_zj.udrive_az_" + defaultConfig.versionName + "_" + defaultConfig.versionCode + ".apk"
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

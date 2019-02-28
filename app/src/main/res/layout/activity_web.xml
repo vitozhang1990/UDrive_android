@@ -38,7 +38,7 @@
             android:id="@+id/commonWebview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/commonWebProgress" />
+            android:layout_below="@id/progress_bar" />
 
         <SeekBar
             android:id="@+id/progress_bar"

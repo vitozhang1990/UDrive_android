@@ -38,6 +38,7 @@ import java.lang.reflect.Method;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.event.NumberClickEvent;
@@ -47,6 +48,7 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.DeviceUtils;
 import cn.com.i_zj.udrive_az.utils.PushUtil;
 import cn.com.i_zj.udrive_az.utils.RegexUtils;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.VerificationCodeEditText;
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.Observer;
@@ -165,8 +167,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.login_tv_licence)
     public void onLicenceClick(View view) {
-        Intent intent = new Intent(getContext(), ProtocolActivity.class);
-        startActivity(intent);
+        WebActivity.startWebActivity(getContext(), BuildConfig.DOMAIN + "/agreement/");
     }
 
     @OnClick(R.id.login_btn_up)
