@@ -127,7 +127,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_tv_msg:
-                startActivity(ActMsg.class);
+//                startActivity(ActMsg.class);
+                WebActivity.startWebActivity(MainActivity.this, "http://192.168.3.152:3000/wallet");
                 break;
             case R.id.rl_note:
                 if (homeNote != null) {

@@ -22,6 +22,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.blankj.utilcode.util.ToastUtils;
@@ -584,7 +585,7 @@ public class WebActivity extends DBSBaseActivity {
             gsonString.append(new Gson().toJson(token));
         }
         webView.callHandler("App_TokenParameters", gsonString.toString(), data -> { //处理js回传的数据
-
+            Toast.makeText(this, data, Toast.LENGTH_LONG).show();
         });
     }
 
