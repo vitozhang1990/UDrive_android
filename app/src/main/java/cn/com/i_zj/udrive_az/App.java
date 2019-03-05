@@ -11,6 +11,7 @@ import com.umeng.socialize.PlatformConfig;
 
 import cn.com.i_zj.udrive_az.utils.image.ImagePipelineConfigFactory;
 import cn.jpush.android.api.JPushInterface;
+import me.yokeyword.fragmentation.Fragmentation;
 
 /**
  * Created by wli on 2018/8/11.
@@ -39,5 +40,12 @@ public class App extends MultiDexApplication {
 //            return;
 //        }
 //        LeakCanary.install(this);
+
+        Fragmentation.builder()
+                .stackViewMode(Fragmentation.BUBBLE)
+                .debug(BuildConfig.DEBUG)
+                .handleException(e -> {
+                })
+                .install();
     }
 }

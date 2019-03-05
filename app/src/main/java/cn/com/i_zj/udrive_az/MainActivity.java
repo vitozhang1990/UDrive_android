@@ -49,6 +49,7 @@ import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.service.BackService;
+import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.DownloadApk;
@@ -136,7 +137,8 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 }
                 break;
             case R.id.main_tv_personal_info:
-                personalDrawerLayout.openDrawer(Gravity.START);
+                startActivity(StepActivity.class);
+//                personalDrawerLayout.openDrawer(Gravity.START);
                 break;
         }
     }
