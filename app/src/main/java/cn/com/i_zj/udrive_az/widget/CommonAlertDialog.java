@@ -8,14 +8,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.utils.UIUtils;
 
 public class CommonAlertDialog {
 
     private Context mContext;
     private Dialog mDialog;
+    private int mImageResource;
     private boolean mImageTitle, mShowNegBtn, mCancelAble;
     private String mTitle, mMsg, mPos, mNeg;
     private OnClickListener mPosListener, mNegListener;
@@ -25,6 +30,7 @@ public class CommonAlertDialog {
         this.mShowNegBtn = builder.showNegBtn;
         this.mCancelAble = builder.cancelAble;
         this.mImageTitle = builder.imageTitle;
+        this.mImageResource = builder.imageResource;
         this.mTitle = builder.title;
         this.mMsg = builder.msg;
         this.mPos = builder.pos;
@@ -37,17 +43,14 @@ public class CommonAlertDialog {
         return new Builder(context);
     }
 
-    public void show() {
+    public CommonAlertDialog show() {
         View view = LayoutInflater.from(mContext).inflate(R.layout.weight_dialog_alert, null);
         setLayout(view);
         mDialog = new Dialog(mContext, R.style.AlertDialogStyle);
         mDialog.setContentView(view);
-//        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-//        Display display = windowManager.getDefaultDisplay();
-//        view.setLayoutParams(new FrameLayout.LayoutParams((int) (display
-//                .getWidth() * 0.75), FrameLayout.LayoutParams.WRAP_CONTENT));
         mDialog.setCanceledOnTouchOutside(mCancelAble);
         mDialog.show();
+        return this;
     }
 
     public boolean isShowing() {
@@ -65,6 +68,10 @@ public class CommonAlertDialog {
     }
 
     private void setLayout(View view) {
+        TextView txt_msg = view.findViewById(R.id.txt_msg);
+        Button btn_neg = view.findViewById(R.id.btn_neg);
+        Button btn_pos = view.findViewById(R.id.btn_pos);
+
         if (mImageTitle) {
             ViewStub imageStub = view.findViewById(R.id.stub_image);
             imageStub.inflate();
@@ -72,6 +79,8 @@ public class CommonAlertDialog {
                 TextView imageTitle = view.findViewById(R.id.alertImageTitle);
                 imageTitle.setText(mTitle);
             }
+            ImageView alertImage = view.findViewById(R.id.alertImage);
+            Glide.with(mContext).load(mImageResource).error(R.drawable.pic_exchange_fail).into(alertImage);
         } else {
             ViewStub textStub = view.findViewById(R.id.stub_text);
             textStub.inflate();
@@ -79,10 +88,8 @@ public class CommonAlertDialog {
                 TextView textTitle = view.findViewById(R.id.alertTitle);
                 textTitle.setText(mTitle);
             }
+            txt_msg.setMinHeight(UIUtils.dp2px(80));
         }
-        TextView txt_msg = view.findViewById(R.id.txt_msg);
-        Button btn_neg = view.findViewById(R.id.btn_neg);
-        Button btn_pos = view.findViewById(R.id.btn_pos);
 
         txt_msg.setText(mMsg);
         btn_pos.setText(mPos);
@@ -109,6 +116,7 @@ public class CommonAlertDialog {
     public static final class Builder {
         private Context context;
         private boolean imageTitle;
+        private int imageResource;
         private boolean showMsg, showPosBtn, showNegBtn, cancelAble;
         private String title, msg, pos, neg;
         private OnClickListener posListener, negListener;
@@ -119,6 +127,12 @@ public class CommonAlertDialog {
 
         public Builder setImageTitle(boolean imageTitle) {
             this.imageTitle = imageTitle;
+            return this;
+        }
+
+        public Builder setImageTitle(boolean imageTitle, int resource) {
+            this.imageTitle = imageTitle;
+            this.imageResource = resource;
             return this;
         }
 
