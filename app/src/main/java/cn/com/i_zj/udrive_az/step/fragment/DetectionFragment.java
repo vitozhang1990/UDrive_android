@@ -7,7 +7,7 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -17,11 +17,16 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.pcitc.opencvdemo.BitmapUtils;
 import com.pcitc.opencvdemo.DetectionBasedTracker;
 import com.pcitc.opencvdemo.EyeUtils;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -39,13 +44,29 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
+import cn.com.i_zj.udrive_az.login.AccountInfoManager;
+import cn.com.i_zj.udrive_az.model.AccountInfoResult;
+import cn.com.i_zj.udrive_az.model.IDResult;
+import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
+import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.ToolsUtils;
+import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import me.yokeyword.fragmentation.SupportFragment;
 
-public class DetectionFragment extends SupportFragment implements CameraBridgeViewBase.CvCameraViewListener2{
+public class DetectionFragment extends SupportFragment implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     @BindView(R.id.cp_view)
     JavaCameraView mOpenCvCameraView;
@@ -61,6 +82,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     private boolean overTime = false;// 标记是否超时
     private WindowManager manager;
     private int eyeCheckSuccessCount = 0;
+
+    private Context mContext;
+    private AddIdCardInfo mAddIdCardInfo;
+    private int type; //0 ：身份证正面   1 ： 身份证反面   2 ： 进入活体检测
 
     private CountDownTimer countDownTimer = new CountDownTimer(1000 * 20, 1) {
         @Override
@@ -128,8 +153,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         }
     };
 
-    public static DetectionFragment newInstance() {
+    public static DetectionFragment newInstance(AddIdCardInfo addIdCardInfo) {
         Bundle args = new Bundle();
+        args.putSerializable("data", addIdCardInfo);
 
         DetectionFragment fragment = new DetectionFragment();
         fragment.setArguments(args);
@@ -139,8 +165,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mAddIdCardInfo = (AddIdCardInfo) getArguments().getSerializable("data");
         View view = inflater.inflate(R.layout.activity_bioassay, container, false);
         ButterKnife.bind(this, view);
+        mContext = getContext();
 
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         manager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
@@ -242,7 +270,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         return mRgba;
     }
 
-
     /**
      * 眨眼检测，活体检测
      */
@@ -262,7 +289,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                 boolean success = EyeUtils.check();
                 if (success) {
                     eyeCheckSuccessCount++;
-                    if (eyeCheckSuccessCount > 2) {
+                    if (eyeCheckSuccessCount > 3) {
                         EyeUtils.clearEyeCount();
                         // 连续两次眨眼成功认为检测成功，可以设置更大的值，保证检验正确率，但会增加检测难度
                         eyeCheckSuccessCount = 0;
@@ -284,19 +311,22 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         }
     }
 
+    public static Bitmap matToBitmap(Mat mat) {
+        Bitmap resultBitmap = null;
+        if (mat != null) {
+            resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+            if (resultBitmap != null)
+                Utils.matToBitmap(mat, resultBitmap);
+        }
+        return resultBitmap;
+    }
+
 
     /**
      * 眨眼检测成功后进行之后的处理
      */
     private void dealWithEyeCheckSuccess() {
-        final Bitmap bitmap = Bitmap.createBitmap(mRgba.width(), mRgba.height(), Bitmap.Config.ARGB_8888);
-        try {
-            Utils.matToBitmap(mRgba, bitmap);
-        } catch (Exception e) {
-            setMessage("检测失败，请重试");
-            EyeUtils.clearEyeCount();
-            return;
-        }
+        final Bitmap bitmap = mOpenCvCameraView.Bytes2Bimap();
         getActivity().runOnUiThread(() -> {
             if (mOpenCvCameraView != null) {
                 mOpenCvCameraView.disableView();
@@ -347,20 +377,114 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             }
             final Bitmap rotateBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             bitmap.recycle();
-            // 裁剪
-            int rotateBitmapWidth = rotateBitmap.getWidth();
-            int rotateBitmapHeight = rotateBitmap.getHeight();
-            int squareLength = Math.min(rotateBitmapWidth, rotateBitmapHeight);
-            int startLenth = Math.max(rotateBitmapWidth, rotateBitmapHeight) - squareLength;
-            final Bitmap squareBitmap = Bitmap.createBitmap(rotateBitmap, 0, startLenth / 2, squareLength, squareLength);
-            rotateBitmap.recycle();
-            Bitmap zoomBitmap = BitmapUtils.getZoomImage(squareBitmap, 1024);
-            Toast.makeText(getActivity(), "嗯，你是人", Toast.LENGTH_LONG).show();
-            startWithPop(DriveCardFragment.newInstance());
-//            finish();
-//            dealWtihZoomBitmap(zoomBitmap);
+            Bitmap zoomBitmap = BitmapUtils.getZoomImage(rotateBitmap, 1024);
+            String picPath = saveBitmap(getActivity(), zoomBitmap);
+            if (TextUtils.isEmpty(picPath)) {
+                return;
+            }
+//            mAddIdCardInfo.setDetectionPic(picPath);
+//
+//            uploadImg2QiNiu(0,  new File(getActivity().getFilesDir(), "front_pic.jpg").getAbsolutePath());
+//            uploadImg2QiNiu(1,  new File(getActivity().getFilesDir(), "back_pic.jpg").getAbsolutePath());
+//            uploadImg2QiNiu(2,  new File(getActivity().getFilesDir(), "detection_pic.jpg").getAbsolutePath());
         });
+    }
 
+    private String saveBitmap(Context context, Bitmap mBitmap) {
+        File filePic;
+        try {
+            String path = "/mnt/sdcard/" + System.currentTimeMillis() + ".jpg";
+            filePic = new File(path);
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(filePic);
+            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return filePic.getAbsolutePath();
+    }
+
+    private void uploadImg2QiNiu(int type, String path) {
+        new Thread() {
+            public void run() {
+                UploadManager uploadManager = new UploadManager();
+                // 设置图片名字
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                String key = "nxnk_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
+                uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
+                    @Override
+                    public void complete(String key, ResponseInfo info, JSONObject res) {
+                        if (info.isOK()) {
+                            switch (type) {
+                                case 0:
+                                    mAddIdCardInfo.setIdentityCardPhotoFront(key);
+                                    break;
+                                case 1:
+                                    mAddIdCardInfo.setIdentityCardPhotoBehind(key);
+                                    break;
+                                case 2:
+                                    mAddIdCardInfo.setDetectionPicURL(key);
+                                    break;
+                            }
+                            if (!TextUtils.isEmpty(mAddIdCardInfo.getIdentityCardPhotoFront())
+                                    && !TextUtils.isEmpty(mAddIdCardInfo.getIdentityCardPhotoBehind())
+                                    && !TextUtils.isEmpty(mAddIdCardInfo.getDetectionPicURL())) {
+                                uploadCardInfo();
+                            }
+                        } else {
+                            ToastUtils.showShort("图片上传失败，请重试");
+                        }
+                    }
+                }, null);
+            }
+        }.start();
+    }
+
+    //上传认证信息
+    private void uploadCardInfo() {
+        UdriveRestClient.getClentInstance().postAddIdCardInfo(mAddIdCardInfo)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<IDResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(IDResult value) {
+                        if (value != null && value.getCode() == 1) {
+                            ToastUtils.showShort("信息提交成功");
+//                            ScreenManager.getScreenManager().popAllActivityExceptOne(ActIdentificationIDCard.class);
+                            EventBus.getDefault().post(new CloseActivityEvent());
+                            AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
+                            accountInfo.data.idCardState = Constants.ID_UNDER_REVIEW;
+                            AccountInfoManager.getInstance().cacheAccount(accountInfo);
+                        } else {
+                            if (value != null) {
+                                ToastUtils.showShort("信息提交失败Code:" + value.getCode());
+                            } else {
+                                ToastUtils.showShort("信息提交失败");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        ToastUtils.showShort("信息提交失败");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     /**

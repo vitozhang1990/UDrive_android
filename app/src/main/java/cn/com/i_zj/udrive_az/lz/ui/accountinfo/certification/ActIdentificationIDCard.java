@@ -47,7 +47,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.ActIdentificationCameraTwo;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.ALiIDCarBean;
 import cn.com.i_zj.udrive_az.lz.ui.idregister.IdBean;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
@@ -186,33 +185,33 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
     @OnClick({R.id.iv_idcard_one, R.id.iv_idcard_two, R.id.tv_start_time, R.id.tv_end_time, R.id.btn_commit})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.iv_idcard_one:
-                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
-                } else {
-                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
-                }
-                break;
-            case R.id.iv_idcard_two:
-                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_REVERSE);
-                } else {
-                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
-                }
-                break;
-            case R.id.tv_start_time:
-                showTimeDailog(true);
-                break;
-            case R.id.tv_end_time:
-                showTimeDailog(false);
-                break;
-            case R.id.btn_commit:
-                if (commitVerify()) {
-                    ActBioassay.startActBioassay(ActIdentificationIDCard.this, addIdCardInfo);
-                }
-
-//                ActBioassay.startActBioassay(ActIdentificationIDCard.this, addIdCardInfo);
-                break;
+//            case R.id.iv_idcard_one:
+//                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
+//                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_POSITIVE);
+//                } else {
+//                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
+//                }
+//                break;
+//            case R.id.iv_idcard_two:
+//                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)) {
+//                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationIDCard.this, ActIdentificationCameraTwo.IDCARD_REVERSE);
+//                } else {
+//                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA);
+//                }
+//                break;
+//            case R.id.tv_start_time:
+//                showTimeDailog(true);
+//                break;
+//            case R.id.tv_end_time:
+//                showTimeDailog(false);
+//                break;
+//            case R.id.btn_commit:
+//                if (commitVerify()) {
+//                    ActBioassay.startActBioassay(ActIdentificationIDCard.this, addIdCardInfo);
+//                }
+//
+////                ActBioassay.startActBioassay(ActIdentificationIDCard.this, addIdCardInfo);
+//                break;
         }
     }
 
@@ -325,30 +324,30 @@ public class ActIdentificationIDCard extends DBSBaseActivity implements EasyPerm
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void cameraEvent(CameraEvent cameraEvent) {
-        if (ActIdentificationCameraTwo.IDCARD_POSITIVE == cameraEvent.getCode()) {
-            idCardOneFile = new File(cameraEvent.getPath());
-            Glide.with(ActIdentificationIDCard.this)
-                    .load(Uri.fromFile(idCardOneFile))
-                    .centerCrop()
-                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationIDCard.this, 4)))
-                    .placeholder(R.mipmap.pic_idcardscanbg)
-                    .error(R.mipmap.pic_idcardscanbg)
-                    .into(ivIdcardOne);
-
-            uploadImage(cameraEvent.getPath(), true);
-        } else if (ActIdentificationCameraTwo.IDCARD_REVERSE == cameraEvent.getCode()) {
-            idCardTwoFile = new File(cameraEvent.getPath());
-            Glide.with(ActIdentificationIDCard.this)
-                    .load(Uri.fromFile(idCardTwoFile))
-                    .centerCrop()
-                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationIDCard.this, 4)))
-                    .crossFade()
-                    .placeholder(R.mipmap.pic_idcardfrontscanbg)
-                    .error(R.mipmap.pic_idcardfrontscanbg)
-                    .into(ivIdcardTwo);
-            uploadImage(cameraEvent.getPath(), false);
-
-        }
+//        if (ActIdentificationCameraTwo.IDCARD_POSITIVE == cameraEvent.getCode()) {
+//            idCardOneFile = new File(cameraEvent.getPath());
+//            Glide.with(ActIdentificationIDCard.this)
+//                    .load(Uri.fromFile(idCardOneFile))
+//                    .centerCrop()
+//                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationIDCard.this, 4)))
+//                    .placeholder(R.mipmap.pic_idcardscanbg)
+//                    .error(R.mipmap.pic_idcardscanbg)
+//                    .into(ivIdcardOne);
+//
+//            uploadImage(cameraEvent.getPath(), true);
+//        } else if (ActIdentificationCameraTwo.IDCARD_REVERSE == cameraEvent.getCode()) {
+//            idCardTwoFile = new File(cameraEvent.getPath());
+//            Glide.with(ActIdentificationIDCard.this)
+//                    .load(Uri.fromFile(idCardTwoFile))
+//                    .centerCrop()
+//                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationIDCard.this, 4)))
+//                    .crossFade()
+//                    .placeholder(R.mipmap.pic_idcardfrontscanbg)
+//                    .error(R.mipmap.pic_idcardfrontscanbg)
+//                    .into(ivIdcardTwo);
+//            uploadImage(cameraEvent.getPath(), false);
+//
+//        }
 
     }
 

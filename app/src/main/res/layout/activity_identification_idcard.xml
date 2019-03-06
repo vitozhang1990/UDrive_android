@@ -181,5 +181,6 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/btn_black_selector"
         android:text="下一步"
+        android:enabled="false"
         android:textColor="@color/white" />
 </LinearLayout>

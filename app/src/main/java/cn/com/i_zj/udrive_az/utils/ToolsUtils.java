@@ -275,6 +275,16 @@ public class ToolsUtils {
 
     }
 
+    public static Date getDate(String str, String format) {
+        try {
+            SimpleDateFormat formater = new SimpleDateFormat(format);
+            formater.setLenient(false);
+            return formater.parse(str);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * 检测某个应用是否安装
      *

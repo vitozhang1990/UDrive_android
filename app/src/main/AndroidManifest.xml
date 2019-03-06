@@ -109,11 +109,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".lz.ui.accountinfo.ActIdentificationCameraTwo"
-            android:label="@string/activity_account_info"
-            android:screenOrientation="landscape"
-            android:theme="@style/NoTitleFullscreen" />
-        <activity
             android:name=".lz.ui.accountinfo.certification.ActIdentificationDrivingLicense"
             android:label="@string/activity_account_info"
             android:screenOrientation="portrait"
@@ -122,11 +117,6 @@
             android:name=".step.StepActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".lz.ui.accountinfo.certification.ActBioassay"
-            android:label="@string/activity_account_info"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoTitleFullscreen" />
         <activity
             android:name="com.zjcx.face.camera.CameraActivity"
             android:screenOrientation="landscape"
@@ -266,6 +256,11 @@
         <activity
             android:name=".lz.ui.msg.ActMsg"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.baidu.ocr.ui.camera.CameraActivity"
+            android:configChanges="screenSize|orientation"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
 
         <activity
             android:name=".utils.dialog.OffPowerDialogActivity"

@@ -17,6 +17,7 @@ public class Constants {
   public static final String SP_NOT_SHOW_PICTURE = "sp_not_show_picture";
   public static final String SP_CITY_LIST = "sp_city_list";
   public static final String SP_CITY = "sp_city";
+  public static final String SP_Access_Token = "sp_Access_Token";
 
   public static final String INTENT_KET_COMMENT_DATA = "intent_key_comment_data";
 

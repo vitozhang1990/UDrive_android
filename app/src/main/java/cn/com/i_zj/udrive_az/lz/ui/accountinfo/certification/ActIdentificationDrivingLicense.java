@@ -51,7 +51,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.lz.bean.CameraEvent;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.ActIdentificationCameraTwo;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliDrivingIDBackEntity;
 import cn.com.i_zj.udrive_az.model.AliDrivingIDEntity;
@@ -226,50 +225,50 @@ public class ActIdentificationDrivingLicense extends DBSBaseActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void cameraEvent(CameraEvent cameraEvent) {
-        if (ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE == cameraEvent.getCode()) {
-            idOneFile = new File(cameraEvent.getPath());
-            Glide.with(ActIdentificationDrivingLicense.this)
-                    .load(Uri.fromFile(idOneFile))
-                    .centerCrop()
-                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationDrivingLicense.this, 4)))
-                    .placeholder(R.mipmap.pic_driverlicensefrontbg)
-                    .error(R.mipmap.pic_driverlicensefrontbg)
-                    .into(ivOne);
-            uploadImage(cameraEvent.getPath(), true);
-        } else if (ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE == cameraEvent.getCode()) {
-            idTwoFile = new File(cameraEvent.getPath());
-            Glide.with(ActIdentificationDrivingLicense.this)
-                    .load(Uri.fromFile(idTwoFile))
-                    .centerCrop()
-                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationDrivingLicense.this, 4)))
-                    .placeholder(R.mipmap.pic_driverlicensebg)
-                    .error(R.mipmap.pic_driverlicensebg)
-                    .into(ivTwo);
-            uploadImage(cameraEvent.getPath(), false);
-        }
+//        if (ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE == cameraEvent.getCode()) {
+//            idOneFile = new File(cameraEvent.getPath());
+//            Glide.with(ActIdentificationDrivingLicense.this)
+//                    .load(Uri.fromFile(idOneFile))
+//                    .centerCrop()
+//                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationDrivingLicense.this, 4)))
+//                    .placeholder(R.mipmap.pic_driverlicensefrontbg)
+//                    .error(R.mipmap.pic_driverlicensefrontbg)
+//                    .into(ivOne);
+//            uploadImage(cameraEvent.getPath(), true);
+//        } else if (ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE == cameraEvent.getCode()) {
+//            idTwoFile = new File(cameraEvent.getPath());
+//            Glide.with(ActIdentificationDrivingLicense.this)
+//                    .load(Uri.fromFile(idTwoFile))
+//                    .centerCrop()
+//                    .transform(new GlideRoundTransform(this, SizeUtils.dp2px(ActIdentificationDrivingLicense.this, 4)))
+//                    .placeholder(R.mipmap.pic_driverlicensebg)
+//                    .error(R.mipmap.pic_driverlicensebg)
+//                    .into(ivTwo);
+//            uploadImage(cameraEvent.getPath(), false);
+//        }
 
     }
 
     @OnClick({R.id.iv_one, R.id.iv_two, R.id.btn_commit})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.iv_one:
-                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE);
-                } else {
-                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
-                }
-                break;
-            case R.id.iv_two:
-                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
-                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE);
-                } else {
-                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
-                }
-                break;
-            case R.id.btn_commit:
-                uploadDriverInfo();
-                break;
+//            case R.id.iv_one:
+//                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+//                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_POSITIVE);
+//                } else {
+//                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
+//                }
+//                break;
+//            case R.id.iv_two:
+//                if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+//                    ActIdentificationCameraTwo.startActIdentificationCamera(ActIdentificationDrivingLicense.this, ActIdentificationCameraTwo.DRIVING_LICENSE_REVERSE);
+//                } else {
+//                    EasyPermissions.requestPermissions(this, getString(R.string.lz_request_permission), 1, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
+//                }
+//                break;
+//            case R.id.btn_commit:
+//                uploadDriverInfo();
+//                break;
         }
     }
 

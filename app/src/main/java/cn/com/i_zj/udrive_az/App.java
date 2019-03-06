@@ -3,12 +3,21 @@ package cn.com.i_zj.udrive_az;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
+import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.AccessToken;
+import com.baidu.ocr.ui.camera.CameraNativeHelper;
+import com.baidu.ocr.ui.camera.CameraView;
 import com.blankj.utilcode.util.Utils;
 import com.bugtags.library.Bugtags;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.google.gson.Gson;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.image.ImagePipelineConfigFactory;
 import cn.jpush.android.api.JPushInterface;
 import me.yokeyword.fragmentation.Fragmentation;
@@ -47,5 +56,42 @@ public class App extends MultiDexApplication {
                 .handleException(e -> {
                 })
                 .install();
+
+        initAccessToken();
+    }
+
+    private void initAccessToken() {
+        OCR.getInstance(this).initAccessToken(new OnResultListener<AccessToken>() {
+            @Override
+            public void onResult(AccessToken result) {
+                initLicense();
+                LocalCacheUtils.savePersistentSettingString(Constants.SP_GLOBAL_NAME, Constants.SP_Access_Token, new Gson().toJson(result));
+            }
+            @Override
+            public void onError(OCRError error) {
+                error.printStackTrace();
+                LocalCacheUtils.removePersistentSetting(Constants.SP_GLOBAL_NAME, Constants.SP_Access_Token);
+            }
+        }, getApplicationContext());
+    }
+
+    private void initLicense() {
+        CameraNativeHelper.init(this, OCR.getInstance(this).getLicense(),
+                (errorCode, e) -> {
+                    final String msg;
+                    switch (errorCode) {
+                        case CameraView.NATIVE_SOLOAD_FAIL:
+                            msg = "加载so失败，请确保apk中存在ui部分的so";
+                            break;
+                        case CameraView.NATIVE_AUTH_FAIL:
+                            msg = "授权本地质量控制token获取失败";
+                            break;
+                        case CameraView.NATIVE_INIT_FAIL:
+                            msg = "本地质量控制";
+                            break;
+                        default:
+                            msg = String.valueOf(errorCode);
+                    }
+                });
     }
 }
