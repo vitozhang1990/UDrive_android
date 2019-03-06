@@ -630,8 +630,7 @@ public class WebActivity extends DBSBaseActivity {
             webView.goBack();
             return true;
         } else {
-            finish();
-            return true;
+            return super.onKeyDown(keyCode, event);
         }
     }
 }

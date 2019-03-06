@@ -251,17 +251,18 @@
             android:windowSoftInputMode="stateHidden|stateUnchanged" />
         <activity
             android:name=".lz.ui.coupon.CouponListActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".web.WebActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".lz.ui.payment.ActPaySucc"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".lz.ui.msg.ActMsg"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".utils.dialog.OffPowerDialogActivity"
