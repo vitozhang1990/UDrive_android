@@ -33,13 +33,14 @@ public class StepActivity extends DBSBaseActivity {
         initAccessTokenWithAkSk();
         ISupportFragment firstFragment = findFragment(IdCardFragment.class);
         if (firstFragment == null) {
-            loadRootFragment(R.id.fl_container, DetectionFragment.newInstance(null));
+            loadRootFragment(R.id.fl_container, IdCardFragment.newInstance());
         }
     }
 
     private void initAccessTokenWithAkSk() {
         String token = LocalCacheUtils.getPersistentSettingString(Constants.SP_GLOBAL_NAME, Constants.SP_Access_Token, "");
         if (!TextUtils.isEmpty(token)) {
+            runOnUiThread(() -> showToast("已经认证过了哈"));
             return;
         }
         OCR.getInstance(this).initAccessToken(new OnResultListener<AccessToken>() {

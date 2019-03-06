@@ -217,6 +217,24 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                         tvEndTime.setText(ToolsUtils.getTime(date, "yyyy.MM.dd"));
                         addIdCardInfo.setExpireTime(result.getExpiryDate().getWords());
                     }
+                    if (result.getAddress() != null) {
+                        addIdCardInfo.setAddress(result.getAddress().getWords());
+                    }
+                    if (result.getGender() != null) {
+                        addIdCardInfo.setSex(result.getGender().getWords());
+                    }
+                    if (result.getGender() != null) {
+                        addIdCardInfo.setSex(result.getGender().getWords());
+                    }
+                    if (result.getBirthday() != null) {
+                        addIdCardInfo.setIdentityTime(result.getBirthday().getWords());
+                    }
+                    if (result.getEthnic() != null) {
+                        addIdCardInfo.setNationality(result.getEthnic().getWords());
+                    }
+                    if (result.getIssueAuthority() != null) {
+                        addIdCardInfo.setIssue(result.getIssueAuthority().getWords());
+                    }
                     if (commitDateVerify()) {
                         btnCommit.setEnabled(true);
                     } else {

@@ -1,6 +1,7 @@
 package cn.com.i_zj.udrive_az.step.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,6 +88,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     private Context mContext;
     private AddIdCardInfo mAddIdCardInfo;
     private int type; //0 ：身份证正面   1 ： 身份证反面   2 ： 进入活体检测
+    protected Dialog progressDialog;
 
     private CountDownTimer countDownTimer = new CountDownTimer(1000 * 20, 1) {
         @Override
@@ -326,7 +329,15 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
      * 眨眼检测成功后进行之后的处理
      */
     private void dealWithEyeCheckSuccess() {
-        final Bitmap bitmap = mOpenCvCameraView.Bytes2Bimap();
+//        final Bitmap bitmap = mOpenCvCameraView.Bytes2Bimap();
+        final Bitmap bitmap = Bitmap.createBitmap(mRgba.width(), mRgba.height(), Bitmap.Config.ARGB_8888);
+        try {
+            Utils.matToBitmap(mRgba, bitmap);
+        } catch (Exception e) {
+            setMessage("检测失败，请重试");
+            EyeUtils.clearEyeCount();
+            return;
+        }
         getActivity().runOnUiThread(() -> {
             if (mOpenCvCameraView != null) {
                 mOpenCvCameraView.disableView();
@@ -382,19 +393,18 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             if (TextUtils.isEmpty(picPath)) {
                 return;
             }
-//            mAddIdCardInfo.setDetectionPic(picPath);
-//
-//            uploadImg2QiNiu(0,  new File(getActivity().getFilesDir(), "front_pic.jpg").getAbsolutePath());
-//            uploadImg2QiNiu(1,  new File(getActivity().getFilesDir(), "back_pic.jpg").getAbsolutePath());
-//            uploadImg2QiNiu(2,  new File(getActivity().getFilesDir(), "detection_pic.jpg").getAbsolutePath());
+            mAddIdCardInfo.setDetectionPic(picPath);
+
+            uploadImg2QiNiu(0,  new File(getActivity().getFilesDir(), "front_pic.jpg").getAbsolutePath());
+            uploadImg2QiNiu(1,  new File(getActivity().getFilesDir(), "back_pic.jpg").getAbsolutePath());
+            uploadImg2QiNiu(2,  new File(getActivity().getFilesDir(), "detection_pic.jpg").getAbsolutePath());
         });
     }
 
     private String saveBitmap(Context context, Bitmap mBitmap) {
         File filePic;
         try {
-            String path = "/mnt/sdcard/" + System.currentTimeMillis() + ".jpg";
-            filePic = new File(path);
+            filePic = new File(getActivity().getFilesDir(), "detection_pic.jpg");
             if (!filePic.exists()) {
                 filePic.getParentFile().mkdirs();
                 filePic.createNewFile();
@@ -411,12 +421,13 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     }
 
     private void uploadImg2QiNiu(int type, String path) {
+        showProgressDialog();
         new Thread() {
             public void run() {
                 UploadManager uploadManager = new UploadManager();
                 // 设置图片名字
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                String key = "nxnk_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
+                String key = "nxnk"+ type +"_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
                 uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, JSONObject res) {
@@ -429,15 +440,16 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                                     mAddIdCardInfo.setIdentityCardPhotoBehind(key);
                                     break;
                                 case 2:
-                                    mAddIdCardInfo.setDetectionPicURL(key);
+                                    mAddIdCardInfo.setHandCardPhoto(key);
                                     break;
                             }
                             if (!TextUtils.isEmpty(mAddIdCardInfo.getIdentityCardPhotoFront())
                                     && !TextUtils.isEmpty(mAddIdCardInfo.getIdentityCardPhotoBehind())
-                                    && !TextUtils.isEmpty(mAddIdCardInfo.getDetectionPicURL())) {
+                                    && !TextUtils.isEmpty(mAddIdCardInfo.getHandCardPhoto())) {
                                 uploadCardInfo();
                             }
                         } else {
+                            showProgressDialog();
                             ToastUtils.showShort("图片上传失败，请重试");
                         }
                     }
@@ -459,6 +471,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
                     @Override
                     public void onNext(IDResult value) {
+                        dissmisProgressDialog();
                         if (value != null && value.getCode() == 1) {
                             ToastUtils.showShort("信息提交成功");
 //                            ScreenManager.getScreenManager().popAllActivityExceptOne(ActIdentificationIDCard.class);
@@ -468,6 +481,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
                         } else {
                             if (value != null) {
+                                if (value.getCode() == 1030) {
+
+                                }
                                 ToastUtils.showShort("信息提交失败Code:" + value.getCode());
                             } else {
                                 ToastUtils.showShort("信息提交失败");
@@ -477,6 +493,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
                     @Override
                     public void onError(Throwable e) {
+                        dissmisProgressDialog();
                         ToastUtils.showShort("信息提交失败");
                     }
 
@@ -486,6 +503,17 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                     }
                 });
     }
+
+//    private void show(int cost) {
+//        new AlertDialog.Builder(mContext)
+//                .setTitle("提示")
+//                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
+//                .setCancelable(false)
+//                .setNegativeButton("取消", null)
+//                .setPositiveButton("确定", (dialog, which) -> reservation(false))
+//                .create()
+//                .show();
+//    }
 
     /**
      * 显示超时的对话框
@@ -503,6 +531,28 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
         dialog.show();
+    }
+
+    public void showProgressDialog() {
+        if (getActivity() == null) {
+            return;
+        }
+        if (null == progressDialog) {
+            progressDialog = new Dialog(getActivity(), R.style.MyDialog);
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_loading);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+        }
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    public void dissmisProgressDialog() {
+        if (null != progressDialog && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     private void setMessage(final String msg) {

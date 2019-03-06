@@ -25,7 +25,6 @@ public class AddIdCardInfo implements Serializable {
     private String frontPic;  //本地的身份证前照片
     private String backPic;   //本地的身份证后照片
     private String detectionPic;
-    private String detectionPicURL;
 
     public String getRealName() {
         return realName;
@@ -147,11 +146,4 @@ public class AddIdCardInfo implements Serializable {
         this.detectionPic = detectionPic;
     }
 
-    public String getDetectionPicURL() {
-        return detectionPicURL;
-    }
-
-    public void setDetectionPicURL(String detectionPicURL) {
-        this.detectionPicURL = detectionPicURL;
-    }
 }
