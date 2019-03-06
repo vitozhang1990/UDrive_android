@@ -22,7 +22,7 @@ public class RechargeDialogActivity extends Activity {
         setFinishOnTouchOutside(false);
 
         findViewById(R.id.sure).setOnClickListener(v -> {
-            WebActivity.startWebActivity(this, BuildConfig.WEB_URL + "/wallet/recharge");
+            WebActivity.startWebActivity(this, BuildConfig.WEB_URL + "/wallet/recharge/0");
             finish();
         });
 
