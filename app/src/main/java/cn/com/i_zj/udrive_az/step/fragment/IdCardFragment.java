@@ -147,7 +147,7 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                 startActivityForResult(intent, REQUEST_CODE_CAMERA);
                 break;
             case 2:
-                startWithPop(DetectionFragment.newInstance(addIdCardInfo));
+                start(DetectionFragment.newInstance(addIdCardInfo));
                 break;
         }
     }

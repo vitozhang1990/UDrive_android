@@ -62,6 +62,7 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -482,7 +483,20 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         } else {
                             if (value != null) {
                                 if (value.getCode() == 1030) {
-
+                                    CommonAlertDialog.builder(getContext())
+                                            .setImageTitle(true)
+                                            .setTitle("证件重复")
+                                            .setMsg("身份证已被注册，请致电400-614-1888")
+                                            .setNegativeButton("取消", v -> {
+                                                if (getActivity() != null) {
+                                                    getActivity().finish();
+                                                }
+                                            })
+                                            .setPositiveButton("重新上传", v -> {
+                                                pop();
+                                            })
+                                            .build()
+                                            .show();
                                 }
                                 ToastUtils.showShort("信息提交失败Code:" + value.getCode());
                             } else {
@@ -503,17 +517,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                     }
                 });
     }
-
-//    private void show(int cost) {
-//        new AlertDialog.Builder(mContext)
-//                .setTitle("提示")
-//                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
-//                .setCancelable(false)
-//                .setNegativeButton("取消", null)
-//                .setPositiveButton("确定", (dialog, which) -> reservation(false))
-//                .create()
-//                .show();
-//    }
 
     /**
      * 显示超时的对话框
