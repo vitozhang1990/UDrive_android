@@ -51,7 +51,15 @@ class CouponsAdapter : BaseQuickAdapter<UnUseCouponResult.DataBean, BaseViewHold
                 yanTv.text = "元"
             }
             if (item.instant_rebate_amount > 0) {
-                list.add("满" + (item.instant_rebate_amount / 100f).toString() + "元使用")
+                if (!StringUtils.isEmpty(item.area_name)) {
+                    list.add("限定城市" + item.area_name +"，满" + (item.instant_rebate_amount / 100f).toString() + "元使用")
+                } else {
+                    list.add("满" + (item.instant_rebate_amount / 100f).toString() + "元使用")
+                }
+            } else {
+                if (!StringUtils.isEmpty(item.area_name)) {
+                    list.add("限定城市" + item.area_name)
+                }
             }
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
             var time: Long = 0
@@ -82,7 +90,7 @@ class CouponsAdapter : BaseQuickAdapter<UnUseCouponResult.DataBean, BaseViewHold
                 }
                 else -> {
                     if (!StringUtils.isEmpty(item.start_time)) {
-                        list.add("全场通用,使用时间段为" + item.start_time + "-" + item.end_time)
+                        list.add("全场通用，使用时间段为" + item.start_time + "-" + item.end_time)
                     } else {
                         list.add("全场通用")
                     }

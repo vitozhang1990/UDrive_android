@@ -199,6 +199,11 @@ public class WebActivity extends DBSBaseActivity {
             loginDialogFragment.show(getSupportFragmentManager(), "login");
         });
 
+        webView.registerHandler("JS_RefreshToken", (data, function) -> {
+            callBackFunction = function;
+            SessionManager.getInstance().refreshToken(true);
+        });
+
         webView.registerHandler("JS_Phone", (data, function) -> {
             Intent intent = new Intent(Intent.ACTION_DIAL);
             Uri uri = Uri.parse("tel:" + getResources().getString(R.string.about_phone));

@@ -169,7 +169,8 @@ public class DrawerLeftFragment extends DBSBaseFragment {
     @OnClick(R.id.di_money)
     public void onMoneyClick(View view) {
         if (SessionManager.getInstance().isLogin()) {
-            startActivity(WalletActivity.class);
+//            startActivity(WalletActivity.class);
+            WebActivity.startWebActivity(getActivity(), "http://192.168.3.152:3000/wallet");
         } else {
             EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
         }

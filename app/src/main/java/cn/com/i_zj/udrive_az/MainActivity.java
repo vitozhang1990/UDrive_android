@@ -79,6 +79,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private long time = 0;
     private boolean hasRequest; //网络变化后只请求一次
+    private Disposable activityDisposable;
 
     @Override
     protected int getLayoutResource() {
@@ -194,6 +195,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                 if (result.getData().getOrderType() == 0 && result.getData().getReservationId() > 0) {
                                     long time = System.currentTimeMillis() - result.getData().getCreateTime();//
                                     if (time < 1000 * 60 * 15) {
+                                        if (activityDisposable != null && !activityDisposable.isDisposed()) {
+                                            activityDisposable.dispose();
+                                        }
                                         if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
                                             homeAdvDialog.dismiss();
                                             homeAdvDialog = null;
@@ -275,6 +279,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                             if (result.getCode() == 1) {
                                 if (result.getData() != null && result.getData().getId() > 0) {
                                     if (result.getData().getStatus() == 0) {//行程中
+                                        if (activityDisposable != null && !activityDisposable.isDisposed()) {
+                                            activityDisposable.dispose();
+                                        }
                                         if (homeAdvDialog != null && homeAdvDialog.isShowing()) {
                                             homeAdvDialog.dismiss();
                                             homeAdvDialog = null;
@@ -342,6 +349,12 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<BaseRetObj<HomeActivityEntity>>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new UObserver<HomeActivityEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        super.onSubscribe(d);
+                        activityDisposable = d;
+                    }
+
                     @Override
                     public void onSuccess(HomeActivityEntity homeActivityEntity) {
                         if (homeActivityEntity != null) {
