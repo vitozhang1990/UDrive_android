@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.alipay.sdk.app.PayTask;
 import com.blankj.utilcode.util.ToastUtils;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
@@ -41,6 +45,8 @@ import com.umeng.socialize.media.UMWeb;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -54,7 +60,11 @@ import cn.com.i_zj.udrive_az.event.LoginSuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.model.AliPayOrder;
+import cn.com.i_zj.udrive_az.model.AliPayResult;
+import cn.com.i_zj.udrive_az.model.RechargeOrder;
 import cn.com.i_zj.udrive_az.model.ShareBean;
 import cn.com.i_zj.udrive_az.model.Token;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
@@ -67,12 +77,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+
 /**
  * @author JayQiu
  * @create 2018/10/26
  * @Describe
  */
 public class WebActivity extends DBSBaseActivity {
+    private static final int SDK_PAY_FLAG = 1;
+    private static final int ALI = 1;
+    private static final int WECHAT = 2;
+
     @BindView(R.id.commonWebview)
     BridgeWebView webView;
     @BindView(R.id.progress_bar)
@@ -216,6 +231,19 @@ public class WebActivity extends DBSBaseActivity {
             finish();
         });
 
+        webView.registerHandler("JS_Charge", (data, function) -> {
+            JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
+            String chargeType = circleObject.get("type").getAsString();
+            String chargeAmount = circleObject.get("amount").getAsString();
+            if (TextUtils.isEmpty(chargeType) || TextUtils.isEmpty(chargeAmount)) {
+                function.onCallBack("0");
+                return;
+            }
+
+            callBackFunction = function;
+            createOrder(chargeAmount, chargeType.equals("0") ? WECHAT : ALI);
+        });
+
         webView.registerHandler("JS_Pay", (data, function) -> {
             JsonObject circleObject = (JsonObject) new JsonParser().parse(data);
             String orderNum = circleObject.get("orderNum").getAsString();
@@ -281,6 +309,177 @@ public class WebActivity extends DBSBaseActivity {
             showShareDialog(web);
         });
     }
+
+    private void createOrder(String amount, int payType) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("amount", Integer.valueOf(amount) * 100);
+        map.put("payType", payType);
+
+        UdriveRestClient.getClentInstance().createRechargeOrder(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<RechargeOrder>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(RechargeOrder rechargeOrder) {
+                        if (1 == payType) {
+                            getAliPayOrderInfo(rechargeOrder.orderItem);
+                        } else if (2 == payType) {
+                            getWeiChatOderInfo(rechargeOrder.orderItem);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                        showToast(e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dissmisProgressDialog();
+                    }
+                });
+    }
+
+    private void getAliPayOrderInfo(RechargeOrder.RechargeOrderItem orderItem) {
+        UdriveRestClient.getClentInstance().getAliPayOderInfo(orderItem.number)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<AliPayOrder>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(AliPayOrder rechargeOrder) {
+                        gotoAliPayActivity(rechargeOrder.data);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                        showToast(e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dissmisProgressDialog();
+                    }
+                });
+    }
+
+    private void getWeiChatOderInfo(RechargeOrder.RechargeOrderItem orderItem) {
+        UdriveRestClient.getClentInstance().getWeiChatPayOderInfo(orderItem.number)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<WeichatPayOrder>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(WeichatPayOrder rechargeOrder) {
+                        if (null != rechargeOrder && null != rechargeOrder.data) {
+                            gotoWexinPayActivity(rechargeOrder.data);
+                        } else {
+                            showToast("创建订单失败，请重试");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                        showToast(e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dissmisProgressDialog();
+                    }
+                });
+    }
+
+    private void gotoWexinPayActivity(WeichatPayOrder.WeiChatPayDetail payInfo) {
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(this, Constants.WEIXIN_APP_ID, false);
+        iwxapi.registerApp(Constants.WEIXIN_APP_ID);
+
+        PayReq payReq = new PayReq();
+        payReq.appId = payInfo.appid;
+        payReq.partnerId = payInfo.partnerid;
+        payReq.prepayId = payInfo.prepayid;
+        payReq.packageValue = payInfo.packageValue;
+        payReq.nonceStr = payInfo.noncestr;
+        payReq.timeStamp = payInfo.timestamp;
+        payReq.sign = payInfo.sign;
+        boolean result = iwxapi.sendReq(payReq);
+        Log.e("*****", "**" + result + "***");
+    }
+
+    private void gotoAliPayActivity(final String orderInfo) {
+        Runnable payRunnable = () -> {
+            PayTask alipay = new PayTask(WebActivity.this);
+            Map<String, String> result = alipay.payV2(orderInfo, true);
+            Log.i("msp", result.toString());
+
+            Message msg = new Message();
+            msg.what = SDK_PAY_FLAG;
+            msg.obj = result;
+            mHandler.sendMessage(msg);
+        };
+
+        Thread payThread = new Thread(payRunnable);
+        payThread.start();
+    }
+
+    private Handler mHandler = new Handler() {
+        @SuppressWarnings("unused")
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case SDK_PAY_FLAG: {
+                    @SuppressWarnings("unchecked")
+                    AliPayResult payResult = new AliPayResult((Map<String, String>) msg.obj);
+                    /**
+                     对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+                     */
+                    String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                    String resultStatus = payResult.getResultStatus();
+                    // 判断resultStatus 为9000则代表支付成功
+                    if (TextUtils.equals(resultStatus, "9000")) {
+                        // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
+                        showToast("支付成功");
+                        Token token = new Token();
+                        token.setResult("1");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
+                        dissmisProgressDialog();
+                    } else {
+                        // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
+                        showToast("支付失败");
+                        Token token = new Token();
+                        token.setResult("0");
+                        if (callBackFunction != null) {
+                            callBackFunction.onCallBack(new Gson().toJson(token));
+                        }
+                        dissmisProgressDialog();
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    };
 
     private void share(UMWeb web, SHARE_MEDIA type) {
         new ShareAction(WebActivity.this)
