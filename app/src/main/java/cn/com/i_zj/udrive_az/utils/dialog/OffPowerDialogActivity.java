@@ -12,9 +12,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.GongDianEvent;
 import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 
 public class OffPowerDialogActivity extends Activity {
     @Override
@@ -25,12 +27,9 @@ public class OffPowerDialogActivity extends Activity {
         setFinishOnTouchOutside(false);
         EventBus.getDefault().register(this);
 
-        findViewById(R.id.sure).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(OffPowerDialogActivity.this, MyWalletActivity.class), 100);
-                finish();
-            }
+        findViewById(R.id.sure).setOnClickListener(v -> {
+            WebActivity.startWebActivity(this, BuildConfig.WEB_URL + "/wallet/recharge");
+            finish();
         });
     }
 
@@ -38,14 +37,6 @@ public class OffPowerDialogActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (RESULT_OK == resultCode) {
-            finish();
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

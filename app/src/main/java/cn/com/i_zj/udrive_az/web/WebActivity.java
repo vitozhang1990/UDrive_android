@@ -207,6 +207,14 @@ public class WebActivity extends DBSBaseActivity {
         //默认接收
         webView.setDefaultHandler(new DefaultHandler());
 
+        webView.registerHandler("JS_Loading", (data, function) -> {
+            showProgressDialog();
+        });
+
+        webView.registerHandler("JS_Dismiss", (data, function) -> {
+            dissmisProgressDialog();
+        });
+
         webView.registerHandler("JS_UserLogin", (data, function) -> {
             callBackFunction = function;
             LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
