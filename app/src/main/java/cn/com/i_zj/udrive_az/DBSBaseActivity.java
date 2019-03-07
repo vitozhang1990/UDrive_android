@@ -254,6 +254,10 @@ public abstract class DBSBaseActivity extends BaseActivity implements ISupportAc
         mDelegate.startWithPopTo(toFragment, targetFragmentClass, includeTargetFragment);
     }
 
+    public void startWithPop(ISupportFragment toFragment) {
+        mDelegate.startWithPop(toFragment);
+    }
+
     /**
      * Pop the fragment.
      */

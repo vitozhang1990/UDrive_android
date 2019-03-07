@@ -13,12 +13,19 @@ import com.baidu.ocr.sdk.model.AccessToken;
 import com.baidu.ocr.ui.camera.CameraNativeHelper;
 import com.baidu.ocr.ui.camera.CameraView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import butterknife.BindView;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.GongDianEvent;
+import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AuthResult;
+import cn.com.i_zj.udrive_az.step.fragment.DepositFragment;
 import cn.com.i_zj.udrive_az.step.fragment.DetectionFragment;
+import cn.com.i_zj.udrive_az.step.fragment.DriveCardFragment;
 import cn.com.i_zj.udrive_az.step.fragment.IdCardFragment;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
@@ -60,6 +67,8 @@ public class StepActivity extends DBSBaseActivity {
 
     private AuthResult authResult;
 
+    private boolean loadFragment;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_step;
@@ -77,18 +86,87 @@ public class StepActivity extends DBSBaseActivity {
         }
 
         initAccessTokenWithAkSk();
-        ISupportFragment firstFragment = findFragment(IdCardFragment.class);
-        if (firstFragment == null) {
-            loadRootFragment(R.id.fl_container, IdCardFragment.newInstance());
+        initStepBar();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(StepEvent event) {
+        switch (event.getStep()) {
+            case 1:
+                text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+                text1.setTextColor(Color.parseColor("#FFFFFF"));
+                line1.setBackgroundColor(Color.parseColor("#33333D"));
+                line21.setBackgroundColor(Color.parseColor("#33333D"));
+                name1.setTextColor(Color.parseColor("#33333D"));
+
+                text2.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                line22.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                line31.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                name2.setTextColor(Color.parseColor("#33333D"));
+                break;
+            case 2:
+                if (event.isSuccess()) {
+                    text2.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+                    text2.setTextColor(Color.parseColor("#FFFFFF"));
+                    line22.setBackgroundColor(Color.parseColor("#33333D"));
+                    line31.setBackgroundColor(Color.parseColor("#33333D"));
+                    name2.setTextColor(Color.parseColor("#33333D"));
+
+                    if (authResult.getData().getDriver().getState() != 2
+                            && authResult.getData().getDriver().getState() != 1) {
+                        startWithPop(IdCardFragment.newInstance());
+                    } else if (authResult.getData().getDeposit().getState() != 2) {
+                        startWithPop(DepositFragment.newInstance());
+                    } else {
+                        showToast("已完成，待审批");
+                        finish();
+                    }
+                } else {
+                    text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                    text1.setTextColor(Color.parseColor("#33333D"));
+                    line1.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                    line21.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                    name1.setTextColor(Color.parseColor("#33333D"));
+
+                    text2.setBackground(getResources().getDrawable(R.drawable.bg_circle_grey));
+                    line22.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                    line31.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                    name2.setTextColor(Color.parseColor("#CCCCCC"));
+
+                    startWithPop(IdCardFragment.newInstance());
+                }
+                break;
+            case 3:
+                text3.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+                text3.setTextColor(Color.parseColor("#FFFFFF"));
+                line32.setBackgroundColor(Color.parseColor("#33333D"));
+                line4.setBackgroundColor(Color.parseColor("#33333D"));
+                name3.setTextColor(Color.parseColor("#33333D"));
+
+                if (authResult.getData().getDeposit().getState() != 2) {
+                    startWithPop(DepositFragment.newInstance());
+                } else {
+                    showToast("已完成，待审批");
+                    finish();
+                }
+                break;
+            case 4:
+                text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+                text4.setTextColor(Color.parseColor("#FFFFFF"));
+                name4.setTextColor(Color.parseColor("#33333D"));
+
+                showToast("已完成");
+                finish();
+                break;
         }
     }
 
     private void initStepBar() {
         // 0：未认证 1：审核中 2：已认证 3：认证失败
-        if (authResult.getData().getIdcard().getState() == 2) {
+        if (authResult.getData().getIdcard().getState() == 2
+                || authResult.getData().getIdcard().getState() == 1) {
             //第一个圈及后面的线
             text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
-            line1.setBackgroundColor(Color.parseColor("#33333D"));
             line1.setBackgroundColor(Color.parseColor("#33333D"));
             line21.setBackgroundColor(Color.parseColor("#33333D"));
             name1.setTextColor(Color.parseColor("#33333D"));
@@ -98,7 +176,8 @@ public class StepActivity extends DBSBaseActivity {
             line31.setBackgroundColor(Color.parseColor("#33333D"));
             name2.setTextColor(Color.parseColor("#33333D"));
         } else {
-            text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_grey));
+            text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+            text1.setTextColor(Color.parseColor("#33333D"));
             line1.setBackgroundColor(Color.parseColor("#CCCCCC"));
             line21.setBackgroundColor(Color.parseColor("#CCCCCC"));
             name1.setTextColor(Color.parseColor("#33333D"));
@@ -107,24 +186,44 @@ public class StepActivity extends DBSBaseActivity {
             line22.setBackgroundColor(Color.parseColor("#CCCCCC"));
             line31.setBackgroundColor(Color.parseColor("#CCCCCC"));
             name2.setTextColor(Color.parseColor("#CCCCCC"));
+
+            if (!loadFragment) {
+                loadRootFragment(R.id.fl_container, IdCardFragment.newInstance());
+                loadFragment = true;
+            }
         }
-        if (authResult.getData().getDriver().getState() == 2) {
+        if (authResult.getData().getDriver().getState() == 2
+                || authResult.getData().getDriver().getState() == 1) {
             text3.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+            text3.setTextColor(Color.parseColor("#FFFFFF"));
             line32.setBackgroundColor(Color.parseColor("#33333D"));
             line4.setBackgroundColor(Color.parseColor("#33333D"));
             name3.setTextColor(Color.parseColor("#33333D"));
         } else {
-            text3.setBackground(getResources().getDrawable(R.drawable.bg_circle_grey));
-            line32.setBackgroundColor(Color.parseColor("#CCCCCC"));
-            line4.setBackgroundColor(Color.parseColor("#CCCCCC"));
-            name3.setTextColor(Color.parseColor("#CCCCCC"));
+            if (!loadFragment) {
+                text3.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                text3.setTextColor(Color.parseColor("#33333D"));
+                line32.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                line4.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                name3.setTextColor(Color.parseColor("#33333D"));
+
+                loadRootFragment(R.id.fl_container, DriveCardFragment.newInstance());
+                loadFragment = true;
+            }
         }
         if (authResult.getData().getDeposit().getState() == 2) {
             text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
+            text4.setTextColor(Color.parseColor("#FFFFFF"));
             name4.setTextColor(Color.parseColor("#33333D"));
         } else {
-            text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_grey));
-            name4.setTextColor(Color.parseColor("#CCCCCC"));
+            if (!loadFragment) {
+                text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                text4.setTextColor(Color.parseColor("#33333D"));
+                name4.setTextColor(Color.parseColor("#33333D"));
+
+                loadRootFragment(R.id.fl_container, DepositFragment.newInstance());
+                loadFragment = true;
+            }
         }
     }
 
@@ -140,6 +239,7 @@ public class StepActivity extends DBSBaseActivity {
                 initLicense();
                 runOnUiThread(() -> showToast("初始化认证成功"));
             }
+
             @Override
             public void onError(OCRError error) {
                 error.printStackTrace();

@@ -16,12 +16,15 @@ import android.widget.Toast;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.bumptech.glide.Glide;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.utils.FileUtil;
 import me.yokeyword.fragmentation.SupportFragment;
 
@@ -73,7 +76,7 @@ public class DriveCardFragment extends SupportFragment {
                 startActivityForResult(intent, REQUEST_CODE_CAMERA_Two);
                 break;
             case R.id.btn_commit:
-                startWithPop(DepositFragment.newInstance());
+                EventBus.getDefault().post(new StepEvent(3));
                 break;
         }
     }

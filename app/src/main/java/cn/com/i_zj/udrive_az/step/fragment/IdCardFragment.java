@@ -29,6 +29,8 @@ import com.baidu.ocr.ui.camera.CameraActivity;
 import com.bumptech.glide.Glide;
 import com.pickerview.TimePickerView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
@@ -147,7 +150,7 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                 startActivityForResult(intent, REQUEST_CODE_CAMERA);
                 break;
             case 2:
-                start(DetectionFragment.newInstance(addIdCardInfo));
+                EventBus.getDefault().post(new StepEvent(1));
                 break;
         }
     }

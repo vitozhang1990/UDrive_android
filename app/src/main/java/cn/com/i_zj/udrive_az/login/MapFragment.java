@@ -362,6 +362,11 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 //                reservationVerify();
                 break;
             case R.id.btn_yongche:
+                if (SessionManager.getInstance().getAuthorization() == null) {
+                    LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
+                    loginDialogFragment.show(getChildFragmentManager(), "login");
+                    return;
+                }
                 checkAuth();
                 break;
             case R.id.park_explain:
@@ -424,7 +429,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     public void onNext(AuthResult authResult) {
                         dissmisProgressDialog();
                         if (authResult != null && authResult.getCode() == 1
-                                || !authResult.getData().isPass()) {
+                                && !authResult.getData().isPass()) {
                             showToast("请先完成认证");
                             Intent intent = new Intent(getActivity(), StepActivity.class);
                             intent.putExtra("data", authResult);

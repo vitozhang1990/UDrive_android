@@ -54,6 +54,7 @@ import butterknife.ButterKnife;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.CloseActivityEvent;
+import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.IDResult;
@@ -479,7 +480,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
                             accountInfo.data.idCardState = Constants.ID_UNDER_REVIEW;
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
-                            start(DriveCardFragment.newInstance());
+                            EventBus.getDefault().post(new StepEvent(2, true));
                         } else {
                             if (value != null) {
                                 if (value.getCode() == 1030) {
@@ -493,14 +494,15 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                                                 }
                                             })
                                             .setPositiveButton("重新上传", v -> {
-                                                pop();
+                                                EventBus.getDefault().post(new StepEvent(2, false));
                                             })
                                             .build()
                                             .show();
                                 }
                                 ToastUtils.showShort("信息提交失败Code:" + value.getCode());
                             } else {
-                                ToastUtils.showShort("信息提交失败");
+                                ToastUtils.showShort("信息提交失败, 请重试");
+                                EventBus.getDefault().post(new StepEvent(2, false));
                             }
                         }
                     }
@@ -508,7 +510,8 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                     @Override
                     public void onError(Throwable e) {
                         dissmisProgressDialog();
-                        ToastUtils.showShort("信息提交失败");
+                        ToastUtils.showShort("信息提交失败, 请重试");
+                        EventBus.getDefault().post(new StepEvent(2, false));
                     }
 
                     @Override
