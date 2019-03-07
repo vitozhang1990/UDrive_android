@@ -474,12 +474,12 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                     public void onNext(IDResult value) {
                         dissmisProgressDialog();
                         if (value != null && value.getCode() == 1) {
-                            ToastUtils.showShort("信息提交成功");
 //                            ScreenManager.getScreenManager().popAllActivityExceptOne(ActIdentificationIDCard.class);
                             EventBus.getDefault().post(new CloseActivityEvent());
                             AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
                             accountInfo.data.idCardState = Constants.ID_UNDER_REVIEW;
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
+                            start(DriveCardFragment.newInstance());
                         } else {
                             if (value != null) {
                                 if (value.getCode() == 1030) {

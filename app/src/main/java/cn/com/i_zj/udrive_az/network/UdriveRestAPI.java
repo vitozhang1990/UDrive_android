@@ -11,6 +11,7 @@ import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.ActivityResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
+import cn.com.i_zj.udrive_az.model.AuthResult;
 import cn.com.i_zj.udrive_az.model.CarInfoResult;
 import cn.com.i_zj.udrive_az.model.CheckCarResult;
 import cn.com.i_zj.udrive_az.model.CityListResult;
@@ -219,6 +220,10 @@ public interface UdriveRestAPI {
     //获取停车场区域标签
     @GET("/mobile/park/areaTags")
     Observable<AreaTagsResult> getAreaTags();
+
+    //获取用户状态/身份证状态/驾驶证状态/押金状态接口
+    @GET("/mobile/v1/user/checkAuth")
+    Observable<AuthResult> checkAuth();
 
     //获取停车场
     @GET("/mobile/park/findRelativeParks")

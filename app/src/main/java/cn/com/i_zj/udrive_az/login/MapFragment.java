@@ -90,6 +90,7 @@ import cn.com.i_zj.udrive_az.map.fragment.CarsFragment;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AreaInfo;
 import cn.com.i_zj.udrive_az.model.AreaTagsResult;
+import cn.com.i_zj.udrive_az.model.AuthResult;
 import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
@@ -102,6 +103,7 @@ import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.WalkRouteOverlay;
+import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.Constants2;
@@ -360,24 +362,7 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
 //                reservationVerify();
                 break;
             case R.id.btn_yongche:
-                ParksResult.DataBean bestPark = null;
-                float bestDistance = 1000000;
-                for (ParksResult.DataBean dataBean : parkBeans) {
-                    float distance = AMapUtils.calculateLineDistance(mobileLocation,
-                            new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
-                    if (dataBean.getValidCarCount() > 0 && distance < bestDistance) {
-                        bestPark = dataBean;
-                        bestDistance = distance;
-                    }
-                }
-                if (bestPark != null && bestDistance < 3000) {
-                    ParkKey parkKey = new ParkKey(bestPark.getId(), bestPark.getLongitude(), bestPark.getLatitude());
-                    if (parkMarkerMap.containsKey(parkKey)) {
-                        onMarkerClick(parkMarkerMap.get(parkKey));
-                    }
-                } else {
-                    ToastUtils.showShort("3公里内无可用车辆");
-                }
+                checkAuth();
                 break;
             case R.id.park_explain:
                 startActivity(ParkExplainActivity.class);
@@ -420,6 +405,65 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             fetchAreas();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkAuth() {
+        showProgressDialog();
+        UdriveRestClient.getClentInstance().checkAuth()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<AuthResult>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(AuthResult authResult) {
+                        dissmisProgressDialog();
+                        if (authResult != null && authResult.getCode() == 1
+                                || !authResult.getData().isPass()) {
+                            showToast("请先完成认证");
+                            startActivity(StepActivity.class);
+                            return;
+                        }
+                        useCar();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        useCar();
+                        dissmisProgressDialog();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void useCar() {
+        ParksResult.DataBean bestPark = null;
+        float bestDistance = 1000000;
+        for (ParksResult.DataBean dataBean : parkBeans) {
+            float distance = AMapUtils.calculateLineDistance(mobileLocation,
+                    new LatLng(dataBean.getLatitude(), dataBean.getLongitude()));
+            if (dataBean.getValidCarCount() > 0 && distance < bestDistance) {
+                bestPark = dataBean;
+                bestDistance = distance;
+            }
+        }
+        if (bestPark != null && bestDistance < 3000) {
+            ParkKey parkKey = new ParkKey(bestPark.getId(), bestPark.getLongitude(), bestPark.getLatitude());
+            if (parkMarkerMap.containsKey(parkKey)) {
+                onMarkerClick(parkMarkerMap.get(parkKey));
+            }
+        } else {
+            ToastUtils.showShort("3公里内无可用车辆");
         }
     }
 
