@@ -909,14 +909,14 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
             return;
         }
         mLocationClient.stopLocation();
-        if (TextUtils.isEmpty(aMapLocation.getCityCode())) {
+        if (TextUtils.isEmpty(aMapLocation.getAdCode())) {
             mLocationClient.startLocation();
             return;
         }
 
         mobileLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
         CityListResult cityInfo = new CityListResult();
-        cityInfo.setAreaCode(aMapLocation.getCityCode());
+        cityInfo.setAreaCode(aMapLocation.getAdCode());
         cityInfo.setAreaName(aMapLocation.getCity().replace("市", ""));
         Log.e("zaijian", "222__》" + cityInfo.getAreaName());
         LocalCacheUtils.saveDeviceData(Constants.SP_GLOBAL_NAME, Constants.SP_CITY, cityInfo);

@@ -544,7 +544,7 @@ public class ChooseParkActivity extends DBSBaseActivity implements
     private void doSomeThing() {
         //逻辑：没有则正常请求，若在白名单内，则使用当前定位请求，否则使用白名单第一个城市请求
         CityListResult cityInfo = new CityListResult();
-        cityInfo.setAreaCode(mapLocation.getCityCode());
+        cityInfo.setAreaCode(mapLocation.getAdCode());
         cityInfo.setAreaName(mapLocation.getCity().replace("市", ""));
         cityInfo.setAmount(0);
         LatLng mobileLocation = new LatLng(mapLocation.getLatitude(), mapLocation.getLongitude());
