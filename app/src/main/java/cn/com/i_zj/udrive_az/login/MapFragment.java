@@ -426,7 +426,9 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                         if (authResult != null && authResult.getCode() == 1
                                 || !authResult.getData().isPass()) {
                             showToast("请先完成认证");
-                            startActivity(StepActivity.class);
+                            Intent intent = new Intent(getActivity(), StepActivity.class);
+                            intent.putExtra("data", authResult);
+                            startActivity(intent);
                             return;
                         }
                         useCar();

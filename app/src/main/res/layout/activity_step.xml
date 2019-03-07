@@ -69,7 +69,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:text="实名认证"
-                android:textColor="#CCCCCC"
+                android:textColor="#030303"
                 android:textSize="13sp" />
         </RelativeLayout>
 
