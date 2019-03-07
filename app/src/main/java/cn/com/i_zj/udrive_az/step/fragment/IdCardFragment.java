@@ -184,8 +184,8 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
             Glide.with(mContext)
                     .load(Uri.fromFile(back))
                     .centerCrop()
-                    .placeholder(R.mipmap.pic_idcardscanbg)
-                    .error(R.mipmap.pic_idcardscanbg)
+                    .placeholder(R.mipmap.pic_idcardfrontscanbg)
+                    .error(R.mipmap.pic_idcardfrontscanbg)
                     .into(ivIdcardTwo);
             recIDCard(IDCardParams.ID_CARD_SIDE_BACK, back.getAbsolutePath());
         }

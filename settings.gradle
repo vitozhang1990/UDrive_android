@@ -1,1 +1,1 @@
-include ':app', ':facelibrary', ':pickerview', ':library', ':identify', ':opnecvlibrary'
+include ':app', ':facelibrary', ':pickerview', ':library', ':opnecvlibrary', ':ocr_ui'

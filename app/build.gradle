@@ -203,8 +203,8 @@ dependencies {
 //    implementation project(':facelibrary')
     implementation project(':pickerview')
     implementation project(':library')
-    implementation project(':identify')
     implementation project(':opnecvlibrary')
+    implementation project(':ocr_ui')
     implementation files('libs/jpush-android-3.1.7.jar')
     implementation files('libs/ocr-sdk.jar')
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
