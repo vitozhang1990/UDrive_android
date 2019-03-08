@@ -36,6 +36,7 @@ import cn.com.i_zj.udrive_az.model.ParkOutAmount;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
@@ -322,6 +323,12 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 break;
                             case 1029://驾驶证认证失败
                                 showDriverFailure();
+                                break;
+                            case 1032:
+                                showToast("请先完成认证");
+                                Intent intent = new Intent(this, StepActivity.class);
+                                intent.putExtra("data", reserVationBean.getData().getAuthResult());
+                                startActivity(intent);
                                 break;
                             default:
                                 ToastUtils.showShort(reserVationBean.getMessage());

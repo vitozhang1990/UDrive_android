@@ -246,7 +246,7 @@ public interface UdriveRestAPI {
 
     //预约车辆接口
     @Headers("Content-Type: application/json")
-    @POST("mobile/tripOrder/reservation")
+    @POST("mobile/v1/order/reservation")
     Observable<ReserVationBean> reservation(@Body Map<String, String> body);
 
     @Headers("Content-Type: application/json")

@@ -367,7 +367,8 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     loginDialogFragment.show(getChildFragmentManager(), "login");
                     return;
                 }
-                checkAuth();
+                useCar();
+//                checkAuth();
                 break;
             case R.id.park_explain:
                 startActivity(ParkExplainActivity.class);

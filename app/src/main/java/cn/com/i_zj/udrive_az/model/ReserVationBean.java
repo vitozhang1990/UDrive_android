@@ -1,5 +1,7 @@
 package cn.com.i_zj.udrive_az.model;
 
+import java.io.Serializable;
+
 /**
  * Created by liuwei on 2018/8/20.
  */
@@ -81,6 +83,12 @@ public class ReserVationBean {
         private String latitude;
         private long createTime;
         private int remainderRange;
+
+        private int userState;
+        private boolean pass;
+        private AuthResult.DataBean.StateBean idcard;
+        private AuthResult.DataBean.StateBean driver;
+        private AuthResult.DataBean.StateBean deposit;
 
         public int getId() {
             return id;
@@ -224,6 +232,58 @@ public class ReserVationBean {
 
         public void setRemainderRange(int remainderRange) {
             this.remainderRange = remainderRange;
+        }
+
+        public int getUserState() {
+            return userState;
+        }
+
+        public void setUserState(int userState) {
+            this.userState = userState;
+        }
+
+        public boolean isPass() {
+            return pass;
+        }
+
+        public void setPass(boolean pass) {
+            this.pass = pass;
+        }
+
+        public AuthResult.DataBean.StateBean getIdcard() {
+            return idcard;
+        }
+
+        public void setIdcard(AuthResult.DataBean.StateBean idcard) {
+            this.idcard = idcard;
+        }
+
+        public AuthResult.DataBean.StateBean getDriver() {
+            return driver;
+        }
+
+        public void setDriver(AuthResult.DataBean.StateBean driver) {
+            this.driver = driver;
+        }
+
+        public AuthResult.DataBean.StateBean getDeposit() {
+            return deposit;
+        }
+
+        public void setDeposit(AuthResult.DataBean.StateBean deposit) {
+            this.deposit = deposit;
+        }
+
+        public AuthResult getAuthResult() {
+            AuthResult authResult = new AuthResult();
+            AuthResult.DataBean dataBean = new AuthResult.DataBean();
+            dataBean.setPass(pass);
+            dataBean.setUserState(userState);
+            dataBean.setIdcard(idcard);
+            dataBean.setDeposit(deposit);
+            dataBean.setDriver(driver);
+            authResult.setData(dataBean);
+            return authResult;
         }
     }
 }
