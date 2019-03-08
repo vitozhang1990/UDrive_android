@@ -1,6 +1,5 @@
 package cn.com.i_zj.udrive_az.lz.ui.accountinfo;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -22,12 +21,12 @@ import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationDrivingLicense;
-import cn.com.i_zj.udrive_az.lz.ui.accountinfo.certification.ActIdentificationIDCard;
 import cn.com.i_zj.udrive_az.lz.view.UserInfoItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.step.StepDriveCardActivity;
+import cn.com.i_zj.udrive_az.step.StepIdCardActivity;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -55,7 +54,6 @@ public class AccountInfoActivity extends DBSBaseActivity {
     UserInfoItemView mUiDriverLicense;
     private AccountInfoResult accountInfo;
 
-
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_account_info;
@@ -64,13 +62,10 @@ public class AccountInfoActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setSupportActionBar(toolbar);
 
         mUiHead.setRightImageVisible(View.INVISIBLE);
         mUiPhone.setRightImageVisible(View.INVISIBLE);
-
-
     }
 
     @Override
@@ -88,9 +83,8 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.ui_register)
     public void onRegisterClick(View view) {
-
         if (accountInfo != null && (accountInfo.data.idCardState == Constants.ID_UN_AUTHORIZED || accountInfo.data.idCardState == Constants.ID_AUTHORIZED_FAIL)) {
-            Intent intent = new Intent(this, ActIdentificationIDCard.class);
+            Intent intent = new Intent(this, StepIdCardActivity.class);
             startActivity(intent);
         } else if (accountInfo != null && accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
             Toast.makeText(this, R.string.under_reving, Toast.LENGTH_SHORT).show();
@@ -99,31 +93,17 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.account_info_btn_exit)
     public void onExitClick(View view) {
-        new AlertDialog.Builder(this).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        })
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
-                        registrationDown(regId);
-
-
-                    }
+        new AlertDialog.Builder(this).setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("确定", (dialog, which) -> {
+                    dialog.dismiss();
+                    String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
+                    registrationDown(regId);
                 }).setMessage("确定要退出么？")
                 .create().show();
-
     }
 
     @OnClick(R.id.ui_driver_license)
     public void onDriverLicense(View view) {
-
-//        Intent intent = new Intent(this, ActIdentificationDrivingLicense.class);
-//        startActivity(intent);
         AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
         if (accountInfo == null) {
             Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
@@ -137,7 +117,7 @@ public class AccountInfoActivity extends DBSBaseActivity {
             if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
                 Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(this, ActIdentificationDrivingLicense.class);
+                Intent intent = new Intent(this, StepDriveCardActivity.class);
                 startActivity(intent);
             }
         } else {

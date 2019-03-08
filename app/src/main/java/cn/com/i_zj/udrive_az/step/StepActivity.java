@@ -17,9 +17,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.event.GongDianEvent;
 import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AuthResult;
@@ -29,7 +29,6 @@ import cn.com.i_zj.udrive_az.step.fragment.DriveCardFragment;
 import cn.com.i_zj.udrive_az.step.fragment.IdCardFragment;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
-import me.yokeyword.fragmentation.ISupportFragment;
 
 public class StepActivity extends DBSBaseActivity {
 
@@ -93,6 +92,9 @@ public class StepActivity extends DBSBaseActivity {
     public void onEvent(StepEvent event) {
         switch (event.getStep()) {
             case 1:
+                if (event.getAddIdCardInfo() == null) {
+                    return;
+                }
                 text1.setBackground(getResources().getDrawable(R.drawable.bg_circle_black));
                 text1.setTextColor(Color.parseColor("#FFFFFF"));
                 line1.setBackgroundColor(Color.parseColor("#33333D"));
@@ -103,6 +105,8 @@ public class StepActivity extends DBSBaseActivity {
                 line22.setBackgroundColor(Color.parseColor("#CCCCCC"));
                 line31.setBackgroundColor(Color.parseColor("#CCCCCC"));
                 name2.setTextColor(Color.parseColor("#33333D"));
+
+                start(DetectionFragment.newInstance(event.getAddIdCardInfo()));
                 break;
             case 2:
                 if (event.isSuccess()) {
@@ -239,23 +243,31 @@ public class StepActivity extends DBSBaseActivity {
         }
     }
 
+    @OnClick({R.id.iv_back})
+    void onClick(View view) {
+        finish();
+    }
+
+    @Override
+    public void onBackPressedSupport() {
+        finish();
+    }
+
     private void initAccessTokenWithAkSk() {
         String token = LocalCacheUtils.getPersistentSettingString(Constants.SP_GLOBAL_NAME, Constants.SP_Access_Token, "");
         if (!TextUtils.isEmpty(token)) {
-            runOnUiThread(() -> showToast("已经认证过了哈"));
             return;
         }
         OCR.getInstance(this).initAccessToken(new OnResultListener<AccessToken>() {
             @Override
             public void onResult(AccessToken result) {
                 initLicense();
-                runOnUiThread(() -> showToast("初始化认证成功"));
             }
 
             @Override
             public void onError(OCRError error) {
                 error.printStackTrace();
-                runOnUiThread(() -> showToast("初始化认证失败,请检查 key"));
+                runOnUiThread(() -> showToast("初始化认证失败"));
             }
         }, getApplicationContext());
     }
@@ -277,7 +289,7 @@ public class StepActivity extends DBSBaseActivity {
                         default:
                             msg = String.valueOf(errorCode);
                     }
-                    runOnUiThread(() -> showToast("本地质量控制初始化错误，错误原因： " + msg));
+//                    runOnUiThread(() -> showToast("本地质量控制初始化错误，错误原因： " + msg));
                 });
     }
 }

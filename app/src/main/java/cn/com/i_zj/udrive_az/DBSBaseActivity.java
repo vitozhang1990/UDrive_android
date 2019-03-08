@@ -86,6 +86,11 @@ public abstract class DBSBaseActivity extends BaseActivity implements ISupportAc
     }
 
     @Override
+    public void onBackPressed() {
+        mDelegate.onBackPressed();
+    }
+
+    @Override
     public void onBackPressedSupport() {
         mDelegate.onBackPressedSupport();
     }

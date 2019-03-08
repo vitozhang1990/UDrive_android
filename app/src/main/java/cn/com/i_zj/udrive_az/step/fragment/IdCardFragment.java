@@ -150,7 +150,9 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                 startActivityForResult(intent, REQUEST_CODE_CAMERA);
                 break;
             case 2:
-                EventBus.getDefault().post(new StepEvent(1));
+                StepEvent event = new StepEvent(1);
+                event.setAddIdCardInfo(addIdCardInfo);
+                EventBus.getDefault().post(event);
                 break;
         }
     }

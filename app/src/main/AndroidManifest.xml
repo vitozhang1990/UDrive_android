@@ -118,6 +118,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".step.StepIdCardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".step.StepDriveCardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name="com.zjcx.face.camera.CameraActivity"
             android:screenOrientation="landscape"
             android:theme="@style/NoTitleFullscreen" />
