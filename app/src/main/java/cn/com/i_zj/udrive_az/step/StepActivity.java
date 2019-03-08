@@ -114,8 +114,16 @@ public class StepActivity extends DBSBaseActivity {
 
                     if (authResult.getData().getDriver().getState() != 2
                             && authResult.getData().getDriver().getState() != 1) {
-                        startWithPop(IdCardFragment.newInstance());
+                        text3.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                        text3.setTextColor(Color.parseColor("#33333D"));
+                        name3.setTextColor(Color.parseColor("#33333D"));
+
+                        startWithPop(DriveCardFragment.newInstance());
                     } else if (authResult.getData().getDeposit().getState() != 2) {
+                        text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                        text4.setTextColor(Color.parseColor("#33333D"));
+                        name4.setTextColor(Color.parseColor("#33333D"));
+
                         startWithPop(DepositFragment.newInstance());
                     } else {
                         showToast("已完成，待审批");
@@ -144,6 +152,10 @@ public class StepActivity extends DBSBaseActivity {
                 name3.setTextColor(Color.parseColor("#33333D"));
 
                 if (authResult.getData().getDeposit().getState() != 2) {
+                    text4.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
+                    text4.setTextColor(Color.parseColor("#33333D"));
+                    name4.setTextColor(Color.parseColor("#33333D"));
+
                     startWithPop(DepositFragment.newInstance());
                 } else {
                     showToast("已完成，待审批");

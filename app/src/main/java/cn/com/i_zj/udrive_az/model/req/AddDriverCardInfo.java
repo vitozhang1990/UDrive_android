@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class AddDriverCardInfo implements Serializable {
     private String driverLicencePhotoMaster;                //类型：String  必有字段  备注：驾驶证正本URL
     private String driverLicencePhotoSlave;              //类型：String  必有字段  备注：驾驶证副本URL
+    private String driverLicencePhotoMasterLocal;                //类型：String  必有字段  备注：驾驶证正本URL
+    private String driverLicencePhotoSlaveLocal;              //类型：String  必有字段  备注：驾驶证副本URL
     private String driverType;            //类型：String  可有字段  备注：驾照类型：C1,C2
     private String validatTime;                 //类型：String  可有字段  备注：有效期开始时间:20100808
     private String expireTime;           //类型：String  可有字段  备注：有效期结束时间:20100808
@@ -35,6 +37,22 @@ public class AddDriverCardInfo implements Serializable {
 
     public void setDriverLicencePhotoSlave(String driverLicencePhotoSlave) {
         this.driverLicencePhotoSlave = driverLicencePhotoSlave;
+    }
+
+    public String getDriverLicencePhotoMasterLocal() {
+        return driverLicencePhotoMasterLocal;
+    }
+
+    public void setDriverLicencePhotoMasterLocal(String driverLicencePhotoMasterLocal) {
+        this.driverLicencePhotoMasterLocal = driverLicencePhotoMasterLocal;
+    }
+
+    public String getDriverLicencePhotoSlaveLocal() {
+        return driverLicencePhotoSlaveLocal;
+    }
+
+    public void setDriverLicencePhotoSlaveLocal(String driverLicencePhotoSlaveLocal) {
+        this.driverLicencePhotoSlaveLocal = driverLicencePhotoSlaveLocal;
     }
 
     public String getDriverType() {
