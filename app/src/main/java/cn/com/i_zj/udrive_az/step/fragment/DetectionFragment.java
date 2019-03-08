@@ -140,6 +140,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                     }
                     if (mOpenCvCameraView != null) {
                         mOpenCvCameraView.enableView();
+                        message.postDelayed(() -> startTimer(), 2200);
                     }
                 }
                 break;
@@ -196,7 +197,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
             getActivity().finish();
         } else {
-            message.postDelayed(() -> startTimer(), 2200);
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }

@@ -64,6 +64,7 @@ public class StepIdCardActivity extends DBSBaseActivity {
                 } else {
                     layout1.setVisibility(View.VISIBLE);
                     layout2.setVisibility(View.GONE);
+                    pop();
                 }
                 break;
         }

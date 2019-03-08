@@ -292,11 +292,19 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
 
                     @Override
                     public void onNext(NetworkResult networkResult) {
-                        if (isJump) {
-                            showPanel(false);
+                        if (networkResult != null && networkResult.getCode() == 1) {
+                            if (isJump) {
+                                showPanel(false);
+                            }
+                            codeTipView.setText("验证码已发送至" + phone);
+                            startTimerCount();
+                        } else {
+                            if (networkResult != null && !TextUtils.isEmpty(networkResult.getMessage())) {
+                                showToast(networkResult.getMessage());
+                            } else {
+                                showToast("验证码发送错误" + networkResult != null ? String.valueOf(networkResult.getCode()) : "");
+                            }
                         }
-                        codeTipView.setText("验证码已发送至" + phone);
-                        startTimerCount();
                     }
 
                     @Override

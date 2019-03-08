@@ -1,16 +1,23 @@
 package cn.com.i_zj.udrive_az.model;
 
-import com.google.gson.annotations.SerializedName;
-
-/**
- * Created by wli on 2018/8/11.
- */
-
 public class NetworkResult {
 
-  @SerializedName("success")
-  public boolean success = true;
+  private int code;
+  private String message;
 
-  @SerializedName("result")
-  public String result;
+  public int getCode() {
+    return code;
+  }
+
+  public void setCode(int code) {
+    this.code = code;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }
