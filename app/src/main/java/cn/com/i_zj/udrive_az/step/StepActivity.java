@@ -102,7 +102,7 @@ public class StepActivity extends DBSBaseActivity {
                 name1.setTextColor(Color.parseColor("#33333D"));
 
                 text2.setBackground(getResources().getDrawable(R.drawable.bg_circle_black1));
-                text1.setTextColor(Color.parseColor("#33333D"));
+                text2.setTextColor(Color.parseColor("#33333D"));
                 line22.setBackgroundColor(Color.parseColor("#CCCCCC"));
                 line31.setBackgroundColor(Color.parseColor("#CCCCCC"));
                 name2.setTextColor(Color.parseColor("#33333D"));

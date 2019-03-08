@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +79,8 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     JavaCameraView mOpenCvCameraView;
     @BindView(R.id.message)
     TextView message;
+    @BindView(R.id.iv_image)
+    ImageView ivImage;
 
     private Mat mRgba;// rgb图像
     private Mat mGray;// 灰度图像
@@ -83,7 +88,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
     private CascadeClassifier mEyeJavaDetector;//眨眼检测器
     private int mAbsoluteFaceSize = 0;// 图像人脸小于高度的多少就不检测
-    private boolean overTime = false;// 标记是否超时
     private WindowManager manager;
     private int eyeCheckSuccessCount = 0;
 
@@ -91,18 +95,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     private AddIdCardInfo mAddIdCardInfo;
     private int type; //0 ：身份证正面   1 ： 身份证反面   2 ： 进入活体检测
     protected Dialog progressDialog;
-
-    private CountDownTimer countDownTimer = new CountDownTimer(1000 * 20, 1) {
-        @Override
-        public void onTick(long millisUntilFinished) {
-
-        }
-
-        @Override
-        public void onFinish() {
-            overTime = true;
-        }
-    };
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getContext()) {
         @Override
@@ -146,8 +138,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         e.printStackTrace();
                         Toast.makeText(getActivity(), "摄像头启动失败", Toast.LENGTH_SHORT).show();
                     }
-                    mOpenCvCameraView.enableView();
-                    countDownTimer.start();
+                    if (mOpenCvCameraView != null) {
+                        mOpenCvCameraView.enableView();
+                    }
                 }
                 break;
                 default: {
@@ -180,6 +173,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
         mOpenCvCameraView.setCameraIndex(JavaCameraView.CAMERA_ID_FRONT);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        startNot();
+        startNot1();
+        initTimerCount();
+        initTimerCount1();
         return view;
     }
 
@@ -199,6 +196,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
             getActivity().finish();
         } else {
+            message.postDelayed(() -> startTimer(), 2200);
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }
@@ -209,10 +207,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
             mOpenCvCameraView = null;
-        }
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-            countDownTimer = null;
         }
     }
 
@@ -238,11 +232,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
-        // 检查是否超时
-        if (overTime) {
-            getActivity().runOnUiThread(() -> showTipDialog("检测人脸超时，请重试"));
-            return mRgba;
-        }
         if (mOpenCvCameraView.getCameraIndex() == JavaCameraView.CAMERA_ID_FRONT) {
             // 原始opencv只识别手机横向的图像，此处是将max顺时针旋转90度
             if (mGray != null) {
@@ -271,7 +260,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             mNativeDetector.detect(mGray, faces);
         }
         final Rect[] facesArray = faces.toArray();
-        dealEyeCheck(facesArray);
+        if (start) {
+            dealEyeCheck(facesArray);
+        }
         return mRgba;
     }
 
@@ -294,7 +285,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                 boolean success = EyeUtils.check();
                 if (success) {
                     eyeCheckSuccessCount++;
-                    if (eyeCheckSuccessCount > 3) {
+                    if (eyeCheckSuccessCount > 5) {
                         EyeUtils.clearEyeCount();
                         // 连续两次眨眼成功认为检测成功，可以设置更大的值，保证检验正确率，但会增加检测难度
                         eyeCheckSuccessCount = 0;
@@ -302,7 +293,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         dealWithEyeCheckSuccess();
                     }
                 } else {
-                    setMessage("请眨眼");
+                    setMessage("请眨一眨眼睛");
                 }
             }
         } else if (facesArray.length == 0) {
@@ -337,6 +328,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             Utils.matToBitmap(mRgba, bitmap);
         } catch (Exception e) {
             setMessage("检测失败，请重试");
+            EventBus.getDefault().post(new StepEvent(2, false));
             EyeUtils.clearEyeCount();
             return;
         }
@@ -397,9 +389,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             }
             mAddIdCardInfo.setDetectionPic(picPath);
 
-            uploadImg2QiNiu(0,  new File(getActivity().getFilesDir(), "front_pic.jpg").getAbsolutePath());
-            uploadImg2QiNiu(1,  new File(getActivity().getFilesDir(), "back_pic.jpg").getAbsolutePath());
-            uploadImg2QiNiu(2,  new File(getActivity().getFilesDir(), "detection_pic.jpg").getAbsolutePath());
+            uploadImg2QiNiu(0, new File(getActivity().getFilesDir(), "front_pic.jpg").getAbsolutePath());
+            uploadImg2QiNiu(1, new File(getActivity().getFilesDir(), "back_pic.jpg").getAbsolutePath());
+            uploadImg2QiNiu(2, new File(getActivity().getFilesDir(), "detection_pic.jpg").getAbsolutePath());
         });
     }
 
@@ -429,7 +421,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                 UploadManager uploadManager = new UploadManager();
                 // 设置图片名字
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                String key = "nxnk"+ type +"_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
+                String key = "nxnk" + type + "_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
                 uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, JSONObject res) {
@@ -453,6 +445,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         } else {
                             showProgressDialog();
                             ToastUtils.showShort("图片上传失败，请重试");
+                            EventBus.getDefault().post(new StepEvent(2, false));
                         }
                     }
                 }, null);
@@ -460,15 +453,21 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         }.start();
     }
 
+    Disposable disposable;
+    CommonAlertDialog alertDialog;
+
     //上传认证信息
     private void uploadCardInfo() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
         UdriveRestClient.getClentInstance().postAddIdCardInfo(mAddIdCardInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<IDResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        disposable = d;
                     }
 
                     @Override
@@ -484,7 +483,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         } else {
                             if (value != null) {
                                 if (value.getCode() == 1030) {
-                                    CommonAlertDialog.builder(getContext())
+                                    if (alertDialog != null && alertDialog.isShowing()) {
+                                        return;
+                                    }
+                                    alertDialog = CommonAlertDialog.builder(getContext())
                                             .setImageTitle(true)
                                             .setTitle("证件重复")
                                             .setMsg("身份证已被注册，请致电400-614-1888")
@@ -498,8 +500,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                                             })
                                             .build()
                                             .show();
+                                } else {
+                                    ToastUtils.showShort("信息提交失败Code:" + value.getCode());
+                                    EventBus.getDefault().post(new StepEvent(2, false));
                                 }
-                                ToastUtils.showShort("信息提交失败Code:" + value.getCode());
                             } else {
                                 ToastUtils.showShort("信息提交失败, 请重试");
                                 EventBus.getDefault().post(new StepEvent(2, false));
@@ -519,24 +523,6 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
                     }
                 });
-    }
-
-    /**
-     * 显示超时的对话框
-     */
-    private void showTipDialog(String msg) {
-        mOpenCvCameraView.disableView();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(msg);
-        builder.setNegativeButton("取消", (dialog, which) -> {
-            dialog.dismiss();
-        });
-        builder.setPositiveButton("确定", (dialog, which) -> {
-            dialog.dismiss();
-        });
-        AlertDialog dialog = builder.create();
-        dialog.setCancelable(false);
-        dialog.show();
     }
 
     public void showProgressDialog() {
@@ -563,5 +549,121 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
     private void setMessage(final String msg) {
         getActivity().runOnUiThread(() -> message.setText(msg));
+    }
+
+
+    private CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer1;
+    private AnimationDrawable anim;
+    private AnimationDrawable anim1;
+    private boolean start;
+
+    private void startNot() {
+        anim = new AnimationDrawable();
+        for (int i = 0; i <= 74; i++) {
+            String name = "nod_";
+            if (i <= 9) {
+                name = name + "0000" + i;
+            } else {
+                name = name + "000" + i;
+            }
+            int id = getResources().getIdentifier(name, "mipmap", getActivity().getPackageName());
+            Drawable drawable = getResources().getDrawable(id);
+            anim.addFrame(drawable, 70);
+        }
+        for (int i = 0; i <= 74; i++) {
+            String name = "shakehead_";
+            if (i <= 9) {
+                name = name + "0000" + i;
+            } else {
+                name = name + "000" + i;
+            }
+            int id = getResources().getIdentifier(name, "mipmap", getActivity().getPackageName());
+            Drawable drawable = getResources().getDrawable(id);
+            anim.addFrame(drawable, 70);
+        }
+        anim.setOneShot(false);
+    }
+
+
+    private void startNot1() {
+        anim1 = new AnimationDrawable();
+        for (int i = 0; i <= 10; i++) {
+            String name = "zy_";
+            if (i <= 9) {
+                name = name + "0000" + i;
+            } else {
+                name = name + "000" + i;
+            }
+            int id = getResources().getIdentifier(name, "mipmap", getActivity().getPackageName());
+            Drawable drawable = getResources().getDrawable(id);
+            anim1.addFrame(drawable, 100);
+        }
+        anim1.setOneShot(false);
+    }
+
+
+    private void initTimerCount1() {
+        if (null != countDownTimer1) {
+            countDownTimer1.cancel();
+        }
+        countDownTimer1 = new CountDownTimer(10000, 10) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (anim1 != null && !anim1.isRunning()) {
+                    ivImage.setImageDrawable(anim1);
+                    anim1.start();
+                }
+                setMessage("请眨一眨眼睛");
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+    }
+
+    private void initTimerCount() {
+        if (null != countDownTimer) {
+            countDownTimer.cancel();
+        }
+        countDownTimer = new CountDownTimer(10360, 10) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (anim != null && !anim.isRunning()) {
+                    ivImage.setImageDrawable(anim);
+                    anim.start();
+                }
+                if (millisUntilFinished > 5180) {
+                    setMessage("请重复上下抬头动作");
+                } else {
+                    setMessage("请重复左右摇头动作");
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                anim.stop();
+                start = true;
+                if (countDownTimer1 != null) {
+                    countDownTimer1.start();
+                }
+            }
+        };
+    }
+
+    private void startTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.start();
+        }
+    }
+
+    private void cancelTimer() {
+        if (null != countDownTimer) {
+            ivImage.setImageResource(R.mipmap.ic_adjustment);
+            setMessage("请调整距离将脸部对准虚线框");
+            countDownTimer.cancel();
+        }
     }
 }
