@@ -116,6 +116,9 @@ public class DepositFragment extends SupportFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventPaySuccessEvent eventPaySuccessEvent) {
         dissmisProgressDialog();
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 
     private void select(int position) {
@@ -316,7 +319,9 @@ public class DepositFragment extends SupportFragment {
                         // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
                         ToastUtil.show(getContext(), "支付成功");
                         dissmisProgressDialog();
-                        getActivity().finish();
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                        }
                     } else {
                         // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
                         ToastUtil.show(getContext(), "支付失败");

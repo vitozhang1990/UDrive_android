@@ -80,7 +80,9 @@ public class CommonAlertDialog {
                 imageTitle.setText(mTitle);
             }
             ImageView alertImage = view.findViewById(R.id.alertImage);
-            Glide.with(mContext).load(mImageResource).error(R.drawable.pic_exchange_fail).into(alertImage);
+            if (mImageResource != 0) {
+                Glide.with(mContext).load(mImageResource).error(R.drawable.pic_exchange_fail).into(alertImage);
+            }
         } else {
             ViewStub textStub = view.findViewById(R.id.stub_text);
             textStub.inflate();
