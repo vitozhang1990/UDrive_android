@@ -1,11 +1,15 @@
 package cn.com.i_zj.udrive_az.step.fragment;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -47,6 +51,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -85,8 +90,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class DriveCardFragment extends SupportFragment {
+import static com.umeng.socialize.utils.ContextUtil.getPackageName;
+
+public class DriveCardFragment extends SupportFragment implements EasyPermissions.PermissionCallbacks {
     private static final int REQUEST_CODE_CAMERA_One = 102;
     private static final int REQUEST_CODE_CAMERA_Two = 103;
 
@@ -106,6 +114,8 @@ public class DriveCardFragment extends SupportFragment {
 
     Disposable disposable;
     CommonAlertDialog alertDialog;
+    private String[] mPerms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+    private int type; //0 ：驾驶证正面   1 ： 驾驶证反面
 
     public static DriveCardFragment newInstance() {
         Bundle args = new Bundle();
@@ -167,21 +177,22 @@ public class DriveCardFragment extends SupportFragment {
 
     @OnClick({R.id.iv_one, R.id.iv_two, R.id.btn_commit})
     void onClick(View view) {
-        Intent intent = new Intent(getActivity(), CameraActivity.class);
         switch (view.getId()) {
             case R.id.iv_one:
-                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
-                        new File(getActivity().getFilesDir(), "drive_front_pic.jpg").getAbsolutePath());
-                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
-                        CameraActivity.CONTENT_TYPE_GENERAL);
-                startActivityForResult(intent, REQUEST_CODE_CAMERA_One);
+                type = 0;
+                if (EasyPermissions.hasPermissions(mContext, mPerms)) {
+                    startPage();
+                } else {
+                    EasyPermissions.requestPermissions(this, "需要申请拍照、文件读写权限", 1, mPerms);
+                }
                 break;
             case R.id.iv_two:
-                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
-                        new File(getActivity().getFilesDir(), "drive_back_pic.jpg").getAbsolutePath());
-                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
-                        CameraActivity.CONTENT_TYPE_GENERAL);
-                startActivityForResult(intent, REQUEST_CODE_CAMERA_Two);
+                type = 1;
+                if (EasyPermissions.hasPermissions(mContext, mPerms)) {
+                    startPage();
+                } else {
+                    EasyPermissions.requestPermissions(this, "需要申请拍照、文件读写权限", 1, mPerms);
+                }
                 break;
             case R.id.btn_commit:
                 if (TextUtils.isEmpty(addDriverCardInfo.getDriverLicencePhotoMasterLocal())) {
@@ -196,8 +207,8 @@ public class DriveCardFragment extends SupportFragment {
                     showToast("需要填写档案编号");
                     return;
                 }
-                uploadImg2QiNiu(0,  new File(getActivity().getFilesDir(), "drive_front_pic.jpg").getAbsolutePath());
-                uploadImg2QiNiu(1,  new File(getActivity().getFilesDir(), "drive_back_pic.jpg").getAbsolutePath());
+                uploadImg2QiNiu(0, new File(getActivity().getFilesDir(), "drive_front_pic.jpg").getAbsolutePath());
+                uploadImg2QiNiu(1, new File(getActivity().getFilesDir(), "drive_back_pic.jpg").getAbsolutePath());
                 break;
         }
     }
@@ -261,6 +272,58 @@ public class DriveCardFragment extends SupportFragment {
 
             postDrivingImage(back);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.hasPermissions(mContext, mPerms)) {
+            startPage();
+        } else {
+            Toast.makeText(mContext, "尚未赋予对应权限", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startPage() {
+        Intent intent = new Intent(mContext, CameraActivity.class);
+        switch (type) {
+            case 0:
+                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                        new File(getActivity().getFilesDir(), "drive_front_pic.jpg").getAbsolutePath());
+                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                        CameraActivity.CONTENT_TYPE_GENERAL);
+                startActivityForResult(intent, REQUEST_CODE_CAMERA_One);
+                break;
+            case 1:
+                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                        new File(getActivity().getFilesDir(), "drive_back_pic.jpg").getAbsolutePath());
+                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                        CameraActivity.CONTENT_TYPE_GENERAL);
+                startActivityForResult(intent, REQUEST_CODE_CAMERA_Two);
+                break;
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        new AlertDialog.Builder(mContext)
+                .setTitle("权限提示")
+                .setMessage("该功能需要拍照/文件读写权限，点击确认后在权限管理处，开启相应权限")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确认", (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .create()
+                .show();
     }
 
     private int getVehicleType(String type) {
@@ -345,7 +408,7 @@ public class DriveCardFragment extends SupportFragment {
                 UploadManager uploadManager = new UploadManager();
                 // 设置图片名字
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                String key = "nxnk"+ type +"_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
+                String key = "nxnk" + type + "_" + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
                 uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, org.json.JSONObject res) {

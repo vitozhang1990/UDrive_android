@@ -2,10 +2,12 @@ package cn.com.i_zj.udrive_az.step.fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -47,6 +49,8 @@ import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import me.yokeyword.fragmentation.SupportFragment;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.umeng.socialize.utils.ContextUtil.getPackageName;
 
 public class IdCardFragment extends SupportFragment implements EasyPermissions.PermissionCallbacks, TextWatcher {
     private static final int REQUEST_CODE_CAMERA = 102;
@@ -373,7 +377,19 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Toast.makeText(mContext, "权限被拒绝，无法进行下一步", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(mContext)
+                .setTitle("权限提示")
+                .setMessage("该功能需要拍照/文件读写权限，点击确认后在权限管理处，开启相应权限")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确认", (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .create()
+                .show();
     }
 
     @Override
