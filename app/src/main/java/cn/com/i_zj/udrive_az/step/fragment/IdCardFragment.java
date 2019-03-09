@@ -27,6 +27,8 @@ import com.baidu.ocr.sdk.model.IDCardParams;
 import com.baidu.ocr.sdk.model.IDCardResult;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.StringSignature;
 import com.pickerview.TimePickerView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -180,6 +182,8 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                     .centerCrop()
                     .placeholder(R.mipmap.pic_idcardscanbg)
                     .error(R.mipmap.pic_idcardscanbg)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .signature(new StringSignature(System.currentTimeMillis() + ""))
                     .into(ivIdcardOne);
             recIDCard(IDCardParams.ID_CARD_SIDE_FRONT, front.getAbsolutePath());
         } else if (CameraActivity.CONTENT_TYPE_ID_CARD_BACK.equals(contentType)) {
@@ -191,6 +195,8 @@ public class IdCardFragment extends SupportFragment implements EasyPermissions.P
                     .centerCrop()
                     .placeholder(R.mipmap.pic_idcardfrontscanbg)
                     .error(R.mipmap.pic_idcardfrontscanbg)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .signature(new StringSignature(System.currentTimeMillis() + ""))
                     .into(ivIdcardTwo);
             recIDCard(IDCardParams.ID_CARD_SIDE_BACK, back.getAbsolutePath());
         }

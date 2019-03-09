@@ -311,19 +311,19 @@ public class CameraActivity extends Activity {
                 @Override
                 public void run() {
                     takePictureContainer.setVisibility(View.INVISIBLE);
-                    if (cropMaskView.getMaskType() == MaskView.MASK_TYPE_NONE) {
-                        cropView.setFilePath(outputFile.getAbsolutePath());
-                        showCrop();
-                    } else if (cropMaskView.getMaskType() == MaskView.MASK_TYPE_BANK_CARD) {
-                        cropView.setFilePath(outputFile.getAbsolutePath());
-                        cropMaskView.setVisibility(View.INVISIBLE);
-                        overlayView.setVisibility(View.VISIBLE);
-                        overlayView.setTypeWide();
-                        showCrop();
-                    } else {
+//                    if (cropMaskView.getMaskType() == MaskView.MASK_TYPE_NONE) {
+//                        cropView.setFilePath(outputFile.getAbsolutePath());
+//                        showCrop();
+//                    } else if (cropMaskView.getMaskType() == MaskView.MASK_TYPE_BANK_CARD) {
+//                        cropView.setFilePath(outputFile.getAbsolutePath());
+//                        cropMaskView.setVisibility(View.INVISIBLE);
+//                        overlayView.setVisibility(View.VISIBLE);
+//                        overlayView.setTypeWide();
+//                        showCrop();
+//                    } else {
                         displayImageView.setImageBitmap(bitmap);
                         showResultConfirm();
-                    }
+//                    }
                 }
             });
         }

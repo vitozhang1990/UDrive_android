@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/iv_one"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="106dp"
             android:layout_marginRight="@dimen/margin_4"
             android:layout_weight="1"
             android:scaleType="fitXY"
@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/iv_two"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="106dp"
             android:layout_marginLeft="@dimen/margin_4"
             android:layout_weight="1"
             android:scaleType="fitXY"

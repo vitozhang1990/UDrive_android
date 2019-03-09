@@ -27,6 +27,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.StringSignature;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.qiniu.android.http.ResponseInfo;
@@ -215,9 +217,10 @@ public class DriveCardFragment extends SupportFragment {
             addDriverCardInfo.setDriverLicencePhotoMasterLocal(front.getAbsolutePath());
             Glide.with(mContext)
                     .load(Uri.fromFile(front))
-                    .centerCrop()
                     .placeholder(R.mipmap.pic_driverlicensefrontbg)
                     .error(R.mipmap.pic_driverlicensefrontbg)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .signature(new StringSignature(System.currentTimeMillis() + ""))
                     .into(ivDriveImageOne);
 
             RecognizeService.recDrivingLicense(getActivity(),
@@ -250,9 +253,10 @@ public class DriveCardFragment extends SupportFragment {
             addDriverCardInfo.setDriverLicencePhotoSlaveLocal(back.getAbsolutePath());
             Glide.with(mContext)
                     .load(Uri.fromFile(back))
-                    .centerCrop()
                     .placeholder(R.mipmap.pic_driverlicensebg)
                     .error(R.mipmap.pic_driverlicensebg)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .signature(new StringSignature(System.currentTimeMillis() + ""))
                     .into(ivDriveImageTwo);
 
             postDrivingImage(back);
@@ -468,7 +472,9 @@ public class DriveCardFragment extends SupportFragment {
     }
 
     private void updateEditText(String no) {
-        etNumber.setText(no);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> etNumber.setText(no));
+        }
     }
 
     private void showToast(String message) {
