@@ -87,6 +87,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     private DetectionBasedTracker mNativeDetector;
 
     private CascadeClassifier mEyeJavaDetector;//眨眼检测器
+    private boolean overTime = false;// 标记是否超时
     private int mAbsoluteFaceSize = 0;// 图像人脸小于高度的多少就不检测
     private WindowManager manager;
     private int eyeCheckSuccessCount = 0;
@@ -95,6 +96,18 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     private AddIdCardInfo mAddIdCardInfo;
     private int type; //0 ：身份证正面   1 ： 身份证反面   2 ： 进入活体检测
     protected Dialog progressDialog;
+
+    private CountDownTimer overTimer = new CountDownTimer(1000 * 20, 1) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+
+        @Override
+        public void onFinish() {
+            overTime = true;
+        }
+    };
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getContext()) {
         @Override
@@ -208,6 +221,10 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
             mOpenCvCameraView.disableView();
             mOpenCvCameraView = null;
         }
+        if (overTimer != null) {
+            overTimer.cancel();
+            overTimer = null;
+        }
     }
 
     @Override
@@ -232,6 +249,27 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
+        // 检查是否超时
+        if (overTime) {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (mOpenCvCameraView != null) {
+                        mOpenCvCameraView.disableView();
+                    }
+                    if (alertDialog2 == null || !alertDialog2.isShowing()) {
+                        alertDialog2 = CommonAlertDialog.builder(getContext())
+                                .setImageTitle(true)
+                                .setMsg("人脸验证已超时")
+                                .setPositiveButton("确定", v -> {
+                                    EventBus.getDefault().post(new StepEvent(2, false));
+                                })
+                                .build()
+                                .show();
+                    }
+                });
+            }
+            return mRgba;
+        }
         if (mOpenCvCameraView.getCameraIndex() == JavaCameraView.CAMERA_ID_FRONT) {
             // 原始opencv只识别手机横向的图像，此处是将max顺时针旋转90度
             if (mGray != null) {
@@ -285,7 +323,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                 boolean success = EyeUtils.check();
                 if (success) {
                     eyeCheckSuccessCount++;
-                    if (eyeCheckSuccessCount > 5) {
+                    if (eyeCheckSuccessCount > 10) {
                         EyeUtils.clearEyeCount();
                         // 连续两次眨眼成功认为检测成功，可以设置更大的值，保证检验正确率，但会增加检测难度
                         eyeCheckSuccessCount = 0;
@@ -455,6 +493,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
 
     Disposable disposable;
     CommonAlertDialog alertDialog;
+    CommonAlertDialog alertDialog2;
 
     //上传认证信息
     private void uploadCardInfo() {
@@ -548,6 +587,9 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
     }
 
     private void setMessage(final String msg) {
+        if (getActivity() == null) {
+            return;
+        }
         getActivity().runOnUiThread(() -> message.setText(msg));
     }
 
@@ -657,6 +699,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
         if (countDownTimer != null) {
             countDownTimer.start();
         }
+        overTimer.start();
     }
 
     private void cancelTimer() {

@@ -325,10 +325,21 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 showDriverFailure();
                                 break;
                             case 1032:
-                                showToast("请先完成认证");
-                                Intent intent = new Intent(this, StepActivity.class);
-                                intent.putExtra("data", reserVationBean.getData().getAuthResult());
-                                startActivity(intent);
+                                if (reserVationBean.getData().getIdcard().getState() == 1
+                                        && reserVationBean.getData().getDriver().getState() == 1) {
+                                    ToastUtil.show(this, "认证正在审核中");
+                                } else if (reserVationBean.getData().getIdcard().getState() == 1
+                                        && reserVationBean.getData().getDriver().getState() == 2) {
+                                    ToastUtil.show(this, "实名认证正在审核中");
+                                } else if (reserVationBean.getData().getIdcard().getState() == 2
+                                        && reserVationBean.getData().getDriver().getState() == 1) {
+                                    ToastUtil.show(this, "驾驶证正在审核中");
+                                } else {
+                                    showToast("请先完成认证");
+                                    Intent intent = new Intent(this, StepActivity.class);
+                                    intent.putExtra("data", reserVationBean.getData().getAuthResult());
+                                    startActivity(intent);
+                                }
                                 break;
                             default:
                                 ToastUtils.showShort(reserVationBean.getMessage());

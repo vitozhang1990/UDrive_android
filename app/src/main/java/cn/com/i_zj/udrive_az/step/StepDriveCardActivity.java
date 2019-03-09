@@ -1,6 +1,5 @@
 package cn.com.i_zj.udrive_az.step;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,13 +19,9 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.StepEvent;
 import cn.com.i_zj.udrive_az.map.MapUtils;
-import cn.com.i_zj.udrive_az.step.fragment.DepositFragment;
-import cn.com.i_zj.udrive_az.step.fragment.DetectionFragment;
 import cn.com.i_zj.udrive_az.step.fragment.DriveCardFragment;
-import cn.com.i_zj.udrive_az.step.fragment.IdCardFragment;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
-import cn.com.i_zj.udrive_az.utils.ToastUtil;
 
 public class StepDriveCardActivity extends DBSBaseActivity {
 

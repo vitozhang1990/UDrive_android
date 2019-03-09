@@ -69,6 +69,7 @@ import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -100,6 +101,9 @@ public class DriveCardFragment extends SupportFragment {
     private String[] typeDate;
     private AddDriverCardInfo addDriverCardInfo;
     protected Dialog progressDialog;
+
+    Disposable disposable;
+    CommonAlertDialog alertDialog;
 
     public static DriveCardFragment newInstance() {
         Bundle args = new Bundle();
@@ -179,11 +183,11 @@ public class DriveCardFragment extends SupportFragment {
                 break;
             case R.id.btn_commit:
                 if (TextUtils.isEmpty(addDriverCardInfo.getDriverLicencePhotoMasterLocal())) {
-                    showToast("需要驾驶证正页");
+                    showToast("需要拍摄驾驶证正页");
                     return;
                 }
                 if (TextUtils.isEmpty(addDriverCardInfo.getDriverLicencePhotoSlaveLocal())) {
-                    showToast("需要驾驶证副页");
+                    showToast("需要拍摄驾驶证副页");
                     return;
                 }
                 if (TextUtils.isEmpty(addDriverCardInfo.getArchiveNo())) {
@@ -267,13 +271,16 @@ public class DriveCardFragment extends SupportFragment {
     }
 
     private void uploadDriverInfo() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
         UdriveRestClient.getClentInstance().addDriver(addDriverCardInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<DriverResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        disposable = d;
                     }
 
                     @Override
@@ -286,7 +293,31 @@ public class DriveCardFragment extends SupportFragment {
                             AccountInfoManager.getInstance().cacheAccount(accountInfo);
                             EventBus.getDefault().post(new StepEvent(3));
                         } else {
-                            showToast("驾驶证信息提交失败");
+                            if (value != null) {
+                                if (value.getCode() == 1031) {
+                                    if (alertDialog != null && alertDialog.isShowing()) {
+                                        return;
+                                    }
+                                    alertDialog = CommonAlertDialog.builder(getContext())
+                                            .setImageTitle(true)
+                                            .setTitle("证件重复")
+                                            .setMsg("驾驶证已被注册，请致电400-614-1888")
+                                            .setNegativeButton("取消", v -> {
+                                                if (getActivity() != null) {
+                                                    getActivity().finish();
+                                                }
+                                            })
+                                            .setPositiveButton("重新上传", v -> {
+
+                                            })
+                                            .build()
+                                            .show();
+                                } else {
+                                    ToastUtils.showShort("信息提交失败Code:" + value.getCode());
+                                }
+                            } else {
+                                ToastUtils.showShort("信息提交失败, 请重试");
+                            }
                         }
                     }
 

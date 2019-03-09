@@ -52,6 +52,9 @@ public class StepIdCardActivity extends DBSBaseActivity {
     public void onEvent(StepEvent event) {
         switch (event.getStep()) {
             case 1:
+                if (event.getAddIdCardInfo() == null) {
+                    return;
+                }
                 layout1.setVisibility(View.GONE);
                 layout2.setVisibility(View.VISIBLE);
 
@@ -72,11 +75,7 @@ public class StepIdCardActivity extends DBSBaseActivity {
 
     @Override
     public void onBackPressedSupport() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            pop();
-        } else {
-            finish();
-        }
+        finish();
     }
 
     @OnClick({R.id.iv_back})
