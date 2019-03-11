@@ -1,11 +1,15 @@
 package cn.com.i_zj.udrive_az.lz.ui.accountinfo;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebStorage;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -83,12 +87,19 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.ui_register)
     public void onRegisterClick(View view) {
-        if (accountInfo != null && (accountInfo.data.idCardState == Constants.ID_UN_AUTHORIZED || accountInfo.data.idCardState == Constants.ID_AUTHORIZED_FAIL)) {
-            Intent intent = new Intent(this, StepIdCardActivity.class);
-            startActivity(intent);
-        } else if (accountInfo != null && accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-            Toast.makeText(this, R.string.under_reving, Toast.LENGTH_SHORT).show();
+        if (accountInfo == null) {
+            Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
+            return;
         }
+        if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS) {
+            Toast.makeText(this, "实名已认证", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
+            Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        startActivity(StepIdCardActivity.class);
     }
 
     @OnClick(R.id.account_info_btn_exit)
@@ -98,6 +109,7 @@ public class AccountInfoActivity extends DBSBaseActivity {
                     dialog.dismiss();
                     String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
                     registrationDown(regId);
+                    removeCache();
                 }).setMessage("确定要退出么？")
                 .create().show();
     }
@@ -122,6 +134,25 @@ public class AccountInfoActivity extends DBSBaseActivity {
             }
         } else {
             Toast.makeText(this, "请先去实名认证", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void removeCache() {
+        try {
+            CookieSyncManager.createInstance(this);
+            CookieManager cookieManager = CookieManager.getInstance();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cookieManager.removeSessionCookies(null);
+                cookieManager.removeAllCookie();
+                cookieManager.flush();
+            } else {
+                cookieManager.removeSessionCookies(null);
+                cookieManager.removeAllCookie();
+                CookieSyncManager.getInstance().sync();
+            }
+            WebStorage.getInstance().deleteAllData();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

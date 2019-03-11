@@ -266,11 +266,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.baidu.ocr.ui.camera.CameraActivity"
-            android:configChanges="screenSize|orientation"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
-
-        <activity
             android:name=".utils.dialog.OffPowerDialogActivity"
             android:theme="@style/Theme.SoundRecorder" />
 

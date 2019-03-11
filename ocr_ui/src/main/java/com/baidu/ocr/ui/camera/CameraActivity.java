@@ -1,6 +1,3 @@
-/*
- * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
- */
 package com.baidu.ocr.ui.camera;
 
 import java.io.File;
@@ -93,7 +90,7 @@ public class CameraActivity extends Activity {
         lightButton = (ImageView) findViewById(R.id.light_button);
         lightButton.setOnClickListener(lightButtonOnClickListener);
         takePhotoBtn = (ImageView) findViewById(R.id.take_photo_button);
-        findViewById(R.id.album_button).setOnClickListener(albumButtonOnClickListener);
+//        findViewById(R.id.album_button).setOnClickListener(albumButtonOnClickListener);
         takePhotoBtn.setOnClickListener(takeButtonOnClickListener);
 
         // confirm result;
