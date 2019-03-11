@@ -212,7 +212,6 @@ public class CameraView extends FrameLayout {
                 break;
             case MaskView.MASK_TYPE_NONE:
             default:
-                maskView.setVisibility(INVISIBLE);
                 hintView.setVisibility(INVISIBLE);
                 break;
         }
