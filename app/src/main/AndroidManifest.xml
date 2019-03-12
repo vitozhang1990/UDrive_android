@@ -273,6 +273,10 @@
             android:name=".utils.dialog.RechargeDialogActivity"
             android:theme="@style/Theme.SoundRecorder" />
 
+        <activity
+            android:name=".refuel.RefuelStatusActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <service android:name=".service.BackService" />
 
 
