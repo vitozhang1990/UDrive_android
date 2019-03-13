@@ -277,6 +277,15 @@
             android:name=".refuel.RefuelStatusActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".refuel.RefuelActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".refuel.RefuelHistoryActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
         <service android:name=".service.BackService" />
 
 

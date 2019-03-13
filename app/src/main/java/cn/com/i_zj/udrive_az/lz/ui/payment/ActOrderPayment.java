@@ -40,6 +40,7 @@ import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.refuel.RefuelHistoryActivity;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
@@ -108,12 +109,7 @@ public class ActOrderPayment extends DBSBaseActivity {
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(title);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> finish());
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -131,53 +127,42 @@ public class ActOrderPayment extends DBSBaseActivity {
         UdriveRestClient.getClentInstance().tripOrderDetail(orderNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(new Predicate<OrderDetailResult>() {
-                    @Override
-                    public boolean test(OrderDetailResult result) {
-                        if (result == null || result.data == null) {
-                            ToastUtils.showShort("数据请求失败");
-                            return false;
-                        }
-                        return true;
+                .filter(result -> {
+                    if (result == null || result.data == null) {
+                        ToastUtils.showShort("数据请求失败");
+                        return false;
                     }
+                    return true;
                 })
-                .flatMap(new Function<OrderDetailResult, ObservableSource<BaseRetObj<List<OriginContrail>>>>() {
-                    @Override
-                    public ObservableSource<BaseRetObj<List<OriginContrail>>> apply(OrderDetailResult orderDetailResult) throws Exception {
-                        showDate(orderDetailResult);
-                        return UdriveRestClient.getClentInstance()
-                                .originContrail(orderDetailResult.data.id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread());
+                .flatMap((Function<OrderDetailResult, ObservableSource<BaseRetObj<List<OriginContrail>>>>)
+                        orderDetailResult -> {
+                            showDate(orderDetailResult);
+                            return UdriveRestClient.getClentInstance()
+                                    .originContrail(orderDetailResult.data.id)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread());
+                        })
+                .filter(result -> {
+                    if (result == null || result.getDate() == null
+                            || result.getDate().size() == 0) {
+                        return false;
                     }
+                    return true;
                 })
-                .filter(new Predicate<BaseRetObj<List<OriginContrail>>>() {
-                    @Override
-                    public boolean test(BaseRetObj<List<OriginContrail>> result) {
-                        if (result == null || result.getDate() == null
-                                || result.getDate().size() == 0) {
-                            return false;
-                        }
-                        return true;
+                .map(listBaseRetObj -> {
+                    List<TraceLocation> locations = new ArrayList<>();
+                    for (OriginContrail originContrail : listBaseRetObj.getDate()) {
+                        TraceLocation location = new TraceLocation();
+                        location.setLatitude(originContrail.getLatitude());
+                        location.setLongitude(originContrail.getLongitude());
+                        location.setSpeed(originContrail.getSpeed());
+                        location.setBearing(originContrail.getDirection());
+                        location.setTime(originContrail.getTime());
+                        locations.add(location);
                     }
+                    return locations;
                 })
-                .map(new Function<BaseRetObj<List<OriginContrail>>, List<TraceLocation>>() {
-                    @Override
-                    public List<TraceLocation> apply(BaseRetObj<List<OriginContrail>> listBaseRetObj) throws Exception {
-                        List<TraceLocation> locations = new ArrayList<>();
-                        for (OriginContrail originContrail : listBaseRetObj.getDate()) {
-                            TraceLocation location = new TraceLocation();
-                            location.setLatitude(originContrail.getLatitude());
-                            location.setLongitude(originContrail.getLongitude());
-                            location.setSpeed(originContrail.getSpeed());
-                            location.setBearing(originContrail.getDirection());
-                            location.setTime(originContrail.getTime());
-                            locations.add(location);
-                        }
-                        return locations;
-                    }
-                })
-                .compose(this.<List<TraceLocation>>bindUntilEvent(ActivityEvent.DESTROY))
+                .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new Observer<List<TraceLocation>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -250,7 +235,7 @@ public class ActOrderPayment extends DBSBaseActivity {
         if (value.data != null) {
             tvRealPayAmount.setText((value.data.realPayAmount) / 100f + "");
             if (value.data.durationTime > 60) {
-                tvDurationTime.setText("时长("+ value.data.durationTime / 60 +"小时" + (value.data.durationTime % 60 > 0 ? value.data.durationTime % 60 + "分钟)" : ")"));
+                tvDurationTime.setText("时长(" + value.data.durationTime / 60 + "小时" + (value.data.durationTime % 60 > 0 ? value.data.durationTime % 60 + "分钟)" : ")"));
             } else {
                 tvDurationTime.setText("时长(" + (value.data.durationTime) + "分钟)");
             }
@@ -267,8 +252,15 @@ public class ActOrderPayment extends DBSBaseActivity {
 
     }
 
-    @OnClick(R.id.tv_detail)
-    public void onClick() {
-        WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
+    @OnClick({R.id.tv_detail, R.id.tv_oil_detail})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tv_detail:
+                WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
+                break;
+            case R.id.tv_oil_detail:
+                startActivity(RefuelHistoryActivity.class);
+                break;
+        }
     }
 }

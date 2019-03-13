@@ -126,7 +126,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_tv_msg:
-                startActivity(ActMsg.class);
+                startActivity(RefuelActivity.class);
                 break;
             case R.id.rl_note:
                 if (homeNote != null) {

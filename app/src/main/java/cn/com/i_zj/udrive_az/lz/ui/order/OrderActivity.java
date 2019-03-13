@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -39,8 +38,8 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * 我的订单
  */
-public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.OnItemClickListener
-        , BaseQuickAdapter.OnItemChildClickListener, OnRefreshListener {
+public class OrderActivity extends DBSBaseActivity
+        implements BaseQuickAdapter.OnItemClickListener, OnRefreshListener {
 
     @BindView(R.id.swipeRefresh)
     SmartRefreshLayout smartRefreshLayout;
@@ -49,7 +48,6 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
 
     private List<OrderResult.OrderItem> list = new ArrayList<>();
     private OrderAdapter orderAdapter;
-    private PaymentDialogFragment paymentDialogFragment;
 
     @Override
     protected int getLayoutResource() {
@@ -69,7 +67,6 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
         recyclerView.setAdapter(orderAdapter);
 
         orderAdapter.setOnItemClickListener(this);
-        orderAdapter.setOnItemChildClickListener(this);
         orderAdapter.bindToRecyclerView(recyclerView);
         orderAdapter.setEnableLoadMore(false);
     }
@@ -106,33 +103,6 @@ public class OrderActivity extends DBSBaseActivity implements BaseQuickAdapter.O
             intent2.putExtra(ActOrderPayment.TITLE, getResources().getString(R.string.order_finish));
             startActivity(intent2);
         }
-    }
-
-    @Override
-    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-        switch (view.getId()) {
-            case R.id.btn_connect:
-                Toast.makeText(this, "联系客服 " + position, Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.btn_pay_or_finish:
-                Toast.makeText(this, "立即付款 " + position, Toast.LENGTH_SHORT).show();
-                handlePayOrFinish();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void handlePayOrFinish() {
-        handlePay();
-    }
-
-    private void handlePay() {
-        if (paymentDialogFragment != null && !paymentDialogFragment.isHidden()) {
-            paymentDialogFragment.dismiss();
-        }
-        paymentDialogFragment = new PaymentDialogFragment();
-        paymentDialogFragment.show(getSupportFragmentManager(), "pay");
     }
 
     private void getFindTripOrders() {

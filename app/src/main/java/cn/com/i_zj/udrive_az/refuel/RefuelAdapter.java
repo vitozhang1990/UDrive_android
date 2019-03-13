@@ -1,8 +1,7 @@
-package cn.com.i_zj.udrive_az.lz.ui.order;
+package cn.com.i_zj.udrive_az.refuel;
 
 import android.graphics.Color;
 import android.support.annotation.Nullable;
-import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -14,9 +13,10 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
 
-public class OrderAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseViewHolder> {
-    public OrderAdapter(int layoutResId, @Nullable List<OrderResult.OrderItem> data) {
-        super(layoutResId, data);
+public class RefuelAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseViewHolder> {
+
+    public RefuelAdapter(List<OrderResult.OrderItem> data) {
+        super(R.layout.item_refuel, data);
     }
 
     @Override
