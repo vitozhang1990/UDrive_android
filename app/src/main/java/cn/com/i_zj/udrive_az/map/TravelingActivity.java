@@ -65,9 +65,13 @@ import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ToParkBean;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.WebSocketPrice;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.overlay.DrivingRouteOverlay;
+import cn.com.i_zj.udrive_az.refuel.RefuelActivity;
+import cn.com.i_zj.udrive_az.refuel.RefuelStatusActivity;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
 import cn.com.i_zj.udrive_az.utils.Constants2;
@@ -129,6 +133,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
     //TODO 为啥要全局变量
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>(); //所有停车场信息
+    private RefuelObj mRefuelObj;
 
     @Override
     protected int getLayoutResource() {
@@ -211,6 +216,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                             }
                             tv_amount.setText(String.format(Locale.getDefault(), "%.2f", unFinishOrderBean.getData().getOrder().getTotalAmount() / 100f));
                             drawMap();
+                            getOil();
                         } else {
                             startActivity(MainActivity.class);
                             finish();
@@ -223,6 +229,35 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                         dissmisProgressDialog();
                         startActivity(MainActivity.class);
                         finish();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void getOil() {
+        UdriveRestClient.getClentInstance().refuelStatus(oderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<RefuelObj>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<RefuelObj> refuelObj) {
+                        if (refuelObj == null || refuelObj.getCode() == 1) {
+                            mRefuelObj = refuelObj.getDate();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
                     }
 
                     @Override
@@ -248,7 +283,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     }
 
     @OnClick({R.id.header_left, R.id.header_right, R.id.btn_yuding, R.id.rl_kaisuo, R.id.rl_suoding, R.id.rl_xunche,
-            R.id.tv_address, R.id.iv_na, R.id.amount_detail})
+            R.id.rl_jiayou, R.id.tv_address, R.id.iv_na, R.id.amount_detail})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -276,6 +311,19 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 break;
             case R.id.rl_xunche:
                 opencloseDoor("2");
+                break;
+            case R.id.rl_jiayou:
+                Intent refuelIntent = new Intent();
+                if (mRefuelObj == null) {
+                    mRefuelObj = new RefuelObj();
+                }
+                refuelIntent.putExtra("data", mRefuelObj);
+                if (mRefuelObj == null || mRefuelObj.getState() == 0) {
+                    refuelIntent.setClass(this, RefuelActivity.class);
+                } else {
+                    refuelIntent.setClass(this, RefuelStatusActivity.class);
+                }
+                startActivity(refuelIntent);
                 break;
             case R.id.tv_address://更换地址提示
                 Intent intent1 = new Intent(TravelingActivity.this, ChooseParkActivity.class);

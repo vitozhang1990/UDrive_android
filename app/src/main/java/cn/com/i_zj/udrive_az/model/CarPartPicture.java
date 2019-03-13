@@ -19,6 +19,12 @@ public class CarPartPicture implements Serializable {
         this.requestCode = requestCode;
     }
 
+    public CarPartPicture(String key, int requestCode, String path) {
+        this.key = key;
+        this.requestCode = requestCode;
+        this.photoPath = path;
+    }
+
     public String getKey() {
         return key;
     }

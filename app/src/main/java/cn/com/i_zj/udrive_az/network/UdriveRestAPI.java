@@ -43,6 +43,7 @@ import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.model.req.AddDriverCardInfo;
 import cn.com.i_zj.udrive_az.model.req.AddIdCardInfo;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
@@ -333,5 +334,13 @@ public interface UdriveRestAPI {
     @GET("/mobile/park/remark/{id}")
     Observable<BaseRetObj<ParkRemark>> getParkRemark(@Path("id") String id);
 
+    //加油相关api
+    @POST("/mobile/tripOrder/refuel")
+    Observable<BaseRetObj<String>> refuel(@Body Map<String, Object> body);
 
+    @GET("/mobile/tripOrder/refuel/{number}")
+    Observable<BaseRetObj<HomeActivityEntity>> refuelHistory(@Path("number") String number);
+
+    @GET("/mobile/tripOrder/refuel/check")
+    Observable<BaseRetObj<RefuelObj>> refuelStatus(@Query("number") String number);
 }

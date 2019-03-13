@@ -14,11 +14,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,22 +34,12 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
-import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
-import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
-import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.adapter.CameraActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
-import cn.com.i_zj.udrive_az.model.OrderDetailResult;
-import cn.com.i_zj.udrive_az.model.PhotoBean;
-import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class RefuelActivity extends DBSBaseActivity {
 
@@ -65,6 +55,7 @@ public class RefuelActivity extends DBSBaseActivity {
     private Context mContext;
     private String orderNum;
     private int REQUEST_CODE = 1002;
+    private RefuelObj mRefuelObj;
     private Map<String, String> picMap = new HashMap<>();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private Map<String, CarPartPicture> mCarParts = new HashMap<>();
@@ -79,10 +70,31 @@ public class RefuelActivity extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
         this.mContext = this;
-        mCarParts.put("leftFrontBumper", new CarPartPicture("leftFrontBumper", 1001));
-        mCarParts.put("rightFrontBumper", new CarPartPicture("rightFrontBumper", 1002));
-        mCarParts.put("leftFrontDoor", new CarPartPicture("leftFrontDoor", 1003));
-        mCarParts.put("rightFrontDoor", new CarPartPicture("rightFrontDoor", 1004));
+        mRefuelObj = (RefuelObj) getIntent().getSerializableExtra("data");
+        if (mRefuelObj == null) {
+            finish();
+            return;
+        }
+        mCarParts.put("leftFrontBumper", new CarPartPicture("leftFrontBumper", 1001, mRefuelObj.getRefuelBeforePhoto()));
+        if (TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto())) {
+            picMap.put("leftFrontBumper", mRefuelObj.getRefuelBeforePhoto());
+            setImageUrl(mRefuelObj.getRefuelBeforePhoto(), iv_neishi);
+        }
+        mCarParts.put("rightFrontBumper", new CarPartPicture("rightFrontBumper", 1002, mRefuelObj.getPnPhoto()));
+        if (TextUtils.isEmpty(mRefuelObj.getPnPhoto())) {
+            picMap.put("rightFrontBumper", mRefuelObj.getPnPhoto());
+            setImageUrl(mRefuelObj.getPnPhoto(), iv_left);
+        }
+        mCarParts.put("leftFrontDoor", new CarPartPicture("leftFrontDoor", 1003, mRefuelObj.getReceiptPhoto()));
+        if (TextUtils.isEmpty(mRefuelObj.getReceiptPhoto())) {
+            picMap.put("leftFrontDoor", mRefuelObj.getReceiptPhoto());
+            setImageUrl(mRefuelObj.getReceiptPhoto(), iv_right);
+        }
+        mCarParts.put("rightFrontDoor", new CarPartPicture("rightFrontDoor", 1004, mRefuelObj.getRefuelAfterPhoto()));
+        if (TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto())) {
+            picMap.put("rightFrontDoor", mRefuelObj.getRefuelAfterPhoto());
+            setImageUrl(mRefuelObj.getRefuelAfterPhoto(), iv_tail);
+        }
     }
 
     @OnClick({R.id.iv_back, R.id.btn_neishi, R.id.btn_left, R.id.btn_right, R.id.btn_tail, R.id.oil_park, R.id.btnSubmit})
@@ -202,6 +214,10 @@ public class RefuelActivity extends DBSBaseActivity {
                 }, null);
             }
         }.start();
+    }
+
+    private void setImageUrl(String path, ImageView imageView) {
+        Glide.with(this).load(path).into(imageView);
     }
 
     private void setImage(String path, ImageView imageView) {

@@ -155,6 +155,7 @@
             android:textSize="15sp" />
 
         <TextView
+            android:id="@+id/refuel_status_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/refuel_status_status"
@@ -165,13 +166,15 @@
             android:textSize="12sp" />
 
         <LinearLayout
+            android:id="@+id/refuel_status_success"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/refuel_status_status"
             android:layout_marginTop="30dp"
             android:orientation="vertical"
             android:paddingLeft="24dp"
-            android:paddingRight="24dp">
+            android:paddingRight="24dp"
+            android:visibility="gone">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -185,6 +188,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/refuel_status_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -195,8 +199,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -206,6 +210,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/refuel_status_refel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -216,8 +221,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -227,6 +232,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/refuel_status_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -237,6 +243,7 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/refuel_status_button"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_44"
             android:layout_alignParentBottom="true"
@@ -246,6 +253,7 @@
             android:background="@drawable/bg_map_button"
             android:text="继续申请"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>
