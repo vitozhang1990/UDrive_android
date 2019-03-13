@@ -199,6 +199,15 @@
         android:background="#000000">
 
         <ImageView
+            android:id="@+id/pick_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="12dp"
+            android:visibility="gone"
+            android:src="@drawable/pic_photo" />
+
+        <ImageView
             android:id="@+id/flash_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

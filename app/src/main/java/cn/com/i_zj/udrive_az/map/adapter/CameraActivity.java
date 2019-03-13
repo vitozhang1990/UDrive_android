@@ -1,15 +1,21 @@
 package cn.com.i_zj.udrive_az.map.adapter;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
@@ -42,10 +48,15 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback
         , View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
+    private static final int REQUEST_CODE_PICK_IMAGE = 100;
+    private static final int PERMISSIONS_EXTERNAL_STORAGE = 801;
+
     @BindView(R.id.photo_view)
     ImageView imagePhoto;
     @BindView(R.id.flash_light)
     ImageView flash_light;
+    @BindView(R.id.pick_gallery)
+    ImageView gallery;
     @BindView(R.id.camera_back)
     ImageView camera_back;
     @BindView(R.id.surfaceView)
@@ -110,7 +121,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         mHolder.addCallback(this);
 
         state = getIntent().getIntExtra("state", 0);
-        if (state == 0) {
+        if (state == 0 || state == 2) {
             carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
             if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
                 imageModel = true;
@@ -118,6 +129,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 showImageModel();
             } else {
                 showSingle();
+            }
+            if (state == 2) {
+                gallery.setVisibility(View.VISIBLE);
             }
         } else {
             if (!TextUtils.isEmpty(getIntent().getStringExtra("backPath"))) {
@@ -215,7 +229,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         maskPierceView.black(false);
     }
 
-    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.retake_picture, R.id.sure
+    @OnClick({R.id.img_camera, R.id.camera_back, R.id.flash_light, R.id.pick_gallery, R.id.retake_picture, R.id.sure
             , R.id.rightFrontPhoto_layout, R.id.leftFrontPhoto_layout, R.id.innerPhoto_layout})
     public void onClick(View v) {
         switch (v.getId()) {
@@ -263,6 +277,20 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                         flash_light.setImageResource(R.drawable.ic_off_flashlight);
                         break;
                 }
+                break;
+            case R.id.pick_gallery:
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        ActivityCompat.requestPermissions(CameraActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                PERMISSIONS_EXTERNAL_STORAGE);
+                        return;
+                    }
+                }
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
                 break;
             case R.id.retake_picture:
                 if (mCamera == null) {
@@ -361,6 +389,11 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 if (!TextUtils.isEmpty(leftFrontPath)) intent.putExtra("leftFrontPath", leftFrontPath);
                 if (!TextUtils.isEmpty(innerPath)) intent.putExtra("innerPath", innerPath);
                 break;
+            default:
+                carPart.setPhotoPath(img_path);
+                carPart.setHasPhoto(true);
+                intent.putExtra("part", carPart);
+                break;
         }
         setResult(RESULT_OK, intent);
         finish();
@@ -381,6 +414,41 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     protected void onPause() {
         super.onPause();
         releaseCamera();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PICK_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
+                imageModel = true;
+                img_path = getRealPathFromURI(uri);
+                carPart.setPhotoPath(img_path);
+                carPart.setHasPhoto(true);
+                imagePath = carPart.getPhotoPath();
+                showImageModel();
+            }
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(contentURI, null, null, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 
     /**
@@ -582,6 +650,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == PERMISSIONS_EXTERNAL_STORAGE) {
+            return;
+        }
         if (perms.size() == 0) {
             ToastUtils.showShort(R.string.permission_request_fail1);
             return;

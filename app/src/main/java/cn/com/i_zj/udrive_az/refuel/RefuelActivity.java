@@ -89,7 +89,7 @@ public class RefuelActivity extends DBSBaseActivity {
     public void onClick(View view) {
         Intent intent = new Intent();
         intent.setClass(this, CameraActivity.class);
-        intent.putExtra("state", 0);
+        intent.putExtra("state", 2);
         switch (view.getId()) {
             case R.id.iv_back:
                 finish();
