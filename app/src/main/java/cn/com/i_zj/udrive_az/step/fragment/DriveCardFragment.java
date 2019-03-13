@@ -311,18 +311,18 @@ public class DriveCardFragment extends SupportFragment implements EasyPermission
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        new AlertDialog.Builder(mContext)
+        CommonAlertDialog.builder(mContext)
                 .setTitle("权限提示")
-                .setMessage("该功能需要拍照/文件读写权限，点击确认后在权限管理处，开启相应权限")
+                .setMsg("该功能需要拍照/文件读写权限，点击确认后在权限管理处，开启相应权限")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("确认", (dialog, which) -> {
+                .setPositiveButton("确认", v -> {
                     Intent intent = new Intent();
                     intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", getPackageName(), null);
                     intent.setData(uri);
                     startActivity(intent);
                 })
-                .create()
+                .build()
                 .show();
     }
 

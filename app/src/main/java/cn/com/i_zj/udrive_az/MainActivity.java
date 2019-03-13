@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.refuel.RefuelActivity;
 import cn.com.i_zj.udrive_az.service.BackService;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -58,6 +59,7 @@ import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.AppUpdateDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.HomeAdvDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -72,7 +74,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     @BindView(R.id.rl_note)
     CardView rlNote;
 
-    private AlertDialog unfinishedOrderDialog;
+    private CommonAlertDialog unfinishedOrderDialog;
     private AppUpdateDialog appUpdateDialog;
     private HomeAdvDialog homeAdvDialog;
     private ActivityInfo homeNote;
@@ -430,23 +432,15 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private void showUnfinishedOrderDialog() {
         if (unfinishedOrderDialog == null) {
-            unfinishedOrderDialog = new AlertDialog.Builder(MainActivity.this)
+            unfinishedOrderDialog = CommonAlertDialog.builder(this)
                     .setTitle("通知")
-                    .setMessage("您有未付款的订单")
-                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
+                    .setMsg("您有未付款的订单")
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("去付款", v -> {
+                        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                        startActivityForResult(intent, 103);
                     })
-                    .setPositiveButton("去付款", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(MainActivity.this, OrderActivity.class);
-                            startActivityForResult(intent, 103);
-                        }
-                    }).setCancelable(false)
-                    .create();
+                    .build();
         }
         if (!unfinishedOrderDialog.isShowing()) {
             unfinishedOrderDialog.show();

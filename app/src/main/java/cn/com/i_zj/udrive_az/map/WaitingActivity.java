@@ -1,8 +1,6 @@
 package cn.com.i_zj.udrive_az.map;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -71,6 +69,7 @@ import cn.com.i_zj.udrive_az.utils.Constants2;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -255,18 +254,13 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
                 }
                 break;
             case R.id.rl_cancel:
-                new AlertDialog.Builder(WaitingActivity.this)
+                CommonAlertDialog.builder(this)
                         .setTitle("取消预定")
-                        .setMessage("确定要取消预定么？")
-                        .setCancelable(false)
+                        .setMsg("确定要取消预定么？")
                         .setNegativeButton("先不取消", null)
-                        .setPositiveButton("取消预定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                cancelReservation();
-                            }
-                        })
-                        .create().show();
+                        .setPositiveButton("取消预定", v -> cancelReservation())
+                        .build()
+                        .show();
                 break;
             case R.id.rl_xunche:
                 searchCarBySound();

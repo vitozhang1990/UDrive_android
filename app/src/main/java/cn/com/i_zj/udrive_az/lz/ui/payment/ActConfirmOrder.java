@@ -59,6 +59,7 @@ import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import cn.com.i_zj.udrive_az.web.WebActivity;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -194,15 +195,12 @@ public class ActConfirmOrder extends DBSBaseActivity {
     }
 
     private void showVipDialog() {
-        new AlertDialog.Builder(ActConfirmOrder.this)
+        CommonAlertDialog.builder(this)
                 .setTitle("专享折扣")
-                .setMessage("VIP专享折扣。订单结算时，先全额抵扣优惠券，剩余部分再折算折扣金额。特殊活动不参与折扣。不计免赔和停车费不参与折扣。")
-                .setNegativeButton("我知道了", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+                .setMsg("VIP专享折扣。订单结算时，先全额抵扣优惠券，剩余部分再折算折扣金额。特殊活动不参与折扣。不计免赔和停车费不参与折扣。")
+                .setPositiveButton("我知道了", null)
+                .build()
+                .show();
     }
 
     public void findTripOrders() {

@@ -113,16 +113,11 @@ import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.NavigationDialog;
 import cn.com.i_zj.udrive_az.utils.dialog.ParkDetailDialog;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static android.widget.Toast.makeText;
 
 /**
  * 地图MapFragment
@@ -368,7 +363,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     return;
                 }
                 useCar();
-//                checkAuth();
                 break;
             case R.id.park_explain:
                 startActivity(ParkExplainActivity.class);
@@ -412,46 +406,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void checkAuth() {
-        showProgressDialog();
-        UdriveRestClient.getClentInstance().checkAuth()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<AuthResult>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(AuthResult authResult) {
-                        dissmisProgressDialog();
-                        if (authResult != null && authResult.getCode() == 1
-                                && !authResult.getData().isPass()) {
-                            showToast("请先完成认证");
-                            Intent intent = new Intent(getActivity(), StepActivity.class);
-                            intent.putExtra("data", authResult);
-                            startActivity(intent);
-                            return;
-                        }
-                        useCar();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        useCar();
-                        dissmisProgressDialog();
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
     }
 
     private void useCar() {
@@ -617,173 +571,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
                     @Override
                     public void onComplete() {
 
-                    }
-                });
-    }
-
-    private void reservationVerify() {
-        if (SessionManager.getInstance().getAuthorization() == null) {
-            LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
-            loginDialogFragment.show(getChildFragmentManager(), "login");
-            return;
-        }
-        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-        if (accountInfo == null) {
-            return;
-        }
-        if (accountInfo.data.idCardState != Constants.ID_AUTHORIZED_SUCCESS) {
-            if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-                makeText(getActivity(), "实名认证正在审核中", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            showIdCardStateDialog();
-            return;
-        }
-        if (accountInfo.data.driverState != Constants.ID_AUTHORIZED_SUCCESS) {
-            if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
-                makeText(getActivity(), "驾照认证正在审核中", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            showDriverStateDialog();
-            return;
-        }
-        if (accountInfo.data.depositState != 2) {
-            ToastUtil.show(getActivity(), "请先缴纳押金");
-            return;
-        }
-        getUnPayOrder();
-    }
-
-    private void getUnPayOrder() {
-        showProgressDialog();
-        UdriveRestClient.getClentInstance().getUnfinishedOrder()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<UnFinishOrderResult>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(UnFinishOrderResult result) {
-                        dissmisProgressDialog();
-                        if (result != null && result.getCode() == 1
-                                && result.getData() != null && result.getData().getId() > 0
-                                && result.getData().getStatus() == 1) {
-                            showUnfinishedOrderDialog();
-                            return;
-                        }
-                        if (bunldBean.isTrafficControl()) {
-                            showTrafficControlDialog();
-                        } else if (buldParkBean != null && buldParkBean.getCooperate() == 0
-                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
-                        } else {
-                            reservation();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        dissmisProgressDialog();
-                        e.printStackTrace();
-                        if (bunldBean.isTrafficControl()) {
-                            showTrafficControlDialog();
-                        } else if (buldParkBean != null && buldParkBean.getCooperate() == 0
-                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
-                        } else {
-                            reservation();
-                        }
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
-    private void reservation() {
-        Map<String, String> map = new HashMap<>();
-        map.put("carId", carid);
-        map.put("startParkId", parkid);
-        showProgressDialog();
-        UdriveRestClient.getClentInstance().reservation(map)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .filter(new Predicate<ReserVationBean>() {
-                    @Override
-                    public boolean test(ReserVationBean reserVationBean) throws Exception {
-                        if (reserVationBean == null) {
-                            ToastUtils.showShort("数据请求失败");
-                            return false;
-                        }
-                        if (reserVationBean.getCode() != 1) {
-                            ToastUtils.showShort(reserVationBean.getMessage());
-                            return false;
-                        }
-                        if (reserVationBean.getData() == null) {
-                            ToastUtils.showShort("数据返回错误");
-                            return false;
-                        }
-                        if (reserVationBean.getData().getOrderType() != 0) {
-                            showUnfinshOrder();
-                            return false;
-                        }
-                        return true;
-                    }
-                })
-                .flatMap(new Function<ReserVationBean, ObservableSource<GetReservation>>() {
-                    @Override
-                    public ObservableSource<GetReservation> apply(ReserVationBean reserVationBean) throws Exception {
-                        return UdriveRestClient.getClentInstance().getReservation()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread());
-                    }
-                })
-                .filter(new Predicate<GetReservation>() {
-                    @Override
-                    public boolean test(GetReservation reserVationBean) throws Exception {
-                        if (reserVationBean == null) {
-                            ToastUtils.showShort("数据请求失败");
-                            return false;
-                        }
-                        if (reserVationBean.getCode() != 1) {
-                            ToastUtils.showShort(reserVationBean.getMessage());
-                            return false;
-                        }
-                        if (reserVationBean.getData() == null) {
-                            ToastUtils.showShort("数据返回错误");
-                            return false;
-                        }
-                        return true;
-                    }
-                })
-                .subscribe(new Observer<GetReservation>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(GetReservation result) {
-                        dissmisProgressDialog();
-                        Intent intent = new Intent(getActivity(), WaitingActivity.class);
-                        intent.putExtra("bunld", result);
-                        startActivity(intent);
-                        resetAndShowYongChe();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        dissmisProgressDialog();
-                        ToastUtils.showShort("预约失败了");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        dissmisProgressDialog();
                     }
                 });
     }
@@ -1150,136 +937,6 @@ public class MapFragment extends DBSBaseFragment implements AMapLocationListener
         }
         mMapView.onDestroy();
         mLocationClient.onDestroy();
-    }
-
-    //驾照Dialog
-    private void showDriverStateDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setMessage("您还没有绑定驾驶证")
-                .setCancelable(false)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setPositiveButton("立即绑定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), ActIdentificationDrivingLicense.class);
-                        intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_DRIVER_INFO);
-                        startActivity(intent);
-                    }
-                })
-                .create().show();
-    }
-
-    //实名Dialog
-    private void showIdCardStateDialog() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                .setMessage("您没还没有实名认证")
-                .setCancelable(false)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setPositiveButton("立即认证", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), ActIdentificationIDCard.class);
-                        intent.putExtra(Constants.INTENT_TITLE, Constants.INTENT_REGISTER_ID);
-                        startActivity(intent);
-                    }
-                })
-                .create();
-        if (!alertDialog.isShowing()) {
-            alertDialog.show();
-        }
-    }
-
-    //限行Dialog
-    private void showTrafficControlDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("限行提示")
-                .setMessage("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
-                .setCancelable(false)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setPositiveButton("继续使用", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (buldParkBean != null && buldParkBean.getCooperate() == 0
-                                && buldParkBean.getStopInAmount() > 0) { //只有非合作停车场才会有出场费
-                            showParkOutAmountDialog(buldParkBean.getStopInAmount() / 100);
-                        } else {
-                            reservation();
-                        }
-                    }
-                })
-                .create().show();
-    }
-
-    //未完成订单Dialog
-    private void showUnfinshOrder() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("提示")
-                .setMessage("您还有未完成的订单，请完成订单")
-                .setCancelable(false)
-                .setNegativeButton("取消", null)
-                .setPositiveButton("去完成", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startActivity(TravelingActivity.class);
-                    }
-                })
-                .create().show();
-    }
-
-    private void showUnfinishedOrderDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("通知")
-                .setMessage("您有未付款的订单")
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setPositiveButton("去付款", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), OrderActivity.class);
-                        startActivityForResult(intent, 103);
-                    }
-                }).setCancelable(false)
-                .create().show();
-    }
-
-    //停车费Dialog
-    private void showParkOutAmountDialog(int cost) {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("支付提示")
-                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
-                .setCancelable(false)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        reservation();
-                    }
-                })
-                .create().show();
     }
 
     private void drawRoute() {

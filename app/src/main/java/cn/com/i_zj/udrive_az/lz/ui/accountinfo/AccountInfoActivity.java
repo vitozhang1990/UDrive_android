@@ -32,6 +32,7 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.step.StepDriveCardActivity;
 import cn.com.i_zj.udrive_az.step.StepIdCardActivity;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -104,14 +105,16 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
     @OnClick(R.id.account_info_btn_exit)
     public void onExitClick(View view) {
-        new AlertDialog.Builder(this).setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("确定", (dialog, which) -> {
-                    dialog.dismiss();
+        CommonAlertDialog.builder(this)
+                .setMsg("确定要退出么？")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", v -> {
                     String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
                     registrationDown(regId);
                     removeCache();
-                }).setMessage("确定要退出么？")
-                .create().show();
+                })
+                .build()
+                .show();
     }
 
     @OnClick(R.id.ui_driver_license)
@@ -143,10 +146,9 @@ public class AccountInfoActivity extends DBSBaseActivity {
             CookieManager cookieManager = CookieManager.getInstance();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cookieManager.removeSessionCookies(null);
-                cookieManager.removeAllCookie();
+                cookieManager.removeAllCookies(null);
                 cookieManager.flush();
             } else {
-                cookieManager.removeSessionCookies(null);
                 cookieManager.removeAllCookie();
                 CookieSyncManager.getInstance().sync();
             }

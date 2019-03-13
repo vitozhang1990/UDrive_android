@@ -1,6 +1,7 @@
 package cn.com.i_zj.udrive_az.login;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,6 +40,7 @@ import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
 import cn.com.i_zj.udrive_az.web.WebActivity;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import cn.com.i_zj.udrive_az.widget.ViewPagerIndicator;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -134,128 +136,109 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
 
     //限行Dialog
     private void showTrafficControlDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("继续使用", (dialog, which) -> {
-                    reservation(true);
-                })
-                .create().show();
+                .setPositiveButton("继续使用", v -> reservation(true))
+                .build()
+                .show();
     }
 
     //停车费Dialog
     private void showParkOutAmountDialog(int cost) {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("确定", (dialog, which) -> reservation(false))
-                .create()
+                .setPositiveButton("确定", v -> reservation(false))
+                .build()
                 .show();
     }
 
     //实名Dialog
     private void showIdCardStateDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("请先完成实名认证")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("请先完成实名认证")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去认证", (dialog, which) -> {
+                .setPositiveButton("去认证", v -> {
                     startActivity(AccountInfoActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     //驾照Dialog
     private void showDriverStateDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("请先完成驾驶认证")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("请先完成驾驶认证")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去认证", (dialog, which) -> {
+                .setPositiveButton("去认证", v -> {
                     startActivity(AccountInfoActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     //押金Dialog
     private void showDepositDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("请先缴纳押金")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("请先缴纳押金")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去缴纳", (dialog, which) -> {
+                .setPositiveButton("去缴纳", v -> {
                     startActivity(DepositActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     private void showUnfinishedOrderDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("您有未支付的订单，请先支付")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("您有未支付的订单，请先支付")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("去支付", (dialog, which) -> {
+                .setPositiveButton("去支付", v -> {
                     startActivity(OrderActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     //未完成订单Dialog
     private void showUnfinshOrder() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("您有一个订单正在进行中，是否进入")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("您有一个订单正在进行中，是否进入")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("进入", (dialog, which) -> {
+                .setPositiveButton("进入", v -> {
                     startActivity(TravelingActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     private void showIdCardFailure() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("您的实名认证审核失败")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("您的实名认证审核失败")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("重新认证", (dialog, which) -> {
+                .setPositiveButton("重新认证", v -> {
                     startActivity(AccountInfoActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
     private void showDriverFailure() {
-        new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("您的驾驶证审核失败")
-                .setCancelable(false)
+        CommonAlertDialog.builder(this)
+                .setMsg("您的驾驶证审核失败")
                 .setNegativeButton("取消", null)
-                .setPositiveButton("重新认证", (dialog, which) -> {
+                .setPositiveButton("重新认证", v -> {
                     startActivity(AccountInfoActivity.class);
                     finish();
                 })
-                .create()
+                .build()
                 .show();
     }
 
@@ -432,13 +415,13 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         if (isChecked) {
             return;
         }
-        new AlertDialog.Builder(PackageActivity.this)
+        CommonAlertDialog.builder(this)
                 .setTitle("不计免赔服务")
-                .setMessage("购买不计免赔（5元/次）无需承担车辆保险所包含的部分经济责任")
-                .setCancelable(false)
+                .setMsg("购买不计免赔（5元/次）无需承担车辆保险所包含的部分经济责任")
                 .setNegativeButton("不购买", null)
-                .setPositiveButton("仍然购买", (dialog, which) -> checkbox.setChecked(true))
-                .create().show();
+                .setPositiveButton("仍然购买", v -> checkbox.setChecked(true))
+                .build()
+                .show();
     }
 
     @Override

@@ -43,6 +43,7 @@ import cn.com.i_zj.udrive_az.model.UserDepositResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -141,21 +142,12 @@ public class DepositActivity extends DBSBaseActivity {
             Toast.makeText(DepositActivity.this, "获取信息失败,请稍后再试!", Toast.LENGTH_SHORT).show();
         } else {
             if (userDepositResult != null && userDepositResult.data.payState == 2) {
-                new AlertDialog.Builder(this)
-                        .setTitle("确定退押金吗")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                getDepositMoney(userDepositResult.data.orderNum);
-                            }
-                        })
-                        .setNegativeButton("不退", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        }).show();
+                CommonAlertDialog.builder(this)
+                        .setMsg("确定退押金吗")
+                        .setNegativeButton("不退", null)
+                        .setPositiveButton("确定", v -> getDepositMoney(userDepositResult.data.orderNum))
+                        .build()
+                        .show();
             } else {
                 Toast.makeText(DepositActivity.this, "当前状态无法退押金,请稍后再试!", Toast.LENGTH_SHORT).show();
             }

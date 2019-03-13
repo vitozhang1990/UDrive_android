@@ -224,30 +224,23 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
         UdriveRestClient.getClentInstance().createTripOrder(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(new Predicate<CreateOderBean>() {
-                    @Override
-                    public boolean test(CreateOderBean result) {
-                        if (result == null) {
-                            ToastUtils.showShort("数据请求失败");
-                            return false;
-                        }
-                        if (result.getCode() != 1) {
-                            if (!TextUtils.isEmpty(result.getMessage())) {
-                                ToastUtils.showShort(result.getMessage());
-                            }
-                            return false;
-                        }
-                        return true;
+                .filter(result -> {
+                    if (result == null) {
+                        ToastUtils.showShort("数据请求失败");
+                        return false;
                     }
+                    if (result.getCode() != 1) {
+                        if (!TextUtils.isEmpty(result.getMessage())) {
+                            ToastUtils.showShort(result.getMessage());
+                        }
+                        return false;
+                    }
+                    return true;
                 })
-                .flatMap(new Function<CreateOderBean, ObservableSource<UnFinishOrderResult>>() {
-                    @Override
-                    public ObservableSource<UnFinishOrderResult> apply(CreateOderBean createOderBean) throws Exception {
-                        return UdriveRestClient.getClentInstance().getUnfinishedOrder()
+                .flatMap((Function<CreateOderBean, ObservableSource<UnFinishOrderResult>>) createOderBean ->
+                        UdriveRestClient.getClentInstance().getUnfinishedOrder()
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread());
-                    }
-                })
+                                .observeOn(AndroidSchedulers.mainThread()))
                 .subscribe(new Observer<UnFinishOrderResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -256,7 +249,6 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
                     @Override
                     public void onNext(UnFinishOrderResult result) {
-                        dissmisProgressDialog();
                         if (result == null) {
                             ToastUtils.showShort("数据请求失败");
                             return;
@@ -280,7 +272,7 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
 
                     @Override
                     public void onComplete() {
-
+                        dissmisProgressDialog();
                     }
                 });
     }
