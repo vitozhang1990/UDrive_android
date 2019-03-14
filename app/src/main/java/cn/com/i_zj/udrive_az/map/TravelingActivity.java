@@ -239,7 +239,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     }
 
     private void getOil() {
-        UdriveRestClient.getClentInstance().refuelStatus(oderId)
+        UdriveRestClient.getClentInstance().refuelStatus(orderNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BaseRetObj<RefuelObj>>() {
@@ -316,6 +316,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 Intent refuelIntent = new Intent();
                 if (mRefuelObj == null) {
                     mRefuelObj = new RefuelObj();
+                    mRefuelObj.setOrderNumber(orderNum);
                 }
                 refuelIntent.putExtra("data", mRefuelObj);
                 if (mRefuelObj == null || mRefuelObj.getState() == 0) {
@@ -746,6 +747,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        getOil();
     }
 
     @Override

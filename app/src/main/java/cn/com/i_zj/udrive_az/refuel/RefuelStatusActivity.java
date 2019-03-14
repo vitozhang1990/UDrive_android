@@ -82,6 +82,7 @@ public class RefuelStatusActivity extends DBSBaseActivity {
 
                 amount.setText(String.format(Locale.getDefault(), "%.2f 元", mRefuelObj.getAmount() / 100f));
                 refel.setText("" + mRefuelObj.getRufel());
+                number.setText(mRefuelObj.getPn());
                 break;
             case 3:
                 status.setText("审核失败");
@@ -108,7 +109,9 @@ public class RefuelStatusActivity extends DBSBaseActivity {
             case R.id.refuel_status_button:
                 Intent refuelIntent = new Intent();
                 if (mRefuelObj.getState() == 2) {
+                    String orderNumber = mRefuelObj.getOrderNumber();
                     mRefuelObj = new RefuelObj();
+                    mRefuelObj.setOrderNumber(orderNumber);
                 }
                 refuelIntent.putExtra("data", mRefuelObj);
                 refuelIntent.setClass(this, RefuelActivity.class);

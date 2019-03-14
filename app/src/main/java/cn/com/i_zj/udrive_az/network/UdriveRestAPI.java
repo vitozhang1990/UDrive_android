@@ -336,7 +336,7 @@ public interface UdriveRestAPI {
 
     //加油相关api
     @POST("/mobile/tripOrder/refuel")
-    Observable<BaseRetObj<String>> refuel(@Body Map<String, Object> body);
+    Observable<BaseRetObj<RefuelObj>> refuel(@Body Map<String, Object> body);
 
     @GET("/mobile/tripOrder/refuel/{number}")
     Observable<BaseRetObj<HomeActivityEntity>> refuelHistory(@Path("number") String number);

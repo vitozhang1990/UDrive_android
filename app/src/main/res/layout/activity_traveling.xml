@@ -299,6 +299,13 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#F5F5F5" />
+
                 <LinearLayout
                     android:id="@+id/rl_jiayou"
                     android:layout_width="0dp"

@@ -1,8 +1,6 @@
 package cn.com.i_zj.udrive_az;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,7 +46,6 @@ import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.refuel.RefuelActivity;
 import cn.com.i_zj.udrive_az.service.BackService;
 import cn.com.i_zj.udrive_az.utils.AppDownloadManager;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -128,7 +125,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_tv_msg:
-                startActivity(RefuelActivity.class);
+                startActivity(ActMsg.class);
                 break;
             case R.id.rl_note:
                 if (homeNote != null) {

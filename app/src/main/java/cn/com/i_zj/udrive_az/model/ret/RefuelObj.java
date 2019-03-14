@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class RefuelObj implements Serializable {
     private int id;
     private String number;
+    private String orderNumber;
     private String refuelBeforePhoto;
     private String refuelAfterPhoto;
     private String receiptPhoto;
@@ -13,6 +14,7 @@ public class RefuelObj implements Serializable {
     private String remark;
     private int amount;
     private float rufel;
+    private String pn;
 
     public int getId() {
         return id;
@@ -28,6 +30,14 @@ public class RefuelObj implements Serializable {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public String getRefuelBeforePhoto() {
@@ -92,5 +102,13 @@ public class RefuelObj implements Serializable {
 
     public void setRufel(float rufel) {
         this.rufel = rufel;
+    }
+
+    public String getPn() {
+        return pn;
+    }
+
+    public void setPn(String pn) {
+        this.pn = pn;
     }
 }
