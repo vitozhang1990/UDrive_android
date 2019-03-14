@@ -43,6 +43,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
+import cn.com.i_zj.udrive_az.refuel.RotateTransformation;
 import cn.com.i_zj.udrive_az.utils.BitmapUtils;
 import cn.com.i_zj.udrive_az.utils.CameraUtil;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -197,7 +198,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
 
         imagePhoto.setVisibility(View.VISIBLE);
         imagePhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Glide.with(this).load(imagePath).into(imagePhoto);
+        Glide.with(this).load(imagePath).transform(new RotateTransformation(this, 90)).into(imagePhoto);
         maskPierceView.black(true);
     }
 
@@ -430,16 +431,12 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getData();
                 try {
-                    String path = getFilesDir().getAbsolutePath() + System.currentTimeMillis() + ".jpg";
-                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                    boolean saveSuccess = saveBmpToPath(rotateBitmap(bitmap, 180), path);
                     imageModel = true;
-                    img_path = saveSuccess ? path : getRealPathFromURI(uri);
-                    carPart.setPhotoPath(img_path);
+                    carPart.setPhotoPath(getRealPathFromURI(uri));
                     carPart.setHasPhoto(true);
                     imagePath = carPart.getPhotoPath();
                     showImageModel();
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -537,63 +534,61 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
     }
 
     private void capture() {
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                isCameraUseful = false;
-                //将data 转换为位图 或者你也可以直接保存为文件使用 FileOutputStream
-                //这里我相信大部分都有其他用处把 比如加个水印 后续再讲解
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Bitmap saveBitmap = CameraUtil.getInstance().setTakePicktrueOrientation(mCameraId, bitmap);
+        mCamera.takePicture(null, null, (data, camera) -> {
+            isCameraUseful = false;
+            //将data 转换为位图 或者你也可以直接保存为文件使用 FileOutputStream
+            //这里我相信大部分都有其他用处把 比如加个水印 后续再讲解
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Bitmap saveBitmap = CameraUtil.getInstance().setTakePicktrueOrientation(mCameraId, bitmap);
 
-                img_path = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath() +
-                        File.separator + System.currentTimeMillis() + ".jpeg";
+            img_path = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath() +
+                    File.separator + System.currentTimeMillis() + ".jpeg";
 
-                BitmapUtils.saveJPGE_After(context, saveBitmap, img_path, 100);
+            boolean saveSuccess = saveBmpToPath(rotateBitmap(saveBitmap, 270), img_path);
+            if (!saveSuccess) BitmapUtils.saveJPGE_After(context, saveBitmap, img_path, 100);
 
-                if (!bitmap.isRecycled()) {
-                    bitmap.recycle();
-                }
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
 
-                if (!saveBitmap.isRecycled()) {
-                    saveBitmap.recycle();
-                }
+            if (!saveBitmap.isRecycled()) {
+                saveBitmap.recycle();
+            }
 
-                if (state == 1) {
-                    if (imageModel) {
-                        imagePath = img_path;
-                        showImageModel1();
-                        switch (currentPosition) {
-                            case 0:
-                                innerPath = img_path;
-                                break;
-                            case 1:
-                                leftFrontPath = img_path;
-                                break;
-                            case 2:
-                                rightFrontPath = img_path;
-                                break;
-                            case 3:
-                                backPath = img_path;
-                                break;
-                        }
-                        mCamera.stopPreview();
-                    } else {
-                        if (qipa > 0) {
-                            imagePath = img_path;
-                            showImageModel1();
-                            mCamera.stopPreview();
-                        } else {
-                            updateImage(img_path);
-                            mCamera.stopPreview();
-                            startPreview(mCamera, mHolder);
-                        }
-                    }
-                } else {
+            if (state == 1) {
+                if (imageModel) {
                     imagePath = img_path;
                     showImageModel1();
+                    switch (currentPosition) {
+                        case 0:
+                            innerPath = img_path;
+                            break;
+                        case 1:
+                            leftFrontPath = img_path;
+                            break;
+                        case 2:
+                            rightFrontPath = img_path;
+                            break;
+                        case 3:
+                            backPath = img_path;
+                            break;
+                    }
                     mCamera.stopPreview();
+                } else {
+                    if (qipa > 0) {
+                        imagePath = img_path;
+                        showImageModel1();
+                        mCamera.stopPreview();
+                    } else {
+                        updateImage(img_path);
+                        mCamera.stopPreview();
+                        startPreview(mCamera, mHolder);
+                    }
                 }
+            } else {
+                imagePath = img_path;
+                showImageModel1();
+                mCamera.stopPreview();
             }
         });
     }
@@ -602,7 +597,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         switch (currentPosition) {
             case 0:
                 innerPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                innerPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                innerPhoto.setImageBitmap(rotateBitmap(getLocalBitmap(imgPath), 90));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.VISIBLE);
                 rightFrontPhotoLayout.setVisibility(View.GONE);
@@ -613,7 +608,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             case 1:
                 leftFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                leftFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                leftFrontPhoto.setImageBitmap(rotateBitmap(getLocalBitmap(imgPath), 90));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.GONE);
                 rightFrontPhotoLayout.setVisibility(View.VISIBLE);
@@ -624,7 +619,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             case 2:
                 rightFrontPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                rightFrontPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                rightFrontPhoto.setImageBitmap(rotateBitmap(getLocalBitmap(imgPath), 90));
                 innerPhotoLayout.setVisibility(View.GONE);
                 leftFrontPhotoLayout.setVisibility(View.GONE);
                 rightFrontPhotoLayout.setVisibility(View.GONE);
@@ -635,7 +630,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 break;
             case 3:
                 backPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                backPhoto.setImageURI(Uri.fromFile(new File(imgPath)));
+                backPhoto.setImageBitmap(rotateBitmap(getLocalBitmap(imgPath), 90));
 //                innerPhotoLayout.setVisibility(View.VISIBLE);
 //                leftFrontPhotoLayout.setVisibility(View.GONE);
 //                rightFrontPhotoLayout.setVisibility(View.GONE);
@@ -645,6 +640,18 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                 currentPosition++;
                 returnLastPage();
                 break;
+        }
+    }
+
+    public static Bitmap getLocalBitmap(String url) {
+        try {
+            FileInputStream fis = new FileInputStream(url);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            return BitmapFactory.decodeStream(fis, null, options);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

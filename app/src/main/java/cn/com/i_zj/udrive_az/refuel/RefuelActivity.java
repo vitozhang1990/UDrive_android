@@ -293,6 +293,6 @@ public class RefuelActivity extends DBSBaseActivity {
     }
 
     private void setImage(String path, ImageView imageView) {
-        Glide.with(this).load(path).transform(new RotateTransformation(this, 270)).into(imageView);
+        Glide.with(this).load(path).into(imageView);
     }
 }
