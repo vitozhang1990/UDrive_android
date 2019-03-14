@@ -2,10 +2,6 @@ package cn.com.i_zj.udrive_az.refuel;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,8 +18,7 @@ import com.qiniu.android.storage.UploadManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,9 +34,9 @@ import cn.com.i_zj.udrive_az.map.adapter.CameraActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
-import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.OilParkDialog;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -130,11 +125,13 @@ public class RefuelActivity extends DBSBaseActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.oil_park:
-                Intent intent1 = new Intent();
-                intent1.setAction(Intent.ACTION_VIEW);
-                intent1.addCategory(Intent.CATEGORY_DEFAULT);
-                intent1.setData(Uri.parse("androidamap://poi?sourceApplication=你行你开&keywords=加油站&dev=0"));
-                startActivity(intent1);
+                if (!new File("/data/data/com.baidu.BaiduMap").exists()
+                        && !new File("/data/data/com.autonavi.minimap").exists()) {
+                    ToastUtils.showShort("尚未安装高德或百度地图");
+                    return;
+                }
+                OilParkDialog oilParkDialog = new OilParkDialog();
+                oilParkDialog.show(getSupportFragmentManager(), "oilPark");
                 break;
             case R.id.btnSubmit:
                 if ((!picMap.containsKey("refuelBeforePhoto") && !mCarParts.get("refuelBeforePhoto").hasPhoto())
