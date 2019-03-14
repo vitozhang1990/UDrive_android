@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -27,9 +28,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,6 +50,8 @@ import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 import cn.com.i_zj.udrive_az.utils.dialog.PictureTipDialog;
 import cn.com.i_zj.udrive_az.widget.MaskPierceView;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.baidu.ocr.ui.util.ImageUtil.calculateInSampleSize;
 
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback
         , View.OnClickListener, EasyPermissions.PermissionCallbacks {
@@ -123,7 +131,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         state = getIntent().getIntExtra("state", 0);
         if (state == 0 || state == 2) {
             carPart = (CarPartPicture) getIntent().getSerializableExtra("part");
-            if (carPart.hasPhoto() && !TextUtils.isEmpty(carPart.getPhotoPath())) {
+            if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
                 imageModel = true;
                 imagePath = carPart.getPhotoPath();
                 showImageModel();
@@ -187,10 +195,9 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         finishLayout.setVisibility(View.GONE);
         sureLayout.setVisibility(View.VISIBLE);
 
-        Uri uri = Uri.fromFile(new File(imagePath));
         imagePhoto.setVisibility(View.VISIBLE);
         imagePhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imagePhoto.setImageURI(uri);
+        Glide.with(this).load(imagePath).into(imagePhoto);
         maskPierceView.black(true);
     }
 
@@ -404,7 +411,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         super.onResume();
         if (mCamera == null) {
             mCamera = getCamera(mCameraId);
-            if (mHolder != null && !imageModel) {
+            if (mHolder != null) {
                 startPreview(mCamera, mHolder);
             }
         }
@@ -422,13 +429,58 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         if (requestCode == REQUEST_CODE_PICK_IMAGE) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getData();
-                imageModel = true;
-                img_path = getRealPathFromURI(uri);
-                carPart.setPhotoPath(img_path);
-                carPart.setHasPhoto(true);
-                imagePath = carPart.getPhotoPath();
-                showImageModel();
+                try {
+                    String path = getFilesDir().getAbsolutePath() + System.currentTimeMillis() + ".jpg";
+                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                    boolean saveSuccess = saveBmpToPath(rotateBitmap(bitmap, 180), path);
+                    imageModel = true;
+                    img_path = saveSuccess ? path : getRealPathFromURI(uri);
+                    carPart.setPhotoPath(img_path);
+                    carPart.setHasPhoto(true);
+                    imagePath = carPart.getPhotoPath();
+                    showImageModel();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
+        }
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int rotate) {
+        if (bitmap == null)
+            return null;
+
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Matrix mtx = new Matrix();
+        mtx.postRotate(rotate);
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+    }
+
+    @SuppressWarnings("finally")
+    public static boolean saveBmpToPath(final Bitmap bitmap, final String filePath) {
+        if (bitmap == null || filePath == null) {
+            return false;
+        }
+        boolean result = false; // 默认结果
+        File file = new File(filePath);
+        OutputStream outputStream = null; // 文件输出流
+        try {
+            outputStream = new FileOutputStream(file);
+            result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
+                    outputStream); // 将图片压缩为JPEG格式写到文件输出流，100是最大的质量程度
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close(); // 关闭输出流
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
         }
     }
 
@@ -605,10 +657,10 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
         }
 
         //这里第三个参数为最小尺寸 getPropPreviewSize方法会对从最小尺寸开始升序排列 取出所有支持尺寸的最小尺寸
-        Camera.Size previewSize = CameraUtil.getInstance().getPropSizeForHeight(parameters.getSupportedPreviewSizes(), 800);
+        Camera.Size previewSize = CameraUtil.getInstance().getPropSizeForHeight(parameters.getSupportedPreviewSizes(), 1000);
         parameters.setPreviewSize(previewSize.width, previewSize.height);
 
-        Camera.Size pictureSize = CameraUtil.getInstance().getPropSizeForHeight(parameters.getSupportedPictureSizes(), 800);
+        Camera.Size pictureSize = CameraUtil.getInstance().getPropSizeForHeight(parameters.getSupportedPictureSizes(), 1000);
         parameters.setPictureSize(pictureSize.width, pictureSize.height);
 
         camera.setParameters(parameters);

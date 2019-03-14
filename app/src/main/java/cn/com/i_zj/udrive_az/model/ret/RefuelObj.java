@@ -15,6 +15,7 @@ public class RefuelObj implements Serializable {
     private int amount;
     private float rufel;
     private String pn;
+    private String auditResult;
 
     public int getId() {
         return id;
@@ -110,5 +111,13 @@ public class RefuelObj implements Serializable {
 
     public void setPn(String pn) {
         this.pn = pn;
+    }
+
+    public String getAuditResult() {
+        return auditResult;
+    }
+
+    public void setAuditResult(String auditResult) {
+        this.auditResult = auditResult;
     }
 }

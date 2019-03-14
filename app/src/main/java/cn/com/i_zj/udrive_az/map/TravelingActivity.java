@@ -747,7 +747,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
-        getOil();
+        if (!TextUtils.isEmpty(orderNum)) {
+            getOil();
+        }
     }
 
     @Override
