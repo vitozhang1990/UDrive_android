@@ -259,7 +259,7 @@ public class ActOrderPayment extends DBSBaseActivity {
                 WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
                 break;
             case R.id.tv_oil_detail:
-                startActivity(RefuelHistoryActivity.class);
+                RefuelHistoryActivity.startActivity(this, orderNumber);
                 break;
         }
     }

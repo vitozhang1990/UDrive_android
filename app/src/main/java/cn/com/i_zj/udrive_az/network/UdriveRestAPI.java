@@ -25,6 +25,7 @@ import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
 import cn.com.i_zj.udrive_az.model.IDResult;
 import cn.com.i_zj.udrive_az.model.ImageUrlResult;
 import cn.com.i_zj.udrive_az.model.NetworkResult;
+import cn.com.i_zj.udrive_az.model.OilHistoryEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.model.ParkDetailResult;
@@ -339,7 +340,7 @@ public interface UdriveRestAPI {
     Observable<BaseRetObj<RefuelObj>> refuel(@Body Map<String, Object> body);
 
     @GET("/mobile/tripOrder/refuel/{number}")
-    Observable<BaseRetObj<HomeActivityEntity>> refuelHistory(@Path("number") String number);
+    Observable<BaseRetObj<List<OilHistoryEntity>>> refuelHistory(@Path("number") String number);
 
     @GET("/mobile/tripOrder/refuel/check")
     Observable<BaseRetObj<RefuelObj>> refuelStatus(@Query("number") String number);

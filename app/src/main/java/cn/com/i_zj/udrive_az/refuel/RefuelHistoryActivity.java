@@ -1,13 +1,13 @@
 package cn.com.i_zj.udrive_az.refuel;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.text.TextUtils;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
@@ -19,24 +19,32 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
-import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
-import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
-import cn.com.i_zj.udrive_az.map.TravelingActivity;
-import cn.com.i_zj.udrive_az.model.OrderResult;
-import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.model.OilHistoryEntity;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.web.WebActivity;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class RefuelHistoryActivity extends DBSBaseActivity
-        implements BaseQuickAdapter.OnItemClickListener, OnRefreshListener {
+public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshListener {
 
     @BindView(R.id.swipeRefresh)
     SmartRefreshLayout smartRefreshLayout;
     @BindView(R.id.recycler)
     RecyclerView recyclerView;
 
-    private List<OrderResult.OrderItem> list = new ArrayList<>();
+    private List<OilHistoryEntity> list = new ArrayList<>();
     private RefuelAdapter refuelAdapter;
+    private String orderNumber;
+
+    public static void startActivity(Context context, String orderNumber) {
+        Intent intent = new Intent(context, WebActivity.class);
+        intent.putExtra("orderNumber", orderNumber);
+        context.startActivity(intent);
+    }
 
     @Override
     protected int getLayoutResource() {
@@ -48,12 +56,18 @@ public class RefuelHistoryActivity extends DBSBaseActivity
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
 
+        orderNumber = getIntent().getStringExtra("orderNumber");
+        if (TextUtils.isEmpty(orderNumber)) {
+            showToast("没有传入订单号");
+            finish();
+        }
         smartRefreshLayout.setOnRefreshListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         refuelAdapter = new RefuelAdapter(list);
-        refuelAdapter.setOnItemClickListener(this);
         refuelAdapter.bindToRecyclerView(recyclerView);
         refuelAdapter.setEnableLoadMore(false);
+
+        getAllOil();
     }
 
     @OnClick(R.id.iv_back)
@@ -62,24 +76,40 @@ public class RefuelHistoryActivity extends DBSBaseActivity
     }
 
     @Override
-    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-        OrderResult.OrderItem orderItem = list.get(position);
-        if (orderItem.status == Constants.ORDER_MOVE) {//行程中
-            startActivity(TravelingActivity.class);
-        } else if (orderItem.status == Constants.ORDER_WAIT_PAY) {// 待付款
-            Intent intent1 = new Intent(this, ActConfirmOrder.class);
-            intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
-            startActivity(intent1);
-        } else if (orderItem.status == Constants.ORDER_FINISH) {// 已完成
-            Intent intent2 = new Intent(this, ActOrderPayment.class);
-            intent2.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
-            intent2.putExtra(ActOrderPayment.TITLE, getResources().getString(R.string.order_finish));
-            startActivity(intent2);
-        }
+    public void onRefresh(RefreshLayout refreshlayout) {
+        getAllOil();
     }
 
-    @Override
-    public void onRefresh(RefreshLayout refreshlayout) {
-//        getFindTripOrders();
+    private void getAllOil() {
+        UdriveRestClient.getClentInstance().refuelHistory(orderNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<List<OilHistoryEntity>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<List<OilHistoryEntity>> listBaseRetObj) {
+                        if (listBaseRetObj == null || listBaseRetObj.getCode() != 1) {
+                            showToast("尚未获取到数据");
+                            return;
+                        }
+                        list.clear();
+                        list.addAll(listBaseRetObj.getDate());
+                        refuelAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }
