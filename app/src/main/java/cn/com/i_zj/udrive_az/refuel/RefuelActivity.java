@@ -2,12 +2,14 @@ package cn.com.i_zj.udrive_az.refuel;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
@@ -45,6 +47,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RefuelActivity extends DBSBaseActivity {
 
+    @BindView(R.id.header_title)
+    TextView header_title;
+    @BindView(R.id.header_image)
+    ImageView header_image;
+
     @BindView(R.id.iv_empty)
     ImageView iv_empty;
     @BindView(R.id.iv_course)
@@ -77,6 +84,9 @@ public class RefuelActivity extends DBSBaseActivity {
             finish();
             return;
         }
+
+        header_title.setText("自助加油");
+        header_image.setImageResource(R.mipmap.ic_service);
         mCarParts.put("refuelBeforePhoto", new CarPartPicture("refuelBeforePhoto", 1001,
                 mRefuelObj.getAuditResult().contains("refuelBeforePhoto") ? null : BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelBeforePhoto()));
         if (!TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto()) && !mRefuelObj.getAuditResult().contains("refuelBeforePhoto")) {
@@ -103,14 +113,20 @@ public class RefuelActivity extends DBSBaseActivity {
         }
     }
 
-    @OnClick({R.id.iv_back, R.id.btn_empty, R.id.btn_course, R.id.btn_ticket, R.id.btn_fuel, R.id.oil_park, R.id.btnSubmit})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.btn_empty, R.id.btn_course, R.id.btn_ticket, R.id.btn_fuel, R.id.oil_park, R.id.btnSubmit})
     public void onClick(View view) {
         Intent intent = new Intent();
         intent.setClass(this, CameraActivity.class);
         intent.putExtra("state", 2);
         switch (view.getId()) {
-            case R.id.iv_back:
+            case R.id.header_left:
                 finish();
+                break;
+            case R.id.header_right:
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + getResources().getString(R.string.about_phone));
+                callIntent.setData(data);
+                startActivity(callIntent);
                 break;
             case R.id.btn_empty:
                 intent.putExtra("part", mCarParts.get("refuelBeforePhoto"));
