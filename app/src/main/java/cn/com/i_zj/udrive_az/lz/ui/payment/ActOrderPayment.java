@@ -95,6 +95,7 @@ public class ActOrderPayment extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MapUtils.statusBarColor(this);
         mContext = this;
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
         initViewstMap(savedInstanceState);

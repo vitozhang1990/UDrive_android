@@ -3,13 +3,11 @@ package cn.com.i_zj.udrive_az.lz.ui.accountinfo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,6 +24,7 @@ import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.view.UserInfoItemView;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
@@ -43,8 +42,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class AccountInfoActivity extends DBSBaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    @BindView(R.id.header_title)
+    TextView header_title;
 
     @BindView(R.id.ui_head)
     UserInfoItemView mUiHead;
@@ -67,8 +66,8 @@ public class AccountInfoActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar(toolbar);
-
+        MapUtils.statusBarColor(this);
+        header_title.setText("个人信息");
         mUiHead.setRightImageVisible(View.INVISIBLE);
         mUiPhone.setRightImageVisible(View.INVISIBLE);
     }
@@ -86,57 +85,60 @@ public class AccountInfoActivity extends DBSBaseActivity {
         }
     }
 
-    @OnClick(R.id.ui_register)
-    public void onRegisterClick(View view) {
-        if (accountInfo == null) {
-            Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS) {
-            Toast.makeText(this, "实名已认证", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-            Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        startActivity(StepIdCardActivity.class);
-    }
-
-    @OnClick(R.id.account_info_btn_exit)
-    public void onExitClick(View view) {
-        CommonAlertDialog.builder(this)
-                .setMsg("确定要退出么？")
-                .setNegativeButton("取消", null)
-                .setPositiveButton("确定", v -> {
-                    String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
-                    registrationDown(regId);
-                    removeCache();
-                })
-                .build()
-                .show();
-    }
-
-    @OnClick(R.id.ui_driver_license)
-    public void onDriverLicense(View view) {
-        AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-        if (accountInfo == null) {
-            Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS || accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
-            if (accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
-                Toast.makeText(this, "驾驶证已认证", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
-                Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(this, StepDriveCardActivity.class);
-                startActivity(intent);
-            }
-        } else {
-            Toast.makeText(this, "请先去实名认证", Toast.LENGTH_SHORT).show();
+    @OnClick({R.id.header_left, R.id.ui_register, R.id.account_info_btn_exit, R.id.ui_driver_license})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.header_left:
+                finish();
+                break;
+            case R.id.ui_register:
+                if (accountInfo == null) {
+                    Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS) {
+                    Toast.makeText(this, "实名已认证", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
+                    Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                startActivity(StepIdCardActivity.class);
+                break;
+            case R.id.account_info_btn_exit:
+                CommonAlertDialog.builder(this)
+                        .setMsg("确定要退出么？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", v -> {
+                            String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
+                            registrationDown(regId);
+                            removeCache();
+                        })
+                        .build()
+                        .show();
+                break;
+            case R.id.ui_driver_license:
+                AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
+                if (accountInfo == null) {
+                    Toast.makeText(this, "无法获取用户信息", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (accountInfo.data.idCardState == Constants.ID_AUTHORIZED_SUCCESS || accountInfo.data.idCardState == Constants.ID_UNDER_REVIEW) {
+                    if (accountInfo.data.driverState == Constants.ID_AUTHORIZED_SUCCESS) {
+                        Toast.makeText(this, "驾驶证已认证", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (accountInfo.data.driverState == Constants.ID_UNDER_REVIEW) {
+                        Toast.makeText(this, "正在审核中", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(this, StepDriveCardActivity.class);
+                        startActivity(intent);
+                    }
+                } else {
+                    Toast.makeText(this, "请先去实名认证", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
@@ -196,7 +198,6 @@ public class AccountInfoActivity extends DBSBaseActivity {
 
                     @Override
                     public void onSuccess(String response) {
-                        Log.e("=====", "==============================");
                         SessionManager.getInstance().clearSession();
                         EventBus.getDefault().post(new OrderFinishEvent());
                         EventBus.getDefault().post(new WebSocketCloseEvent());

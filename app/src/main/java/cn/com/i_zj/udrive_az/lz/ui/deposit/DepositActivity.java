@@ -1,17 +1,16 @@
 package cn.com.i_zj.udrive_az.lz.ui.deposit;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
@@ -33,6 +32,7 @@ import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
 import cn.com.i_zj.udrive_az.model.AliPayResult;
@@ -55,6 +55,8 @@ import io.reactivex.schedulers.Schedulers;
 public class DepositActivity extends DBSBaseActivity {
 
     private static final int SDK_PAY_FLAG = 1;
+    @BindView(R.id.header_title)
+    TextView header_title;
     @BindView(R.id.deposit_tv_money)
     AppCompatTextView moneyView;
 
@@ -65,6 +67,8 @@ public class DepositActivity extends DBSBaseActivity {
     @BindView(R.id.deposit_btn_recharge)
     AppCompatButton depositBtnRecharge;
 
+    private UserDepositResult userDepositResult;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_deposit;
@@ -73,14 +77,8 @@ public class DepositActivity extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("押金");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        MapUtils.statusBarColor(this);
+        header_title.setText("押金");
     }
 
     @Override
@@ -89,17 +87,20 @@ public class DepositActivity extends DBSBaseActivity {
         getUserDeposit();
     }
 
-
-    @OnClick(R.id.deposit_btn_recharge)
-    public void onRechargeClick(View view) {
-        DepositDialogFragment payDialogFragment = new DepositDialogFragment();
-        payDialogFragment.show(getSupportFragmentManager(), "pay");
-
-    }
-
-    @OnClick(R.id.deposit_btn_withdraw)
-    public void onWithDrawClick(View view) {
-        getDepositOrderNumber();
+    @OnClick({R.id.header_left, R.id.deposit_btn_recharge, R.id.deposit_btn_withdraw})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.header_left:
+                finish();
+                break;
+            case R.id.deposit_btn_recharge:
+                DepositDialogFragment payDialogFragment = new DepositDialogFragment();
+                payDialogFragment.show(getSupportFragmentManager(), "pay");
+                break;
+            case R.id.deposit_btn_withdraw:
+                getDepositOrderNumber();
+                break;
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -151,8 +152,6 @@ public class DepositActivity extends DBSBaseActivity {
             } else {
                 Toast.makeText(DepositActivity.this, "当前状态无法退押金,请稍后再试!", Toast.LENGTH_SHORT).show();
             }
-
-
         }
     }
 
@@ -194,8 +193,6 @@ public class DepositActivity extends DBSBaseActivity {
                     }
                 });
     }
-
-    private UserDepositResult userDepositResult;
 
     //获取押金信息
     private void getUserDeposit() {
@@ -386,23 +383,18 @@ public class DepositActivity extends DBSBaseActivity {
         payReq.timeStamp = payInfo.timestamp;
         payReq.sign = payInfo.sign;
         boolean result = iwxapi.sendReq(payReq);
-        Log.e("*****", "**" + result + "***");
     }
 
     private void gotoAliPayActivity(final String orderInfo) {
-        Runnable payRunnable = new Runnable() {
+        Runnable payRunnable = () -> {
+            PayTask alipay = new PayTask(DepositActivity.this);
+            Map<String, String> result = alipay.payV2(orderInfo, true);
+            Log.i("msp", result.toString());
 
-            @Override
-            public void run() {
-                PayTask alipay = new PayTask(DepositActivity.this);
-                Map<String, String> result = alipay.payV2(orderInfo, true);
-                Log.i("msp", result.toString());
-
-                Message msg = new Message();
-                msg.what = SDK_PAY_FLAG;
-                msg.obj = result;
-                mHandler.sendMessage(msg);
-            }
+            Message msg = new Message();
+            msg.what = SDK_PAY_FLAG;
+            msg.obj = result;
+            mHandler.sendMessage(msg);
         };
 
         Thread payThread = new Thread(payRunnable);
@@ -435,9 +427,7 @@ public class DepositActivity extends DBSBaseActivity {
                 }
                 default:
                     break;
-//      }
             }
         }
     };
-
 }

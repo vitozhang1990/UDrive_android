@@ -150,9 +150,6 @@
             android:name=".lz.ui.order.OrderActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".lz.ui.mycar.MyCarActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".lz.ui.payment.PaymentActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -250,9 +247,6 @@
             android:name=".lz.ui.wallet.MyWalletActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|stateUnchanged" />
-        <activity
-            android:name=".lz.ui.coupon.CouponListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".web.WebActivity"
             android:theme="@style/AppTheme.NoActionBar"

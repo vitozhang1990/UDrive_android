@@ -138,111 +138,47 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
-    @OnClick(R.id.rl_head)
-    public void onHeadClick(View view) {
-        if (SessionManager.getInstance().isLogin()) {
-            startActivity(AccountInfoActivity.class);
-        } else {
-            EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.ACCOUNT_INFO_ACTIVITY));
+    @OnClick({R.id.rl_head, R.id.di_my_type, R.id.di_money, R.id.di_deposit, R.id.di_about, R.id.share})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rl_head:  //我的信息
+                if (SessionManager.getInstance().isLogin()) {
+                    startActivity(AccountInfoActivity.class);
+                } else {
+                    EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.ACCOUNT_INFO_ACTIVITY));
+                }
+                break;
+            case R.id.di_my_type: //我的订单
+                if (SessionManager.getInstance().isLogin()) {
+                    startActivity(OrderActivity.class);
+                } else {
+                    EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.ORDER_ACTIVITY));
+                }
+                break;
+            case R.id.di_money:  //我的钱包
+                if (SessionManager.getInstance().isLogin()) {
+                    WebActivity.startWebActivity(getActivity(), BuildConfig.WEB_URL + "/wallet");
+                } else {
+                    EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
+                }
+                break;
+            case R.id.di_deposit: //我的押金
+                if (SessionManager.getInstance().isLogin()) {
+                    startActivity(DepositActivity.class);
+                } else {
+                    EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
+                }
+                break;
+            case R.id.di_about: //关于
+                startActivity(AboutActivity.class);
+                break;
+            case R.id.share: //底部分享
+                if (activityResultInfo != null) {
+                    WebActivity.startWebActivity(getActivity(), activityResultInfo.getData().get(0).getViewUrl());
+                }
+                break;
         }
-    }
 
-    @OnClick(R.id.di_my_type)
-    public void onMyTypeClick(View view) {
-        if (SessionManager.getInstance().isLogin()) {
-            startActivity(OrderActivity.class);
-        } else {
-            EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.ORDER_ACTIVITY));
-        }
-    }
-
-
-    @OnClick(R.id.di_deposit)
-    public void onMyCarClick(View view) {
-//    if (SessionManager.getInstance().isLogin()) {
-//      startActivity(MyCarActivity.class);
-//    } else {
-//      EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MY_CAR_ACTIVITY));
-//    }
-    }
-
-    @OnClick(R.id.di_money)
-    public void onMoneyClick(View view) {
-        if (SessionManager.getInstance().isLogin()) {
-//            startActivity(WalletActivity.class);
-            WebActivity.startWebActivity(getActivity(), BuildConfig.WEB_URL + "/wallet");
-        } else {
-            EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
-        }
-    }
-
-    @OnClick(R.id.di_deposit)
-    public void onDepositClick(View view) {
-        if (SessionManager.getInstance().isLogin()) {
-            startActivity(DepositActivity.class);
-        } else {
-            EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
-        }
-    }
-
-    @OnClick(R.id.di_about)
-    public void onAboutClick(View view) {
-        startActivity(AboutActivity.class);
-    }
-
-    @OnClick(R.id.share)
-    public void activity(View view) {
-        if (activityResultInfo != null) {
-            WebActivity.startWebActivity(getActivity(), activityResultInfo.getData().get(0).getViewUrl());
-        }
-    }
-
-    public void onShareClick(View view) {
-        System.out.println("====================================================");
-        String url = BuildConfig.SHARE_URL;
-        if (SessionManager.getInstance().isLogin()) {
-            AccountInfoResult accountInfo = AccountInfoManager.getInstance().getAccountInfo();
-            if (accountInfo != null) {
-                url = url + accountInfo.data.username;
-            }
-        } else {
-            url = url + "notLogin";
-        }
-        UMWeb web = new UMWeb(url);
-        web.setTitle("快来和我一起使用你行你开");//标题
-        web.setThumb(new UMImage(getContext(), BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));  //缩略图
-        web.setDescription("新用户注册可以获得60元超大礼包哦!");//描述
-        new ShareAction((MainActivity) getContext())
-                .withMedia(web)
-                .setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.WEIXIN_FAVORITE)
-                .setCallback(new UMShareListener() {
-                    @Override
-                    public void onStart(SHARE_MEDIA share_media) {
-                        if (TextUtils.equals(share_media.getName(), "wxtimeline")) {
-                            showProgressDialog(true);
-                        } else if (TextUtils.equals(share_media.getName(), "wxsession")) {
-                            showProgressDialog(true);
-                        } else if (TextUtils.equals(share_media.getName(), "wxfavorite")) {
-                            showProgressDialog(true);
-                        }
-
-                    }
-
-                    @Override
-                    public void onResult(SHARE_MEDIA share_media) {
-                        dissmisProgressDialog();
-                    }
-
-                    @Override
-                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
-                        dissmisProgressDialog();
-                    }
-
-                    @Override
-                    public void onCancel(SHARE_MEDIA share_media) {
-                        dissmisProgressDialog();
-                    }
-                }).open();
     }
 
     private void getAppView() {
@@ -439,17 +375,9 @@ public class DrawerLeftFragment extends DBSBaseFragment {
                 });
     }
 
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            String[] mPermissionList = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CALL_PHONE, Manifest.permission.READ_LOGS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.SET_DEBUG_APP, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.GET_ACCOUNTS, Manifest.permission.WRITE_APN_SETTINGS};
-            ActivityCompat.requestPermissions((Activity) getContext(), mPermissionList, 123);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
     }
 
     @Override

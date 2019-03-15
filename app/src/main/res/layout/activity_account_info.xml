@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:divider="@drawable/shape_lz_line_divider_gray"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:showDividers="middle">
 
-    <include layout="@layout/layout_lz_toolbar"/>
+    <include layout="@layout/layout_header" />
 
     <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
         android:id="@+id/ui_head"
@@ -21,7 +21,7 @@
         app:user_tv_left_text="@string/lz_account_head"
         app:user_tv_mid_margin="10dp"
         app:user_tv_right_margin="@dimen/horizontal_commen_margin"
-        app:user_tv_right_text_color="@color/right_text_color"/>
+        app:user_tv_right_text_color="@color/right_text_color" />
 
     <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
         android:id="@+id/ui_phone"
@@ -33,11 +33,11 @@
         app:user_tv_mid_margin="10dp"
         app:user_tv_right_margin="@dimen/horizontal_commen_margin"
         app:user_tv_right_text="@string/lz_text_default"
-        app:user_tv_right_text_color="@color/right_text_color"/>
+        app:user_tv_right_text_color="@color/right_text_color" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
+        android:layout_height="10dp" />
 
     <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
         android:id="@+id/ui_register"
@@ -49,7 +49,7 @@
         app:user_tv_mid_margin="10dp"
         app:user_tv_right_margin="@dimen/horizontal_commen_margin"
         app:user_tv_right_text="@string/lz_text_default"
-        app:user_tv_right_text_color="@color/right_text_color"/>
+        app:user_tv_right_text_color="@color/right_text_color" />
 
     <cn.com.i_zj.udrive_az.lz.view.UserInfoItemView
         android:id="@+id/ui_driver_license"
@@ -61,17 +61,17 @@
         app:user_tv_mid_margin="10dp"
         app:user_tv_right_margin="@dimen/horizontal_commen_margin"
         app:user_tv_right_text="@string/lz_text_default"
-        app:user_tv_right_text_color="@color/right_text_color"/>
+        app:user_tv_right_text_color="@color/right_text_color" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/account_info_btn_exit"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_marginLeft="@dimen/horizontal_commen_margin"
-        android:layout_marginRight="@dimen/horizontal_commen_margin"
         android:layout_marginTop="40dp"
+        android:layout_marginRight="@dimen/horizontal_commen_margin"
         android:background="@drawable/round_corner_red_bg"
         android:text="@string/exit_app"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/dbs_textsize_small"/>
+        android:textSize="@dimen/dbs_textsize_small" />
 </LinearLayout>
