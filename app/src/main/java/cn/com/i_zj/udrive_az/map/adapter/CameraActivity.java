@@ -52,8 +52,6 @@ import cn.com.i_zj.udrive_az.utils.dialog.PictureTipDialog;
 import cn.com.i_zj.udrive_az.widget.MaskPierceView;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.baidu.ocr.ui.util.ImageUtil.calculateInSampleSize;
-
 public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Callback
         , View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
@@ -434,6 +432,7 @@ public class CameraActivity extends DBSBaseActivity implements SurfaceHolder.Cal
                     imageModel = true;
                     carPart.setPhotoPath(getRealPathFromURI(uri));
                     carPart.setHasPhoto(true);
+                    img_path = carPart.getPhotoPath();
                     imagePath = carPart.getPhotoPath();
                     showImageModel();
                 } catch (Exception e) {

@@ -81,7 +81,7 @@ public class RefuelStatusActivity extends DBSBaseActivity {
                 statusPic.setBackgroundResource(R.mipmap.pic_audit_succeed);
 
                 amount.setText(String.format(Locale.getDefault(), "%.2f 元", mRefuelObj.getAmount() / 100f));
-                refel.setText("" + mRefuelObj.getRufel());
+                refel.setText("" + mRefuelObj.getFuel());
                 number.setText(mRefuelObj.getPn());
                 break;
             case 3:

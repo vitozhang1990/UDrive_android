@@ -41,7 +41,7 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
     private String orderNumber;
 
     public static void startActivity(Context context, String orderNumber) {
-        Intent intent = new Intent(context, WebActivity.class);
+        Intent intent = new Intent(context, RefuelHistoryActivity.class);
         intent.putExtra("orderNumber", orderNumber);
         context.startActivity(intent);
     }
@@ -92,6 +92,7 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
 
                     @Override
                     public void onNext(BaseRetObj<List<OilHistoryEntity>> listBaseRetObj) {
+                        smartRefreshLayout.finishRefresh(true);
                         if (listBaseRetObj == null || listBaseRetObj.getCode() != 1) {
                             showToast("尚未获取到数据");
                             return;
@@ -103,7 +104,7 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
 
                     @Override
                     public void onError(Throwable e) {
-
+                        smartRefreshLayout.finishRefresh(true);
                     }
 
                     @Override

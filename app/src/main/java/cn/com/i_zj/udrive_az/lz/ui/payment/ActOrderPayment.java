@@ -3,7 +3,6 @@ package cn.com.i_zj.udrive_az.lz.ui.payment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,7 +48,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -86,7 +84,6 @@ public class ActOrderPayment extends DBSBaseActivity {
 
     private AMap mAmap;
     private Context mContext;
-    private String title;
     private String orderNumber;
     private ArrayList<Polyline> mDrawnLines = new ArrayList<>(); //所有的line集合
 
@@ -99,17 +96,9 @@ public class ActOrderPayment extends DBSBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
-        initView();
         initViewstMap(savedInstanceState);
         findTripOrders();
-    }
-
-    private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(title);
-        toolbar.setNavigationOnClickListener(view -> finish());
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -252,9 +241,12 @@ public class ActOrderPayment extends DBSBaseActivity {
 
     }
 
-    @OnClick({R.id.tv_detail, R.id.tv_oil_detail})
+    @OnClick({R.id.iv_back, R.id.tv_detail, R.id.tv_oil_detail})
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_back:
+                finish();
+                break;
             case R.id.tv_detail:
                 WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
                 break;

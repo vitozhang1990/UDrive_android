@@ -4,11 +4,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@color/gray" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp">
@@ -22,8 +17,9 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,6 +64,5 @@
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:background="#F1F1F1" />
-
     </RelativeLayout>
 </LinearLayout>

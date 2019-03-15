@@ -13,7 +13,7 @@ public class RefuelObj implements Serializable {
     private int state;
     private String remark;
     private int amount;
-    private float rufel;
+    private float fuel;
     private String pn;
     private String auditResult;
 
@@ -97,12 +97,12 @@ public class RefuelObj implements Serializable {
         this.amount = amount;
     }
 
-    public float getRufel() {
-        return rufel;
+    public float getFuel() {
+        return fuel;
     }
 
-    public void setRufel(float rufel) {
-        this.rufel = rufel;
+    public void setFuel(float fuel) {
+        this.fuel = fuel;
     }
 
     public String getPn() {
