@@ -81,6 +81,8 @@ public class ActOrderPayment extends DBSBaseActivity {
     ImageView mIvImage;
     @BindView(R.id.mv_map)
     MapView mMapView;
+    @BindView(R.id.tv_oil_detail)
+    TextView mOilDetail;
 
     private AMap mAmap;
     private Context mContext;
@@ -237,9 +239,8 @@ public class ActOrderPayment extends DBSBaseActivity {
                 tvCarColor.setText(carInfoEntity.getCarColor());
                 Glide.with(ActOrderPayment.this).load(CarTypeImageUtils.getCarImageByBrand(carInfoEntity.getBrand(), carInfoEntity.getCarColor())).into(ivCar);
             }
-
+            mOilDetail.setVisibility(value.data.refuel ? View.VISIBLE : View.GONE);
         }
-
     }
 
     @OnClick({R.id.iv_back, R.id.tv_detail, R.id.tv_oil_detail})

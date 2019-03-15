@@ -110,6 +110,9 @@ public class OrderDetailResult implements Serializable{
         @SerializedName("discountAmount")
         public  int discountAmount;
 
+        @SerializedName("refuel")
+        public boolean refuel;
+
         private  CarInfoEntity car;
 
         public CarInfoEntity getCar() {

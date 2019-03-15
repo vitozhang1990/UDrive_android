@@ -98,5 +98,8 @@ public class OrderResult {
 
         @SerializedName("preferentialId")
         public int preferentialId;
+
+        @SerializedName("refuel")
+        public boolean refuel;
     }
 }

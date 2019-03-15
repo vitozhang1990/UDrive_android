@@ -32,6 +32,8 @@
             android:textSize="@dimen/sp_16" />
     </RelativeLayout>
 
+    <View style="@style/line_horizontal" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

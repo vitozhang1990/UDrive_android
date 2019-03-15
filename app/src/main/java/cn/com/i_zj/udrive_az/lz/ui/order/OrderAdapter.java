@@ -34,6 +34,7 @@ public class OrderAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseVi
             helper.setVisible(R.id.tv_money, true);
             helper.setText(R.id.tv_money, String.format(Locale.getDefault(), "¥  %.2f", item.realPayAmount / 100f));
         }
+        helper.setGone(R.id.iv_oil, item.refuel);
     }
 
     private String getStatus(int number) {

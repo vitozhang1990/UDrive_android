@@ -66,6 +66,7 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
         refuelAdapter = new RefuelAdapter(list);
         refuelAdapter.bindToRecyclerView(recyclerView);
         refuelAdapter.setEnableLoadMore(false);
+        refuelAdapter.setEmptyView(R.layout.item_refuel_empty);
 
         getAllOil();
     }
