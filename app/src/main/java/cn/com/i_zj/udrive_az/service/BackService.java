@@ -35,6 +35,7 @@ import cn.com.i_zj.udrive_az.model.WebSocketPark;
 import cn.com.i_zj.udrive_az.model.WebSocketPrice;
 import cn.com.i_zj.udrive_az.model.WebSocketResult;
 import cn.com.i_zj.udrive_az.utils.dialog.OffPowerDialogActivity;
+import cn.com.i_zj.udrive_az.utils.dialog.OilDialogActivity;
 import cn.com.i_zj.udrive_az.utils.dialog.RechargeDialogActivity;
 import okhttp3.WebSocket;
 
@@ -175,6 +176,19 @@ public class BackService extends BaseService {
                         BackService.this.startActivity(intent);
                     } else {
                         intent.setClass(BackService.this, OrderActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        BackService.this.startActivity(intent);
+                    }
+                    break;
+                case 7000://油量警告
+                    if (!getRunningAppProcesses(BackService.this, getPackageName())) {
+                        return;
+                    }
+                    Type oilType = new TypeToken<WebSocketResult>() {}.getType();
+                    WebSocketResult oil = gson.fromJson(text, oilType);
+
+                    if (oil.getSuccess()) {
+                        intent.setClass(BackService.this, OilDialogActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         BackService.this.startActivity(intent);
                     }

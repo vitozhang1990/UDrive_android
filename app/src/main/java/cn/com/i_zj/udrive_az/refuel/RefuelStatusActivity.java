@@ -25,6 +25,11 @@ public class RefuelStatusActivity extends DBSBaseActivity {
     @BindView(R.id.header_image)
     ImageView header_image;
 
+    @BindView(R.id.layout1)
+    View layout1;
+    @BindView(R.id.layout2)
+    View layout2;
+
     @BindView(R.id.refuel_status_pic)
     ImageView statusPic;
     @BindView(R.id.refuel_status_status)
@@ -68,28 +73,34 @@ public class RefuelStatusActivity extends DBSBaseActivity {
                 finish();
                 return;
             case 1:
+                layout1.setVisibility(View.VISIBLE);
+                layout2.setVisibility(View.GONE);
                 status.setText("正在审核");
                 hint.setText("预计1小时完成，请耐心等待");
-                statusPic.setBackgroundResource(R.mipmap.pic_audit);
+                statusPic.setImageResource(R.mipmap.pic_audit);
                 break;
             case 2:
+                layout1.setVisibility(View.GONE);
+                layout2.setVisibility(View.VISIBLE);
                 status.setText("审核成功");
                 hint.setVisibility(View.GONE);
                 successLayout.setVisibility(View.VISIBLE);
                 button.setVisibility(View.VISIBLE);
                 button.setText("继续申请");
-                statusPic.setBackgroundResource(R.mipmap.pic_audit_succeed);
+                statusPic.setImageResource(R.mipmap.pic_audit_succeed);
 
                 amount.setText(String.format(Locale.getDefault(), "%.2f 元", mRefuelObj.getAmount() / 100f));
-                refel.setText("" + mRefuelObj.getFuel());
+                refel.setText(mRefuelObj.getFuel() + " L");
                 number.setText(mRefuelObj.getPn());
                 break;
             case 3:
+                layout1.setVisibility(View.GONE);
+                layout2.setVisibility(View.VISIBLE);
                 status.setText("审核失败");
                 hint.setText(mRefuelObj.getRemark());
                 button.setVisibility(View.VISIBLE);
                 button.setText("重新申请");
-                statusPic.setBackgroundResource(R.mipmap.pic_audit_fail);
+                statusPic.setImageResource(R.mipmap.pic_audit_fail);
                 break;
         }
     }

@@ -126,13 +126,14 @@ public class OrderActivity extends DBSBaseActivity
                             return;
                         }
                         List<OrderResult.OrderItem> data = value.orderList;
-                        if (data.size() == 0) {
+                        if (data == null || data.size() == 0) {
                             EmptyView emptyView= new EmptyView(recyclerView.getContext(),recyclerView);
                             emptyView.setImage(R.mipmap.pic_order_null);
                             emptyView.setMsg("还没有订单哦");
                             orderAdapter.setEmptyView(emptyView);
+                        } else {
+                            orderAdapter.addData(data);
                         }
-                        orderAdapter.addData(data);
                     }
 
                     @Override
