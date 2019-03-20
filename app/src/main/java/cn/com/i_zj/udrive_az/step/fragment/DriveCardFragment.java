@@ -369,6 +369,7 @@ public class DriveCardFragment extends SupportFragment implements EasyPermission
                                             .setImageTitle(true)
                                             .setTitle("证件重复")
                                             .setMsg("驾驶证已被注册，请致电400-614-1888")
+                                            .setMsgCenter(true)
                                             .setNegativeButton("取消", v -> {
                                                 if (getActivity() != null) {
                                                     getActivity().finish();

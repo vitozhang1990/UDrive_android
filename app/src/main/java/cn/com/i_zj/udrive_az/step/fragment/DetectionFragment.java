@@ -260,6 +260,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                         alertDialog2 = CommonAlertDialog.builder(getContext())
                                 .setImageTitle(true)
                                 .setMsg("人脸验证已超时")
+                                .setMsgCenter(true)
                                 .setPositiveButton("确定", v -> {
                                     EventBus.getDefault().post(new StepEvent(2, false));
                                 })
@@ -529,6 +530,7 @@ public class DetectionFragment extends SupportFragment implements CameraBridgeVi
                                             .setImageTitle(true)
                                             .setTitle("证件重复")
                                             .setMsg("身份证已被注册，请致电400-614-1888")
+                                            .setMsgCenter(true)
                                             .setNegativeButton("取消", v -> {
                                                 if (getActivity() != null) {
                                                     getActivity().finish();

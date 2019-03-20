@@ -145,8 +145,9 @@ public class DepositActivity extends DBSBaseActivity {
             if (userDepositResult != null && userDepositResult.data.payState == 2) {
                 CommonAlertDialog.builder(this)
                         .setMsg("确定退押金吗")
-                        .setNegativeButton("不退", null)
-                        .setPositiveButton("确定", v -> getDepositMoney(userDepositResult.data.orderNum))
+                        .setMsgCenter(true)
+                        .setPositiveButton("不退", null)
+                        .setNegativeButton("确定", v -> getDepositMoney(userDepositResult.data.orderNum))
                         .build()
                         .show();
             } else {
@@ -264,6 +265,7 @@ public class DepositActivity extends DBSBaseActivity {
         if (value.data.payState == 1) {
             depositTvStatus.setText("待缴纳");
             depositBtnWithdraw.setEnabled(false);// 提现
+            depositBtnRecharge.setEnabled(true);
             dissmisProgressDialog();
         } else if (value.data.payState == 2) {
             depositTvStatus.setText("已缴纳");
@@ -274,12 +276,16 @@ public class DepositActivity extends DBSBaseActivity {
             depositTvStatus.setText("退款中");
             dissmisProgressDialog();
             depositBtnWithdraw.setEnabled(false);
+            depositBtnRecharge.setEnabled(false);
         } else if (value.data.payState == 4) {
             depositTvStatus.setText("已退款");
+            depositBtnWithdraw.setEnabled(false);
+            depositBtnRecharge.setEnabled(true);
             getDepositAmount();
         } else {
             depositTvStatus.setText("未缴纳");
             depositBtnWithdraw.setEnabled(false);
+            depositBtnRecharge.setEnabled(true);
             getDepositAmount();
         }
     }

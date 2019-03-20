@@ -51,8 +51,9 @@
                 android:layout_width="0dp"
                 android:layout_height="45dp"
                 android:layout_weight="1"
-                android:background="@drawable/round_corner_grey_bg"
-                android:text="提现"
+                android:background="@drawable/bg_bottom_radius1"
+                android:enabled="false"
+                android:text="押金退还"
                 android:textColor="@android:color/white" />
 
             <android.support.v7.widget.AppCompatButton
@@ -61,8 +62,9 @@
                 android:layout_height="45dp"
                 android:layout_marginLeft="@dimen/horizontal_commen_margin"
                 android:layout_weight="1"
-                android:background="@drawable/shape_lz_btn_bg"
-                android:text="充值"
+                android:background="@drawable/bg_bottom_radius1"
+                android:enabled="false"
+                android:text="充值押金"
                 android:textColor="@android:color/white" />
         </LinearLayout>
     </RelativeLayout>
