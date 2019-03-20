@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,6 +61,16 @@ public class RefuelActivity extends DBSBaseActivity {
     ImageView iv_ticket;
     @BindView(R.id.iv_fuel)
     ImageView iv_fuel;
+    @BindView(R.id.error_empty)
+    ImageView error_empty;
+    @BindView(R.id.error_course)
+    ImageView error_course;
+    @BindView(R.id.error_ticket)
+    ImageView error_ticket;
+    @BindView(R.id.error_fuel)
+    ImageView error_fuel;
+    @BindView(R.id.btnSubmit)
+    Button btnSubmit;
 
     private Context mContext;
     private String orderNum;
@@ -87,65 +98,51 @@ public class RefuelActivity extends DBSBaseActivity {
 
         header_title.setText("自助加油");
         header_image.setImageResource(R.mipmap.ic_service);
-        if (TextUtils.isEmpty(mRefuelObj.getAuditResult())) {
-            mCarParts.put("refuelBeforePhoto", new CarPartPicture("refuelBeforePhoto", 1001,
-                    TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto()) ? null : BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelBeforePhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto())) {
-                picMap.put("refuelBeforePhoto", mRefuelObj.getRefuelBeforePhoto());
-                setImageUrl(mRefuelObj.getRefuelBeforePhoto(), iv_empty);
+        mCarParts.put("refuelBeforePhoto", new CarPartPicture("refuelBeforePhoto", 1001,
+                TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto()) ? null :
+                        BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelBeforePhoto()));
+        mCarParts.put("pnPhoto", new CarPartPicture("pnPhoto", 1002,
+                TextUtils.isEmpty(mRefuelObj.getPnPhoto()) ? null :
+                        BuildConfig.IMAGE_DOMAIN + mRefuelObj.getPnPhoto()));
+        mCarParts.put("receiptPhoto", new CarPartPicture("receiptPhoto", 1003,
+                TextUtils.isEmpty(mRefuelObj.getReceiptPhoto()) ? null :
+                        BuildConfig.IMAGE_DOMAIN + mRefuelObj.getReceiptPhoto()));
+        mCarParts.put("refuelAfterPhoto", new CarPartPicture("refuelAfterPhoto", 1004,
+                TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto()) ? null :
+                        BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelAfterPhoto()));
+
+        if (!TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto())) {
+            boolean error = !TextUtils.isEmpty(mRefuelObj.getAuditResult()) && mRefuelObj.getAuditResult().contains("refuelBeforePhoto");
+            if (!error) {
+                picMap.put("refuelBeforePhoto", mRefuelObj.getRefuelBeforePhoto()); //不是错误图片
             }
-            mCarParts.put("pnPhoto", new CarPartPicture("pnPhoto", 1002,
-                    TextUtils.isEmpty(mRefuelObj.getPnPhoto()) ? null : BuildConfig.IMAGE_DOMAIN + mRefuelObj.getPnPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getPnPhoto())) {
-                picMap.put("pnPhoto", mRefuelObj.getPnPhoto());
-                setImageUrl(mRefuelObj.getPnPhoto(), iv_course);
-            }
-            mCarParts.put("receiptPhoto", new CarPartPicture("receiptPhoto", 1003,
-                    TextUtils.isEmpty(mRefuelObj.getReceiptPhoto()) ? null : BuildConfig.IMAGE_DOMAIN + mRefuelObj.getReceiptPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getReceiptPhoto())) {
-                picMap.put("receiptPhoto", mRefuelObj.getReceiptPhoto());
-                setImageUrl(mRefuelObj.getReceiptPhoto(), iv_ticket);
-            }
-            mCarParts.put("refuelAfterPhoto", new CarPartPicture("refuelAfterPhoto", 1004,
-                    TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto()) ? null : BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelAfterPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto())) {
-                picMap.put("refuelAfterPhoto", mRefuelObj.getRefuelAfterPhoto());
-                setImageUrl(mRefuelObj.getRefuelAfterPhoto(), iv_fuel);
-            }
-        } else {
-            mCarParts.put("refuelBeforePhoto", new CarPartPicture("refuelBeforePhoto", 1001,
-                    mRefuelObj.getAuditResult().contains("refuelBeforePhoto") ? null :
-                            TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto()) ? null :
-                                    BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelBeforePhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getRefuelBeforePhoto()) && !mRefuelObj.getAuditResult().contains("refuelBeforePhoto")) {
-                picMap.put("refuelBeforePhoto", mRefuelObj.getRefuelBeforePhoto());
-                setImageUrl(mRefuelObj.getRefuelBeforePhoto(), iv_empty);
-            }
-            mCarParts.put("pnPhoto", new CarPartPicture("pnPhoto", 1002,
-                    mRefuelObj.getAuditResult().contains("pnPhoto") ? null :
-                            TextUtils.isEmpty(mRefuelObj.getPnPhoto()) ? null :
-                                    BuildConfig.IMAGE_DOMAIN + mRefuelObj.getPnPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getPnPhoto()) && !mRefuelObj.getAuditResult().contains("pnPhoto")) {
-                picMap.put("pnPhoto", mRefuelObj.getPnPhoto());
-                setImageUrl(mRefuelObj.getPnPhoto(), iv_course);
-            }
-            mCarParts.put("receiptPhoto", new CarPartPicture("receiptPhoto", 1003,
-                    mRefuelObj.getAuditResult().contains("receiptPhoto") ? null :
-                            TextUtils.isEmpty(mRefuelObj.getReceiptPhoto()) ? null :
-                                    BuildConfig.IMAGE_DOMAIN + mRefuelObj.getReceiptPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getReceiptPhoto()) && !mRefuelObj.getAuditResult().contains("receiptPhoto")) {
-                picMap.put("receiptPhoto", mRefuelObj.getReceiptPhoto());
-                setImageUrl(mRefuelObj.getReceiptPhoto(), iv_ticket);
-            }
-            mCarParts.put("refuelAfterPhoto", new CarPartPicture("refuelAfterPhoto", 1004,
-                    mRefuelObj.getAuditResult().contains("refuelAfterPhoto") ? null :
-                            TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto()) ? null :
-                                    BuildConfig.IMAGE_DOMAIN + mRefuelObj.getRefuelAfterPhoto()));
-            if (!TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto()) && !mRefuelObj.getAuditResult().contains("refuelAfterPhoto")) {
-                picMap.put("refuelAfterPhoto", mRefuelObj.getRefuelAfterPhoto());
-                setImageUrl(mRefuelObj.getRefuelAfterPhoto(), iv_fuel);
-            }
+            setImageUrl(mRefuelObj.getRefuelBeforePhoto(), iv_empty, error ? error_empty : null);
         }
+
+        if (!TextUtils.isEmpty(mRefuelObj.getPnPhoto())) {
+            boolean error = !TextUtils.isEmpty(mRefuelObj.getAuditResult()) && mRefuelObj.getAuditResult().contains("pnPhoto");
+            if (!error) {
+                picMap.put("pnPhoto", mRefuelObj.getPnPhoto()); //不是错误图片
+            }
+            setImageUrl(mRefuelObj.getPnPhoto(), iv_course, error ? error_course : null);
+        }
+
+        if (!TextUtils.isEmpty(mRefuelObj.getReceiptPhoto())) {
+            boolean error = !TextUtils.isEmpty(mRefuelObj.getAuditResult()) && mRefuelObj.getAuditResult().contains("receiptPhoto");
+            if (!error) {
+                picMap.put("receiptPhoto", mRefuelObj.getReceiptPhoto()); //不是错误图片
+            }
+            setImageUrl(mRefuelObj.getReceiptPhoto(), iv_ticket, error ? error_ticket : null);
+        }
+
+        if (!TextUtils.isEmpty(mRefuelObj.getRefuelAfterPhoto())) {
+            boolean error = !TextUtils.isEmpty(mRefuelObj.getAuditResult()) && mRefuelObj.getAuditResult().contains("refuelAfterPhoto");
+            if (!error) {
+                picMap.put("refuelAfterPhoto", mRefuelObj.getRefuelAfterPhoto()); //不是错误图片
+            }
+            setImageUrl(mRefuelObj.getRefuelAfterPhoto(), iv_fuel, error ? error_fuel : null);
+        }
+        resetButtonStatus();
     }
 
     @OnClick({R.id.header_left, R.id.header_right, R.id.btn_empty, R.id.btn_course, R.id.btn_ticket, R.id.btn_fuel, R.id.oil_park, R.id.btnSubmit})
@@ -164,19 +161,27 @@ public class RefuelActivity extends DBSBaseActivity {
                 startActivity(callIntent);
                 break;
             case R.id.btn_empty:
-                intent.putExtra("part", mCarParts.get("refuelBeforePhoto"));
+                intent.putExtra("part", picMap.containsKey("refuelBeforePhoto")
+                        ? mCarParts.get("refuelBeforePhoto")
+                        : new CarPartPicture("refuelBeforePhoto", 1001));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_course:
-                intent.putExtra("part", mCarParts.get("pnPhoto"));
+                intent.putExtra("part", picMap.containsKey("pnPhoto")
+                        ? mCarParts.get("pnPhoto")
+                        : new CarPartPicture("pnPhoto", 1002));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_ticket:
-                intent.putExtra("part", mCarParts.get("receiptPhoto"));
+                intent.putExtra("part", picMap.containsKey("receiptPhoto")
+                        ? mCarParts.get("receiptPhoto")
+                        : new CarPartPicture("receiptPhoto", 1003));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_fuel:
-                intent.putExtra("part", mCarParts.get("refuelAfterPhoto"));
+                intent.putExtra("part", picMap.containsKey("refuelAfterPhoto")
+                        ? mCarParts.get("refuelAfterPhoto")
+                        : new CarPartPicture("refuelAfterPhoto", 1004));
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.oil_park:
@@ -193,7 +198,7 @@ public class RefuelActivity extends DBSBaseActivity {
                         || (!picMap.containsKey("pnPhoto") && !mCarParts.get("pnPhoto").hasPhoto())
                         || (!picMap.containsKey("receiptPhoto") && !mCarParts.get("receiptPhoto").hasPhoto())
                         || (!picMap.containsKey("refuelAfterPhoto") && !mCarParts.get("refuelAfterPhoto").hasPhoto())) {
-                    showToast("请添加所有图片");
+                    showToast("请修改红框里的图片");
                     return;
                 }
                 showProgressDialog();
@@ -236,32 +241,41 @@ public class RefuelActivity extends DBSBaseActivity {
                     case 1001:
                         if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
                             mCarParts.put(carPart.getKey(), carPart);
-                            setImage(carPart.getPhotoPath(), iv_empty);
+                            setImage(carPart.getPhotoPath(), iv_empty, error_empty);
                         }
                         break;
                     case 1002:
                         if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
                             mCarParts.put(carPart.getKey(), carPart);
-                            setImage(carPart.getPhotoPath(), iv_course);
+                            setImage(carPart.getPhotoPath(), iv_course, error_course);
                         }
                         break;
                     case 1003:
                         if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
                             mCarParts.put(carPart.getKey(), carPart);
-                            setImage(carPart.getPhotoPath(), iv_ticket);
+                            setImage(carPart.getPhotoPath(), iv_ticket, error_ticket);
                         }
                         break;
                     case 1004:
                         if (!TextUtils.isEmpty(carPart.getPhotoPath())) {
                             mCarParts.put(carPart.getKey(), carPart);
-                            setImage(carPart.getPhotoPath(), iv_fuel);
+                            setImage(carPart.getPhotoPath(), iv_fuel, error_fuel);
                         }
                         break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            resetButtonStatus();
         }
+    }
+
+    private void resetButtonStatus() {
+        boolean defect = TextUtils.isEmpty(mCarParts.get("refuelBeforePhoto").getPhotoPath())
+                || TextUtils.isEmpty(mCarParts.get("pnPhoto").getPhotoPath())
+                || TextUtils.isEmpty(mCarParts.get("receiptPhoto").getPhotoPath())
+                || TextUtils.isEmpty(mCarParts.get("refuelAfterPhoto").getPhotoPath());
+        btnSubmit.setEnabled(!defect);
     }
 
     private void uploadImg2QiNiu(final String type, final String path) {
@@ -317,6 +331,12 @@ public class RefuelActivity extends DBSBaseActivity {
                     public void onNext(BaseRetObj<RefuelObj> refuelObjBaseRetObj) {
                         if (refuelObjBaseRetObj != null && refuelObjBaseRetObj.getCode() == 1) {
                             showToast("提交成功");
+                            RefuelObj refuelObj = new RefuelObj();
+                            refuelObj.setState(1);
+                            Intent refuelIntent = new Intent();
+                            refuelIntent.putExtra("data", refuelObj);
+                            refuelIntent.setClass(RefuelActivity.this, RefuelStatusActivity.class);
+                            startActivity(refuelIntent);
                             finish();
                         } else if (refuelObjBaseRetObj != null
                                 && !TextUtils.isEmpty(refuelObjBaseRetObj.getMessage())) {
@@ -339,11 +359,13 @@ public class RefuelActivity extends DBSBaseActivity {
                 });
     }
 
-    private void setImageUrl(String path, ImageView imageView) {
+    private void setImageUrl(String path, ImageView imageView, ImageView imageView1) {
         Glide.with(this).load(BuildConfig.IMAGE_DOMAIN + path).into(imageView);
+        if (imageView1 != null) imageView1.setVisibility(View.VISIBLE);
     }
 
-    private void setImage(String path, ImageView imageView) {
+    private void setImage(String path, ImageView imageView, ImageView imageView1) {
         Glide.with(this).load(path).into(imageView);
+        if (imageView1 != null) imageView1.setVisibility(View.GONE);
     }
 }

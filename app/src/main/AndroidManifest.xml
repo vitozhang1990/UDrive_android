@@ -261,14 +261,17 @@
 
         <activity
             android:name=".utils.dialog.OffPowerDialogActivity"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.SoundRecorder" />
 
         <activity
             android:name=".utils.dialog.RechargeDialogActivity"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.SoundRecorder" />
 
         <activity
             android:name=".utils.dialog.OilDialogActivity"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.SoundRecorder" />
 
         <activity
