@@ -109,8 +109,9 @@ public class AccountInfoActivity extends DBSBaseActivity {
             case R.id.account_info_btn_exit:
                 CommonAlertDialog.builder(this)
                         .setMsg("确定要退出么？")
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("确定", v -> {
+                        .setMsgCenter(true)
+                        .setPositiveButton("取消", null)
+                        .setNegativeButton("确定", v -> {
                             String regId = JPushInterface.getRegistrationID(AccountInfoActivity.this);
                             registrationDown(regId);
                             removeCache();

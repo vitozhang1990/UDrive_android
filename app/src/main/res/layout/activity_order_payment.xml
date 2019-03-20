@@ -168,6 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lz_text_default"
+                android:typeface="serif"
                 android:textColor="@color/black"
                 android:textSize="35sp" />
 

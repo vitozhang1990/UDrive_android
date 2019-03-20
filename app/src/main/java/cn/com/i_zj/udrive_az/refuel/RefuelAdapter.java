@@ -14,7 +14,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.OilHistoryEntity;
 
 public class RefuelAdapter extends BaseQuickAdapter<OilHistoryEntity, BaseViewHolder> {
-    private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd  HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
     public RefuelAdapter(List<OilHistoryEntity> data) {
         super(R.layout.item_refuel, data);
     }

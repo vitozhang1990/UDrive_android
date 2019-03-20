@@ -257,8 +257,9 @@ public class WaitingActivity extends DBSBaseActivity implements AMapLocationList
                 CommonAlertDialog.builder(this)
                         .setTitle("取消预定")
                         .setMsg("确定要取消预定么？")
-                        .setNegativeButton("先不取消", null)
-                        .setPositiveButton("取消预定", v -> cancelReservation())
+                        .setMsgCenter(true)
+                        .setPositiveButton("先不", null)
+                        .setNegativeButton("取消", v -> cancelReservation())
                         .build()
                         .show();
                 break;

@@ -3,6 +3,7 @@ package cn.com.i_zj.udrive_az.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +22,7 @@ public class CommonAlertDialog {
     private Context mContext;
     private Dialog mDialog;
     private int mImageResource;
-    private boolean mImageTitle, mShowNegBtn, mCancelAble;
+    private boolean mImageTitle, mShowNegBtn, mCancelAble, mMsgCenter;
     private String mTitle, mMsg, mPos, mNeg;
     private OnClickListener mPosListener, mNegListener;
 
@@ -31,6 +32,7 @@ public class CommonAlertDialog {
         this.mCancelAble = builder.cancelAble;
         this.mImageTitle = builder.imageTitle;
         this.mImageResource = builder.imageResource;
+        this.mMsgCenter = builder.msgCenter;
         this.mTitle = builder.title;
         this.mMsg = builder.msg;
         this.mPos = builder.pos;
@@ -94,6 +96,7 @@ public class CommonAlertDialog {
         }
 
         txt_msg.setText(mMsg);
+        txt_msg.setGravity(mMsgCenter ? Gravity.CENTER : Gravity.LEFT | Gravity.TOP);
         btn_pos.setText(mPos);
         btn_pos.setOnClickListener(v -> {
             if (mPosListener != null) {
@@ -119,7 +122,7 @@ public class CommonAlertDialog {
         private Context context;
         private boolean imageTitle;
         private int imageResource;
-        private boolean showMsg, showPosBtn, showNegBtn, cancelAble;
+        private boolean showMsg, showPosBtn, showNegBtn, cancelAble, msgCenter;
         private String title, msg, pos, neg;
         private OnClickListener posListener, negListener;
 
@@ -152,6 +155,11 @@ public class CommonAlertDialog {
             }
             this.showMsg = true;
             this.msg = msg;
+            return this;
+        }
+
+        public Builder setMsgCenter(boolean center) {
+            this.msgCenter = center;
             return this;
         }
 

@@ -85,6 +85,7 @@ public class UdriveRestClient {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             OkHttpClient httpClient = new OkHttpClient.Builder()
+                    .connectTimeout(60, TimeUnit.SECONDS)
                     .writeTimeout(60, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(logging)

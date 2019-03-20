@@ -137,9 +137,11 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //限行Dialog
     private void showTrafficControlDialog() {
         CommonAlertDialog.builder(this)
+                .setTitle("限行提示")
                 .setMsg("该车辆今日限行！因限行引起的违章费用将由您自行负责，请确认是否继续使用该车辆？")
-                .setNegativeButton("取消", null)
-                .setPositiveButton("继续使用", v -> reservation(true))
+                .setMsgCenter(true)
+                .setPositiveButton("取消", null)
+                .setNegativeButton("继续使用", v -> reservation(true))
                 .build()
                 .show();
     }
@@ -147,7 +149,9 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     //停车费Dialog
     private void showParkOutAmountDialog(int cost) {
         CommonAlertDialog.builder(this)
+                .setTitle("支付提示")
                 .setMsg("该车辆出停车场时可能需要付费" + cost + "元，待订单结束后返还至账户余额")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", v -> reservation(false))
                 .build()
@@ -158,6 +162,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showIdCardStateDialog() {
         CommonAlertDialog.builder(this)
                 .setMsg("请先完成实名认证")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("去认证", v -> {
                     startActivity(AccountInfoActivity.class);
@@ -171,6 +176,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showDriverStateDialog() {
         CommonAlertDialog.builder(this)
                 .setMsg("请先完成驾驶认证")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("去认证", v -> {
                     startActivity(AccountInfoActivity.class);
@@ -184,6 +190,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showDepositDialog() {
         CommonAlertDialog.builder(this)
                 .setMsg("请先缴纳押金")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("去缴纳", v -> {
                     startActivity(DepositActivity.class);
@@ -196,6 +203,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showUnfinishedOrderDialog() {
         CommonAlertDialog.builder(this)
                 .setMsg("您有未支付的订单，请先支付")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("去支付", v -> {
                     startActivity(OrderActivity.class);
@@ -209,6 +217,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showUnfinshOrder() {
         CommonAlertDialog.builder(this)
                 .setMsg("您有一个订单正在进行中，是否进入")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("进入", v -> {
                     startActivity(TravelingActivity.class);
@@ -221,6 +230,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showIdCardFailure() {
         CommonAlertDialog.builder(this)
                 .setMsg("您的实名认证审核失败")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("重新认证", v -> {
                     startActivity(AccountInfoActivity.class);
@@ -233,6 +243,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
     private void showDriverFailure() {
         CommonAlertDialog.builder(this)
                 .setMsg("您的驾驶证审核失败")
+                .setMsgCenter(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("重新认证", v -> {
                     startActivity(AccountInfoActivity.class);
@@ -418,6 +429,7 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
         CommonAlertDialog.builder(this)
                 .setTitle("不计免赔服务")
                 .setMsg("购买不计免赔（5元/次）无需承担车辆保险所包含的部分经济责任")
+                .setMsgCenter(true)
                 .setNegativeButton("不购买", null)
                 .setPositiveButton("仍然购买", v -> checkbox.setChecked(true))
                 .build()

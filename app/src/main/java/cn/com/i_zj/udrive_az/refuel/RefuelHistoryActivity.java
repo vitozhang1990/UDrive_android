@@ -66,9 +66,8 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
         refuelAdapter = new RefuelAdapter(list);
         refuelAdapter.bindToRecyclerView(recyclerView);
         refuelAdapter.setEnableLoadMore(false);
-        refuelAdapter.setEmptyView(R.layout.item_refuel_empty);
 
-        getAllOil();
+        smartRefreshLayout.autoRefresh();
     }
 
     @OnClick(R.id.iv_back)
@@ -93,6 +92,7 @@ public class RefuelHistoryActivity extends DBSBaseActivity implements OnRefreshL
 
                     @Override
                     public void onNext(BaseRetObj<List<OilHistoryEntity>> listBaseRetObj) {
+                        refuelAdapter.setEmptyView(R.layout.item_refuel_empty);
                         smartRefreshLayout.finishRefresh(true);
                         if (listBaseRetObj == null || listBaseRetObj.getCode() != 1) {
                             showToast("尚未获取到数据");
