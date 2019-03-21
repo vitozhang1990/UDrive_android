@@ -124,7 +124,8 @@ public class UdriveRestClient {
         public Response intercept(Chain chain) throws IOException {
             boolean hasTarget = false;
             for (String str : whiteList) {
-                if (chain.request().url().uri().toString().contains(str)) {
+                String url = chain.request().url().uri().toString();
+                if (url.contains(str) && !url.contains("/open/registration/up")) {
                     hasTarget = true;
                     break;
                 }
