@@ -93,7 +93,6 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
         ScreenManager.getScreenManager().pushActivity(MainActivity.this);
         checkPermission();
         versionCheck();
-        getActivity();
 
         if (SessionManager.getInstance().getAuthorization() != null) {
             getUnfinishedOrder();
@@ -289,7 +288,11 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                     } else if (result.getData().getStatus() == 1) {
                                         showUnfinishedOrderDialog();
                                     }
+                                } else {
+                                    getActivity();
                                 }
+                            } else {
+                                getActivity();
                             }
                         }
                     }
@@ -343,10 +346,9 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     private void getActivity() {
         UdriveRestClient.getClentInstance().activity()
-                .delay(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<BaseRetObj<HomeActivityEntity>>bindUntilEvent(ActivityEvent.DESTROY))
+                .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new UObserver<HomeActivityEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {

@@ -133,7 +133,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
     //TODO 为啥要全局变量
     private ArrayList<ParksResult.DataBean> dataBeans = new ArrayList<>(); //所有停车场信息
-    private RefuelObj mRefuelObj;
 
     @Override
     protected int getLayoutResource() {
@@ -216,7 +215,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                             }
                             tv_amount.setText(String.format(Locale.getDefault(), "%.2f", unFinishOrderBean.getData().getOrder().getTotalAmount() / 100f));
                             drawMap();
-                            getOil();
                         } else {
                             startActivity(MainActivity.class);
                             finish();
@@ -239,6 +237,11 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     }
 
     private void getOil() {
+        if (TextUtils.isEmpty(orderNum)) {
+            showToast("尚未获取到订单号");
+            return;
+        }
+        showProgressDialog();
         UdriveRestClient.getClentInstance().refuelStatus(orderNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -250,19 +253,35 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
                     @Override
                     public void onNext(BaseRetObj<RefuelObj> refuelObj) {
+                        dissmisProgressDialog();
                         if (refuelObj == null || refuelObj.getCode() == 1) {
-                            mRefuelObj = refuelObj.getDate();
+                            Intent refuelIntent = new Intent();
+                            RefuelObj mRefuelObj = refuelObj.getDate();
+                            if (mRefuelObj == null) {
+                                mRefuelObj = new RefuelObj();
+                                mRefuelObj.setOrderNumber(orderNum);
+                            }
+                            refuelIntent.putExtra("data", mRefuelObj);
+                            if (mRefuelObj == null || mRefuelObj.getState() == 0) {
+                                refuelIntent.setClass(TravelingActivity.this, RefuelActivity.class);
+                            } else {
+                                refuelIntent.setClass(TravelingActivity.this, RefuelStatusActivity.class);
+                            }
+                            startActivity(refuelIntent);
+                        } else {
+                            showToast("获取加油状态失败，请重试");
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        dissmisProgressDialog();
+                        showToast("获取加油状态失败，请重试");
                     }
 
                     @Override
                     public void onComplete() {
-
+                        dissmisProgressDialog();
                     }
                 });
     }
@@ -313,18 +332,7 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
                 opencloseDoor("2");
                 break;
             case R.id.rl_jiayou:
-                Intent refuelIntent = new Intent();
-                if (mRefuelObj == null) {
-                    mRefuelObj = new RefuelObj();
-                    mRefuelObj.setOrderNumber(orderNum);
-                }
-                refuelIntent.putExtra("data", mRefuelObj);
-                if (mRefuelObj == null || mRefuelObj.getState() == 0) {
-                    refuelIntent.setClass(this, RefuelActivity.class);
-                } else {
-                    refuelIntent.setClass(this, RefuelStatusActivity.class);
-                }
-                startActivity(refuelIntent);
+                getOil();
                 break;
             case R.id.tv_address://更换地址提示
                 Intent intent1 = new Intent(TravelingActivity.this, ChooseParkActivity.class);
@@ -747,9 +755,6 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (!TextUtils.isEmpty(orderNum)) {
-            getOil();
-        }
     }
 
     @Override

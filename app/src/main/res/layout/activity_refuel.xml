@@ -65,6 +65,7 @@
                         android:src="@drawable/ic_camera" />
 
                     <TextView
+                        android:id="@+id/neishitext"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
@@ -123,6 +124,7 @@
                         android:src="@drawable/ic_camera" />
 
                     <TextView
+                        android:id="@+id/lefttext"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
@@ -183,6 +185,7 @@
                         android:src="@drawable/ic_camera" />
 
                     <TextView
+                        android:id="@+id/righttext"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
@@ -241,6 +244,7 @@
                         android:src="@drawable/ic_camera" />
 
                     <TextView
+                        android:id="@+id/tailtext"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
