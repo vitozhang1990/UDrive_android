@@ -1,7 +1,5 @@
 package cn.com.i_zj.udrive_az.model;
 
-import java.io.Serializable;
-
 /**
  * Created by liuwei on 2018/8/20.
  */

@@ -1,7 +1,5 @@
 package cn.com.i_zj.udrive_az.model;
 
-import java.util.List;
-
 /**
  * @author JayQiu
  * @create 2018/10/29

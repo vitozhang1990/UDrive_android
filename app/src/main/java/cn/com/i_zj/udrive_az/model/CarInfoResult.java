@@ -1,7 +1,5 @@
 package cn.com.i_zj.udrive_az.model;
 
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.util.List;
 

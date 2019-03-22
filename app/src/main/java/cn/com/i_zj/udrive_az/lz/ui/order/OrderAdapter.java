@@ -2,7 +2,6 @@ package cn.com.i_zj.udrive_az.lz.ui.order;
 
 import android.graphics.Color;
 import android.support.annotation.Nullable;
-import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;

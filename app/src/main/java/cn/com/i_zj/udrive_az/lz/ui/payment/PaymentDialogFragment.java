@@ -16,26 +16,14 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Locale;
 
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.login.AccountInfoManager;
-import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.bean.PaymentEvent;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
-import cn.com.i_zj.udrive_az.model.AccountInfoResult;
-import cn.com.i_zj.udrive_az.model.CouponResult;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
-import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
-import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.UIUtils;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * 付款PaymentDialogFragment

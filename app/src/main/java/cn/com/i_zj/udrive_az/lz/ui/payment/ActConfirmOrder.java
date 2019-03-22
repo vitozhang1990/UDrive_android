@@ -1,7 +1,5 @@
 package cn.com.i_zj.udrive_az.lz.ui.payment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;

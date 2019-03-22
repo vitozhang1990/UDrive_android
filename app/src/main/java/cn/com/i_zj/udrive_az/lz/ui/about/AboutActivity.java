@@ -3,14 +3,13 @@ package cn.com.i_zj.udrive_az.lz.ui.about;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
+import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 
 /**

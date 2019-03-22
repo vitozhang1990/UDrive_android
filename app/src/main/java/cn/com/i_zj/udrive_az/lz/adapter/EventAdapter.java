@@ -8,7 +8,6 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import cn.com.i_zj.udrive_az.model.ActivityInfo;
-import cn.com.i_zj.udrive_az.model.OrderResult;
 
 /**
  * @author JayQiu

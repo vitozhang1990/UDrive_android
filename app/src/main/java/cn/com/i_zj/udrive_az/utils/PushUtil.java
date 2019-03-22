@@ -1,15 +1,11 @@
 package cn.com.i_zj.udrive_az.utils;
 
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**

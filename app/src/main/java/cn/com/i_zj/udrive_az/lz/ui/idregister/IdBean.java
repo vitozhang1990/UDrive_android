@@ -1,8 +1,5 @@
 package cn.com.i_zj.udrive_az.lz.ui.idregister;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 /**

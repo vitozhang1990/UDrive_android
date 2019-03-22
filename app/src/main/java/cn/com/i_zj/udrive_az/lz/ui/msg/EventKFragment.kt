@@ -11,7 +11,6 @@ import cn.com.i_zj.udrive_az.model.ret.RetEventObj
 import cn.com.i_zj.udrive_az.network.UObserver
 import cn.com.i_zj.udrive_az.network.UdriveRestClient
 import cn.com.i_zj.udrive_az.utils.StringUtils
-import cn.com.i_zj.udrive_az.utils.ToolsUtils
 import cn.com.i_zj.udrive_az.view.EmptyView
 import cn.com.i_zj.udrive_az.web.WebActivity
 import com.trello.rxlifecycle2.android.FragmentEvent

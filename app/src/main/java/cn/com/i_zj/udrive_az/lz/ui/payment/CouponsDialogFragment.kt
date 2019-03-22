@@ -13,7 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import cn.com.i_zj.udrive_az.R
 import cn.com.i_zj.udrive_az.login.AccountInfoManager
-import cn.com.i_zj.udrive_az.login.SessionManager
 import cn.com.i_zj.udrive_az.lz.adapter.CouponsAdapter
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult

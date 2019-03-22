@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment
 import android.widget.LinearLayout
 import cn.com.i_zj.udrive_az.R
 import cn.com.i_zj.udrive_az.model.ActivityInfo
-import cn.com.i_zj.udrive_az.utils.SizeUtils
 import cn.com.i_zj.udrive_az.utils.ToolsUtils
 import cn.com.i_zj.udrive_az.utils.image.FrescoImgUtil
 import com.chad.library.adapter.base.BaseQuickAdapter

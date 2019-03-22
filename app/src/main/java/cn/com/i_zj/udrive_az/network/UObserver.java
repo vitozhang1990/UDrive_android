@@ -1,18 +1,12 @@
 package cn.com.i_zj.udrive_az.network;
 
-import android.widget.Toast;
-
 import com.alipay.android.phone.mrpc.core.HttpException;
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.JsonParseException;
 
 import java.io.InterruptedIOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 
-import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

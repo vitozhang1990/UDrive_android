@@ -22,7 +22,6 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
-import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentDialogFragment;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.OrderResult;

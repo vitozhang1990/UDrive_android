@@ -93,26 +93,11 @@
             android:name=".login.RechargeActivity"
             android:label="@string/activity_recharge"
             android:theme="@style/DBSActivity" />
-        <activity
-            android:name=".lz.ui.share.ShareActivity"
-            android:label="@string/activity_share"
-            android:theme="@style/AppTheme.NoActionBar" />
         <!--用户-->
         <activity
             android:name=".lz.ui.accountinfo.AccountInfoActivity"
             android:label="@string/activity_account_info"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".lz.ui.accountinfo.certification.ActIdentificationIDCard"
-            android:hardwareAccelerated="false"
-            android:label="@string/activity_account_info"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".lz.ui.accountinfo.certification.ActIdentificationDrivingLicense"
-            android:label="@string/activity_account_info"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoTitleFullscreen" />
         <activity
             android:name=".step.StepActivity"
             android:screenOrientation="portrait"
@@ -125,11 +110,6 @@
             android:name=".step.StepDriveCardActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.zjcx.face.camera.CameraActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/NoTitleFullscreen" />
-
         <activity
             android:name=".lz.ui.about.AboutActivity"
             android:label="@string/activity_about"

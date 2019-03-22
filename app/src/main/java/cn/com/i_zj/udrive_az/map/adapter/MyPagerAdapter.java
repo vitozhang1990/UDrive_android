@@ -4,17 +4,14 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.map.fragment.BaseFragmentAdapter;
 
 /**
  * Created by liuwei on 2017/8/5.

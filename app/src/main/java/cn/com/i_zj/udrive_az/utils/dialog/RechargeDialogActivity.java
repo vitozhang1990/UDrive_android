@@ -1,16 +1,13 @@
 package cn.com.i_zj.udrive_az.utils.dialog;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Window;
 
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.R;
-import cn.com.i_zj.udrive_az.lz.ui.wallet.MyWalletActivity;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 
 public class RechargeDialogActivity extends Activity {

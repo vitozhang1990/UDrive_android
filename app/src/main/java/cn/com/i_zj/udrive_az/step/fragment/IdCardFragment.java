@@ -2,7 +2,6 @@ package cn.com.i_zj.udrive_az.step.fragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;

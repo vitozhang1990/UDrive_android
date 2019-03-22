@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
-import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 
 // TODO 与 SessionManager 抽取相同逻辑
