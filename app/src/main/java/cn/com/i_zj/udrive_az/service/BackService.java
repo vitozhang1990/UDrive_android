@@ -171,7 +171,8 @@ public class BackService extends BaseService {
                     EventBus.getDefault().post(new WebSocketCloseEvent());
                     if (kill.getData() != null) {
                         intent.setClass(BackService.this, ActConfirmOrder.class);
-                        intent.putExtra(PaymentActivity.ORDER_NUMBER, kill.getData().getNumber());
+                        intent.putExtra(ActConfirmOrder.ORDER_NUMBER, kill.getData().getNumber());
+                        intent.putExtra(ActConfirmOrder.ORDER_ID, kill.getData().getId());
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         BackService.this.startActivity(intent);
                     } else {

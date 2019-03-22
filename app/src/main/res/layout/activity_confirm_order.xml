@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:paddingBottom="10dp">
 
-    <include layout="@layout/layout_lz_toolbar" />
+    <include layout="@layout/layout_header" />
 
     <View style="@style/line_horizontal" />
 

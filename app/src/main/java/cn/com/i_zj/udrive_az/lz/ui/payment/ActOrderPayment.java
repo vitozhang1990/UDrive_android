@@ -1,10 +1,18 @@
 package cn.com.i_zj.udrive_az.lz.ui.payment;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +32,10 @@ import com.amap.api.trace.TraceLocation;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.trello.rxlifecycle2.android.ActivityEvent;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +48,14 @@ import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
+import cn.com.i_zj.udrive_az.model.ShareInfo;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.refuel.RefuelHistoryActivity;
 import cn.com.i_zj.udrive_az.utils.AMapUtil;
 import cn.com.i_zj.udrive_az.utils.CarTypeImageUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.ShareCouponDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -56,9 +70,15 @@ import io.reactivex.schedulers.Schedulers;
  * @Describe 订单支付---完成
  */
 public class ActOrderPayment extends DBSBaseActivity {
-    public static final String TITLE = "title";
     public static final String ORDER_NUMBER = "order_number";
+    public static final String ORDER_ID = "order_id";
     private final String TAG = getClass().getSimpleName();
+
+    @BindView(R.id.header_title)
+    TextView header_title;
+    @BindView(R.id.header_image)
+    ImageView header_image;
+
     @BindView(R.id.iv_car)
     ImageView ivCar;
     @BindView(R.id.tv_car_number)
@@ -87,6 +107,8 @@ public class ActOrderPayment extends DBSBaseActivity {
     private AMap mAmap;
     private Context mContext;
     private String orderNumber;
+    private int orderId;
+    private String shareUrl;
     private ArrayList<Polyline> mDrawnLines = new ArrayList<>(); //所有的line集合
 
     @Override
@@ -100,8 +122,12 @@ public class ActOrderPayment extends DBSBaseActivity {
         MapUtils.statusBarColor(this);
         mContext = this;
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
+        orderId = getIntent().getIntExtra(ORDER_ID, 0);
+
+        header_title.setText("已完成");
         initViewstMap(savedInstanceState);
         findTripOrders();
+        getShareUrl();
     }
 
     private void initViewstMap(Bundle savedInstanceState) {
@@ -112,6 +138,37 @@ public class ActOrderPayment extends DBSBaseActivity {
         uiSettings.setTiltGesturesEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
         MapUtils.setMapCustomStyleFile(this, mAmap);
+    }
+
+    public void getShareUrl() {
+        UdriveRestClient.getClentInstance().getShareUrl(orderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<ShareInfo>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<ShareInfo> shareInfoBaseRetObj) {
+                        if (shareInfoBaseRetObj != null && shareInfoBaseRetObj.getCode() == 1 &&
+                                shareInfoBaseRetObj.getDate() != null && !TextUtils.isEmpty(shareInfoBaseRetObj.getDate().url)) {
+                            shareUrl = shareInfoBaseRetObj.getDate().url;
+                            header_image.setImageResource(R.drawable.ic_enjoy);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     public void findTripOrders() {
@@ -243,11 +300,25 @@ public class ActOrderPayment extends DBSBaseActivity {
         }
     }
 
-    @OnClick({R.id.iv_back, R.id.tv_detail, R.id.tv_oil_detail})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.tv_detail, R.id.tv_oil_detail})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.iv_back:
+            case R.id.header_left:
                 finish();
+                break;
+            case R.id.header_right:
+                if (TextUtils.isEmpty(shareUrl)) {
+                    return;
+                }
+                ShareCouponDialog dialog = new ShareCouponDialog(this);
+                dialog.setListener(() -> {
+                    UMWeb web = new UMWeb(shareUrl);
+                    web.setTitle("【你行你开】领取红包，出行更便宜");
+                    web.setThumb(new UMImage(mContext, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+                    web.setDescription("我刚用完车，快来和我一起领取红包吧");
+                    showShareDialog(web);
+                });
+                dialog.show();
                 break;
             case R.id.tv_detail:
                 WebActivity.startWebActivity(ActOrderPayment.this, UdriveRestAPI.DETAIL_URL + orderNumber);
@@ -256,5 +327,49 @@ public class ActOrderPayment extends DBSBaseActivity {
                 RefuelHistoryActivity.startActivity(this, orderNumber);
                 break;
         }
+    }
+
+    private void showShareDialog(UMWeb web) {
+        View view = LayoutInflater.from(this).inflate(R.layout.customshare_layout, null);
+        final Dialog dialog = new Dialog(this, R.style.UpdateDialogStytle);
+        dialog.setContentView(view);
+        dialog.show();
+        View.OnClickListener listener = v -> {
+            switch (v.getId()) {
+                case R.id.view_share_weixin:
+                    // 分享到微信
+                    share(web, SHARE_MEDIA.WEIXIN);
+                    break;
+                case R.id.view_share_oyq:
+                    // 分享到朋友圈
+                    share(web, SHARE_MEDIA.WEIXIN_CIRCLE);
+                    break;
+                case R.id.share_cancel_btn:
+                    // 取消
+                    break;
+            }
+            dialog.dismiss();
+        };
+        ViewGroup mViewWeixin = view.findViewById(R.id.view_share_weixin);
+        ViewGroup mViewPengyou = view.findViewById(R.id.view_share_oyq);
+        TextView mBtnCancel = view.findViewById(R.id.share_cancel_btn);
+        mViewWeixin.setOnClickListener(listener);
+        mViewPengyou.setOnClickListener(listener);
+        mBtnCancel.setOnClickListener(listener);
+
+        // 设置相关位置，一定要在 show()之后
+        Window window = dialog.getWindow();
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.gravity = Gravity.BOTTOM;
+        window.setAttributes(params);
+    }
+
+    private void share(UMWeb web, SHARE_MEDIA type) {
+        new ShareAction(this)
+                .withMedia(web)
+                .setPlatform(type)
+                .share();
     }
 }

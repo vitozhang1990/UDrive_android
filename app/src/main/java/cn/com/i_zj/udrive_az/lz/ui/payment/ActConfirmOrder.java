@@ -1,16 +1,22 @@
 package cn.com.i_zj.udrive_az.lz.ui.payment;
 
+import android.app.Dialog;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +26,10 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -47,8 +57,10 @@ import cn.com.i_zj.udrive_az.model.AliPayResult;
 import cn.com.i_zj.udrive_az.model.DiscountEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.PayOrderByBlanceResult;
+import cn.com.i_zj.udrive_az.model.ShareInfo;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestAPI;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
@@ -56,6 +68,7 @@ import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.SizeUtils;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
+import cn.com.i_zj.udrive_az.utils.dialog.ShareCouponDialog;
 import cn.com.i_zj.udrive_az.web.WebActivity;
 import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
 import io.reactivex.Observer;
@@ -71,9 +84,12 @@ import io.reactivex.schedulers.Schedulers;
 public class ActConfirmOrder extends DBSBaseActivity {
     public static final String TITLE = "title";
     public static final String ORDER_NUMBER = "order_number";
+    public static final String ORDER_ID = "order_id";
     public static final int PAY_YU_E = 1;
     public static final int PAY_ALI = 2;
     public static final int PAY_WECHAT = 3;
+    @BindView(R.id.header_title)
+    TextView header_title;
     @BindView(R.id.tv_sub_money_count)
     TextView tvSubMoneyCount;
     @BindView(R.id.tv_coupon)
@@ -97,6 +113,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     private DiscountEntity discountEntity;
     private String title;
     private String orderNumber;
+    private int orderId;
     private OrderDetailResult.OrderItem mOrderItem;
     private CouponsDialogFragment couponDialogFragment;
 
@@ -110,36 +127,31 @@ public class ActConfirmOrder extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
+        orderId = getIntent().getIntExtra(ORDER_ID, 0);
         initView();
 
         findTripOrders();
+        getShareUrl();
     }
 
     private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.confirm_order);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View view) {
-                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)
-                        || ScreenManager.getScreenManager().isHaveActivity(TravelingActivity.class)) {
-                    startActivity(MainActivity.class);
-                }
-                finish();
-            }
-        });
-
+        header_title.setText("确认订单");
         payYuE.setView(R.mipmap.ic_payment_yue, "余额", true);
         payAlipay.setView(R.mipmap.ic_payment_alipay, "支付宝", !payYuE.isCheck());
         payWechat.setView(R.mipmap.ic_payment_wechat, "微信", !payYuE.isCheck() && !payAlipay.isCheck());
 
     }
 
-    @OnClick({R.id.tv_coupon, R.id.btn_commit, R.id.pay_yu_e, R.id.pay_alipay, R.id.pay_wechat, R.id.tv_vip_money_name, R.id.tv_detail})
+    @OnClick({R.id.header_left, R.id.tv_coupon, R.id.btn_commit, R.id.pay_yu_e, R.id.pay_alipay, R.id.pay_wechat, R.id.tv_vip_money_name, R.id.tv_detail})
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.header_left:
+                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)
+                        || ScreenManager.getScreenManager().isHaveActivity(TravelingActivity.class)) {
+                    startActivity(MainActivity.class);
+                }
+                finish();
+                break;
             case R.id.tv_coupon:
                 if (mOrderItem == null) {
                     return;
@@ -201,6 +213,44 @@ public class ActConfirmOrder extends DBSBaseActivity {
                 .show();
     }
 
+    public void getShareUrl() {
+        UdriveRestClient.getClentInstance().getShareUrl(orderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<ShareInfo>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<ShareInfo> shareInfoBaseRetObj) {
+                        if (shareInfoBaseRetObj != null && shareInfoBaseRetObj.getCode() == 1 &&
+                                shareInfoBaseRetObj.getDate() != null && !TextUtils.isEmpty(shareInfoBaseRetObj.getDate().url)) {
+                            ShareCouponDialog dialog = new ShareCouponDialog(ActConfirmOrder.this);
+                            dialog.setListener(() -> {
+                                UMWeb web = new UMWeb(shareInfoBaseRetObj.getDate().url);
+                                web.setTitle("【你行你开】领取红包，出行更便宜");
+                                web.setThumb(new UMImage(ActConfirmOrder.this, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+                                web.setDescription("我刚用完车，快来和我一起领取红包吧");
+                                showShareDialog(web);
+                            });
+                            dialog.show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     public void findTripOrders() {
         showProgressDialog(true);
         UdriveRestClient.getClentInstance().tripOrderDetail(orderNumber)
@@ -237,6 +287,50 @@ public class ActConfirmOrder extends DBSBaseActivity {
 
                     }
                 });
+    }
+
+    private void showShareDialog(UMWeb web) {
+        View view = LayoutInflater.from(this).inflate(R.layout.customshare_layout, null);
+        final Dialog dialog = new Dialog(this, R.style.UpdateDialogStytle);
+        dialog.setContentView(view);
+        dialog.show();
+        View.OnClickListener listener = v -> {
+            switch (v.getId()) {
+                case R.id.view_share_weixin:
+                    // 分享到微信
+                    share(web, SHARE_MEDIA.WEIXIN);
+                    break;
+                case R.id.view_share_oyq:
+                    // 分享到朋友圈
+                    share(web, SHARE_MEDIA.WEIXIN_CIRCLE);
+                    break;
+                case R.id.share_cancel_btn:
+                    // 取消
+                    break;
+            }
+            dialog.dismiss();
+        };
+        ViewGroup mViewWeixin = view.findViewById(R.id.view_share_weixin);
+        ViewGroup mViewPengyou = view.findViewById(R.id.view_share_oyq);
+        TextView mBtnCancel = view.findViewById(R.id.share_cancel_btn);
+        mViewWeixin.setOnClickListener(listener);
+        mViewPengyou.setOnClickListener(listener);
+        mBtnCancel.setOnClickListener(listener);
+
+        // 设置相关位置，一定要在 show()之后
+        Window window = dialog.getWindow();
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.gravity = Gravity.BOTTOM;
+        window.setAttributes(params);
+    }
+
+    private void share(UMWeb web, SHARE_MEDIA type) {
+        new ShareAction(this)
+                .withMedia(web)
+                .setPlatform(type)
+                .share();
     }
 
     private void showDate(OrderDetailResult value) {

@@ -21,7 +21,6 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
-import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.OrderResult;
@@ -94,12 +93,13 @@ public class OrderActivity extends DBSBaseActivity
             startActivity(TravelingActivity.class);
         } else if (orderItem.status == Constants.ORDER_WAIT_PAY) {// 待付款
             Intent intent1 = new Intent(this, ActConfirmOrder.class);
-            intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
+            intent1.putExtra(ActConfirmOrder.ORDER_NUMBER, orderItem.number);
+            intent1.putExtra(ActConfirmOrder.ORDER_ID, orderItem.id);
             startActivity(intent1);
         } else if (orderItem.status == Constants.ORDER_FINISH) {// 已完成
             Intent intent2 = new Intent(this, ActOrderPayment.class);
-            intent2.putExtra(PaymentActivity.ORDER_NUMBER, orderItem.number);
-            intent2.putExtra(ActOrderPayment.TITLE, getResources().getString(R.string.order_finish));
+            intent2.putExtra(ActOrderPayment.ORDER_NUMBER, orderItem.number);
+            intent2.putExtra(ActOrderPayment.ORDER_ID, orderItem.id);
             startActivity(intent2);
         }
     }

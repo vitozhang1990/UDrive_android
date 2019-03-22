@@ -36,7 +36,6 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.event.WebSocketCloseEvent;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
-import cn.com.i_zj.udrive_az.lz.ui.payment.PaymentActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
 import cn.com.i_zj.udrive_az.model.PhotoBean;
@@ -153,7 +152,8 @@ public class PictureAfterActivity extends DBSBaseActivity {
                             if (bean.code == 1) {
                                 ToastUtils.showShort("还车成功");
                                 Intent intent1 = new Intent(PictureAfterActivity.this, ActConfirmOrder.class);
-                                intent1.putExtra(PaymentActivity.ORDER_NUMBER, orderNum);
+                                intent1.putExtra(ActConfirmOrder.ORDER_NUMBER, orderNum);
+                                intent1.putExtra(ActConfirmOrder.ORDER_ID, bean.data.id);
                                 startActivity(intent1);
                                 EventBus.getDefault().post(new OrderFinishEvent());
                                 EventBus.getDefault().post(new WebSocketCloseEvent());

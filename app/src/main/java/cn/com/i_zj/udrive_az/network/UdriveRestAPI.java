@@ -36,6 +36,7 @@ import cn.com.i_zj.udrive_az.model.RechargeOrder;
 import cn.com.i_zj.udrive_az.model.RefundDepositResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
 import cn.com.i_zj.udrive_az.model.SessionResult;
+import cn.com.i_zj.udrive_az.model.ShareInfo;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
 import cn.com.i_zj.udrive_az.model.UnUseCouponResult;
 import cn.com.i_zj.udrive_az.model.UserDepositResult;
@@ -326,6 +327,9 @@ public interface UdriveRestAPI {
 
     @GET("/mobile/activity/page")
     Observable<BaseRetObj<RetEventObj>> activityPage(@Query("pageNumber") int pageNumber, @Query("pageSize") int pageSize);
+
+    @GET("/mobile/tripOrder/getShareUrl/{orderId}")
+    Observable<BaseRetObj<ShareInfo>> getShareUrl(@Path("orderId") int orderId);
 
     /**
      * 获取停车场图片
