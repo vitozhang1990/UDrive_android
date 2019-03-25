@@ -16,8 +16,8 @@ android {
         minSdkVersion 18
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 22
-        versionName "1.20.0"
+        versionCode 23
+        versionName "1.20.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
@@ -99,11 +99,29 @@ android {
     }
 }
 
+afterEvaluate {
+    android.applicationVariants.each { variant ->
+        def bugtagsAppKey = null
+        def bugtagsAppSecret = null
+
+        if (variant.name.contains("debug")) {
+            bugtagsAppKey = 'd6aeaf5636259046f115c36522316c61'
+            bugtagsAppSecret = '51ee2447f7a9efea343e03743cd963e5'
+        } else if (variant.name.contains("release")) {
+            bugtagsAppKey = '6033d61cbc594606381c757239b9a3ca'
+            bugtagsAppSecret = '50450ff2cbcbe809ae7010d60301cb4d'
+        }
+
+        variant.ext.bugtagsAppKey = bugtagsAppKey
+        variant.ext.bugtagsAppSecret = bugtagsAppSecret
+    }
+}
+
 apply plugin: 'com.bugtags.library.plugin'
 
 bugtags {
-    appKey "d6aeaf5636259046f115c36522316c61"  //这里是你的 appKey
     mappingUploadEnabled true
+    trackingNetworkEnabled true
 }
 
 dependencies {

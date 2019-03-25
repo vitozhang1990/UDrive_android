@@ -36,7 +36,7 @@ public class App extends MultiDexApplication {
         appContext = this;
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-        Bugtags.start("d6aeaf5636259046f115c36522316c61", this, Bugtags.BTGInvocationEventNone);
+        Bugtags.start(BuildConfig.DEBUG ? "d6aeaf5636259046f115c36522316c61" : "6033d61cbc594606381c757239b9a3ca", this, Bugtags.BTGInvocationEventNone);
         Utils.init(this);
         UMConfigure.setLogEnabled(true);
         UMConfigure.init(this, "5b814289b27b0a7e080000b4"

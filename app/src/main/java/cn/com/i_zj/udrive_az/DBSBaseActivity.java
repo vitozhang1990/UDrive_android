@@ -166,7 +166,7 @@ public abstract class DBSBaseActivity extends BaseActivity implements ISupportAc
     }
 
     public void dissmisProgressDialog() {
-        if (null != progressDialog && progressDialog.isShowing()) {
+        if (null != progressDialog && progressDialog.isShowing() && !isFinishing()) {
             progressDialog.dismiss();
         }
     }
