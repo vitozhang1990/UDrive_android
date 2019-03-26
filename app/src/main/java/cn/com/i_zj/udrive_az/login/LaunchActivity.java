@@ -11,6 +11,8 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.service.BackService;
+import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.LocalCacheUtils;
 
 /**
  * 启动页面
@@ -26,10 +28,15 @@ public class LaunchActivity extends DBSBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startService(new Intent(LaunchActivity.this, BackService.class));
+        final boolean isFirst = LocalCacheUtils.getPersistentSettingBoolean(Constants.SP_GLOBAL_NAME, Constants.SP_First, true);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                startActivity(MainActivity.class);
+                if (isFirst) {
+                    startActivity(SplashActivity.class);
+                } else {
+                    startActivity(MainActivity.class);
+                }
                 finish();
             }
         }, 800);

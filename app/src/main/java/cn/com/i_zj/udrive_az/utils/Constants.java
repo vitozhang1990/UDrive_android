@@ -18,6 +18,7 @@ public class Constants {
   public static final String SP_CITY_LIST = "sp_city_list";
   public static final String SP_CITY = "sp_city";
   public static final String SP_Access_Token = "sp_Access_Token";
+  public static final String SP_First = "sp_First";
 
   public static final String INTENT_KET_COMMENT_DATA = "intent_key_comment_data";
 
