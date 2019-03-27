@@ -50,6 +50,7 @@ import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
+import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -125,6 +126,7 @@ public class ActConfirmOrder extends DBSBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MapUtils.statusBarColor(this);
         title = getIntent().getStringExtra(TITLE);
         orderNumber = getIntent().getStringExtra(ORDER_NUMBER);
         orderId = getIntent().getIntExtra(ORDER_ID, 0);

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:paddingBottom="10dp">
 
@@ -38,7 +39,6 @@
                     android:layout_weight="1"
                     android:gravity="right"
                     android:text="@string/lz_text_default" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -59,10 +59,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
                     android:drawableRight="@mipmap/ic_arrow_s"
+                    android:gravity="right"
                     android:text="" />
-
             </LinearLayout>
 
             <View style="@style/line_horizontal" />
@@ -83,10 +82,10 @@
                 android:padding="@dimen/margin_sixteen">
 
                 <TextView
+                    android:id="@+id/tv_vip_money_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:id="@+id/tv_vip_money_name"
                     android:drawableRight="@mipmap/ic_help"
                     android:drawablePadding="@dimen/margin_4"
                     android:text="VIP专享" />
@@ -99,9 +98,7 @@
                     android:gravity="right"
                     android:text="@string/no_can_use"
                     android:textColor="@color/traffic_control" />
-
             </RelativeLayout>
-
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -111,25 +108,23 @@
                 android:paddingRight="@dimen/margin_sixteen">
 
                 <TextView
+                    android:id="@+id/tv_real_pay_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lz_text_default"
-                    android:id="@+id/tv_real_pay_amount"
                     android:textColor="@color/black"
-
                     android:textSize="30sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/tv_real_pay_amount"
                     android:layout_marginLeft="6dp"
+                    android:layout_marginBottom="@dimen/margin_4"
+                    android:layout_toRightOf="@+id/tv_real_pay_amount"
                     android:gravity="right"
                     android:text="元"
-                    android:layout_marginBottom="@dimen/margin_4"
-                    android:layout_alignBottom="@+id/tv_real_pay_amount"
-                    android:layout_toRightOf="@+id/tv_real_pay_amount"
                     android:textColor="@color/black" />
-
             </RelativeLayout>
 
             <LinearLayout
@@ -140,11 +135,10 @@
                 android:gravity="center">
 
                 <TextView
+                    android:id="@+id/tv_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableRight="@mipmap/ic_arrow_s"
-
-                    android:id="@+id/tv_detail"
                     android:gravity="center"
                     android:text="@string/cost_detail"
                     android:textSize="12sp" />
@@ -177,8 +171,8 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/shape_lz_btn_bg"
                 android:text="确认支付"
-                android:visibility="gone"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

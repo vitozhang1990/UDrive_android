@@ -32,7 +32,7 @@ import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
 import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
-import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
@@ -284,7 +284,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                                         }
                                         startActivity(TravelingActivity.class);
                                     } else if (result.getData().getStatus() == 1) {
-                                        showUnfinishedOrderDialog();
+                                        showUnfinishedOrderDialog(result.getData().getId(), result.getData().getNumber());
                                     }
                                 } else {
                                     getActivity();
@@ -427,14 +427,17 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
     }
 
-    private void showUnfinishedOrderDialog() {
+    private void showUnfinishedOrderDialog(int id, String number) {
         if (unfinishedOrderDialog == null) {
             unfinishedOrderDialog = CommonAlertDialog.builder(this)
                     .setTitle("通知")
                     .setMsg("您有未付款的订单")
+                    .setMsgCenter(true)
                     .setNegativeButton("取消", null)
                     .setPositiveButton("去付款", v -> {
-                        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ActConfirmOrder.class);
+                        intent.putExtra(ActConfirmOrder.ORDER_NUMBER, number);
+                        intent.putExtra(ActConfirmOrder.ORDER_ID, id);
                         startActivityForResult(intent, 103);
                     })
                     .build();
