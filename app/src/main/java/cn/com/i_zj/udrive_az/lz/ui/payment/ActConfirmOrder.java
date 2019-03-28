@@ -132,8 +132,13 @@ public class ActConfirmOrder extends DBSBaseActivity {
         orderId = getIntent().getIntExtra(ORDER_ID, 0);
         initView();
 
-        findTripOrders();
         getShareUrl();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        findTripOrders();
     }
 
     private void initView() {
