@@ -396,7 +396,8 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void dissmisProgressDialog() {
-        if (null != progressDialog && progressDialog.isShowing()) {
+        if (null != progressDialog && progressDialog.isShowing()
+                && getActivity() != null && !getActivity().isFinishing()) {
             progressDialog.dismiss();
         }
     }

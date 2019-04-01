@@ -124,6 +124,13 @@ bugtags {
     trackingNetworkEnabled true
 }
 
+configurations.all {
+    resolutionStrategy {  //兼容4.4系统
+        force 'com.squareup.okhttp3:okhttp:3.12.1'
+        force 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
