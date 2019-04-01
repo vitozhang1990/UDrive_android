@@ -93,6 +93,19 @@
         app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
         app:item_tv_right_text_color="@color/right_text_color" />
 
+    <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
+        android:id="@+id/di_violation"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_drawer_left_item_height"
+        android:background="@drawable/selector_lz_item_press"
+        app:item_image_left_margin="20dp"
+        app:item_image_src="@drawable/ic_break"
+        app:item_tv_mid_left_margin="10dp"
+        app:item_tv_mid_text="@string/lz_my_safe"
+        app:item_tv_mid_text_color="@color/black"
+        app:item_tv_right_right_margin="@dimen/main_drawer_left_item_right_margin"
+        app:item_tv_right_text_color="@color/right_text_color" />
+
 
     <cn.com.i_zj.udrive_az.lz.view.DrawerItemView
         android:id="@+id/di_about"

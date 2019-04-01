@@ -49,6 +49,7 @@ import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
+import cn.com.i_zj.udrive_az.model.ret.ViolationObj;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -348,4 +349,7 @@ public interface UdriveRestAPI {
 
     @GET("/mobile/tripOrder/refuel/check")
     Observable<BaseRetObj<RefuelObj>> refuelStatus(@Query("number") String number);
+
+    @GET("/mobile/illegal/list")
+    Observable<BaseRetObj<ViolationObj>> illegalList(@Query("pageSize") int pageSize, @Query("pageNumber") int pageNumber);
 }

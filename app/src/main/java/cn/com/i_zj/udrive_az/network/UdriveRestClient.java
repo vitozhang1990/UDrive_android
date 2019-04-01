@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.event.GotoLoginDialogEvent1;
 import cn.com.i_zj.udrive_az.login.SessionManager;
+import cn.com.i_zj.udrive_az.lz.ui.violation.MockInterceptor;
 import cn.com.i_zj.udrive_az.model.CityListResult;
 import cn.com.i_zj.udrive_az.model.SessionResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
@@ -89,7 +90,8 @@ public class UdriveRestClient {
                     .writeTimeout(60, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(logging)
-                    .addInterceptor(new ResponseInterceptor()).build();
+                    .addInterceptor(new ResponseInterceptor())
+                    .addInterceptor(new MockInterceptor()).build();
             Gson buildGson = new GsonBuilder()
                     .setDateFormat("yyyy-MM-dd HH:mm:ss")
 //                    .registerTypeAdapter(String.class, new StringDefaultNullAdapter())

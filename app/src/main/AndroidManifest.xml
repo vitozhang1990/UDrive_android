@@ -94,6 +94,12 @@
             android:label="@string/activity_deposit"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".lz.ui.violation.ViolationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".lz.ui.violation.ViolationDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".login.RechargeActivity"
             android:label="@string/activity_recharge"
             android:theme="@style/DBSActivity" />

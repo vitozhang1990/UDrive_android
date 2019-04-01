@@ -34,6 +34,7 @@ import cn.com.i_zj.udrive_az.lz.ui.about.AboutActivity;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.AccountInfoActivity;
 import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.lz.view.DrawerItemView;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.ActivityResult;
@@ -125,7 +126,7 @@ public class DrawerLeftFragment extends DBSBaseFragment {
         }
     }
 
-    @OnClick({R.id.rl_head, R.id.di_my_type, R.id.di_money, R.id.di_deposit, R.id.di_about, R.id.share})
+    @OnClick({R.id.rl_head, R.id.di_my_type, R.id.di_money, R.id.di_deposit, R.id.di_violation, R.id.di_about, R.id.share})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_head:  //我的信息
@@ -152,6 +153,13 @@ public class DrawerLeftFragment extends DBSBaseFragment {
             case R.id.di_deposit: //我的押金
                 if (SessionManager.getInstance().isLogin()) {
                     startActivity(DepositActivity.class);
+                } else {
+                    EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
+                }
+                break;
+            case R.id.di_violation:
+                if (SessionManager.getInstance().isLogin()) {
+                    startActivity(ViolationActivity.class);
                 } else {
                     EventBus.getDefault().post(new GotoLoginDialogEvent(GotoLoginDialogEvent.NextJump.MONEY_ACTIVITY));
                 }
