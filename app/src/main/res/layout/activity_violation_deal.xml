@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    android:fitsSystemWindows="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_header" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="请上传违章小票，blah blah" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="197dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp">
+
+        <RelativeLayout
+            android:id="@+id/btn_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F0F0F0">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="33dp"
+                android:src="@drawable/pic_ticket_break" />
+
+            <ImageView
+                android:id="@+id/iv_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"
+                android:src="@drawable/ic_camera" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
+                android:background="#80000000"
+                android:gravity="center"
+                android:text="违章小票"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/error_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_oil_error"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_commit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_bottom_radius"
+            android:text="去处理"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -14,16 +14,21 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 
-public class ViolationDetailActivity extends DBSBaseActivity {
+public class ViolationDealActivity extends DBSBaseActivity {
 
     @BindView(R.id.header_title)
     TextView header_title;
     @BindView(R.id.header_image)
     ImageView header_image;
 
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+    @BindView(R.id.error_empty)
+    ImageView error_empty;
+
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_violation_detail;
+        return R.layout.activity_violation_deal;
     }
 
     @Override
@@ -31,11 +36,11 @@ public class ViolationDetailActivity extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
 
-        header_title.setText("违章信息");
+        header_title.setText("违章处理");
         header_image.setImageResource(R.mipmap.ic_service);
     }
 
-    @OnClick({R.id.header_left, R.id.header_right, R.id.btn_commit})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.btn_empty, R.id.btn_commit})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -47,9 +52,11 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                 intent.setData(data);
                 startActivity(intent);
                 break;
+            case R.id.btn_empty:
+                break;
             case R.id.btn_commit:
-                startActivity(ViolationDealActivity.class);
                 break;
         }
     }
+
 }

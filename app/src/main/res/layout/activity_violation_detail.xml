@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F1F1F1"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -12,4 +13,171 @@
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:src="@drawable/pic_safe" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:text="订单信息"
+            android:textColor="#030303"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:drawableRight="@mipmap/ic_arrow_home"
+            android:gravity="center_vertical"
+            android:text="详情"
+            android:textColor="#030303"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#F1F1F1" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:background="@color/white"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2019-03-25至2019-03-26"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:text="川A QU203"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="菁蓉汇地下停车场-广都停车场"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/pic_cartype_baolai" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:text="违章信息"
+            android:textColor="#030303"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:gravity="center_vertical"
+            android:text="罚款："
+            android:textColor="#030303"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#F1F1F1" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="时间：2019-03-25 10:18:06"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:text="地点：古柏路与金芙蓉大道交叉口"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="行为：机动车违反禁止标线指示的"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_commit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_bottom_radius"
+            android:text="去处理"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
 </LinearLayout>
