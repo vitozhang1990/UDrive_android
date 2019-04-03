@@ -7,6 +7,7 @@ import java.util.Map;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
 import cn.com.i_zj.udrive_az.lz.bean.ParkRemark;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDealActivity;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.ActivityResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -49,6 +50,7 @@ import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
+import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationObj;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
@@ -352,4 +354,10 @@ public interface UdriveRestAPI {
 
     @GET("/mobile/illegal/list")
     Observable<BaseRetObj<ViolationObj>> illegalList(@Query("pageSize") int pageSize, @Query("pageNumber") int pageNumber);
+
+    @GET("/mobile/illegal/{id}")
+    Observable<BaseRetObj<ViolationDetailObj>> getIllegal(@Path("id") int id);
+
+    @PUT("/mobile/illegal/{id}")
+    Observable<BaseRetObj<ViolationObj>> updateIllegal(@Path("id") int id, @Body Map<String, Object> body);
 }

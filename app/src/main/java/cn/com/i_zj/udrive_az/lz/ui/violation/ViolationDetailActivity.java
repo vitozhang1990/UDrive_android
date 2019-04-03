@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 
 public class ViolationDetailActivity extends DBSBaseActivity {
 
@@ -48,7 +49,13 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                 startActivity(intent);
                 break;
             case R.id.btn_commit:
-                startActivity(ViolationDealActivity.class);
+                Intent deal = new Intent();
+                deal.setClass(this, ViolationDealActivity.class);
+                ViolationDetailObj obj = new ViolationDetailObj();
+                obj.setState(4);
+                obj.setProcessSheetPhoto("receiptPhotob7ce6e988f0865b083b9dcc010baaeb2_20190325161508.png");
+                deal.putExtra("data", obj);
+                startActivity(deal);
                 break;
         }
     }
