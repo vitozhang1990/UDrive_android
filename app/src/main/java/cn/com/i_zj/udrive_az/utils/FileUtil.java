@@ -32,4 +32,23 @@ public class FileUtil {
         }
         return Str;
     }
+
+    /**
+     * 递归删除 文件/文件夹
+     *
+     * @param file
+     */
+    public static void deleteFile(File file) {
+        if (file.exists()) {
+            if (file.isFile()) {
+                file.delete();
+            } else if (file.isDirectory()) {
+                File files[] = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    deleteFile(files[i]);
+                }
+            }
+            file.delete();
+        }
+    }
 }

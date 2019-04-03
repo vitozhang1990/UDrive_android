@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -46,6 +48,7 @@ import com.umeng.socialize.media.UMWeb;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +73,7 @@ import cn.com.i_zj.udrive_az.model.Token;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.FileUtil;
 import cn.com.i_zj.udrive_az.utils.StringUtils;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -84,6 +88,7 @@ import io.reactivex.schedulers.Schedulers;
  * @Describe
  */
 public class WebActivity extends DBSBaseActivity {
+    public static final String APP_CACHE_DIRNAME = "/webcache";
     private static final int SDK_PAY_FLAG = 1;
     private static final int ALI = 1;
     private static final int WECHAT = 2;
@@ -133,6 +138,37 @@ public class WebActivity extends DBSBaseActivity {
         dissmisProgressDialog();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        webView.clearCache(true);
+        clearWebViewCache();
+    }
+
+    private void clearWebViewCache() {
+        //清理Webview缓存数据库
+        try {
+            deleteDatabase("webview.db");
+            deleteDatabase("webviewCache.db");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //WebView 缓存文件
+        File appCacheDir = new File(getFilesDir().getAbsolutePath() + APP_CACHE_DIRNAME);
+
+        File webviewCacheDir = new File(getCacheDir().getAbsolutePath() + APP_CACHE_DIRNAME);
+
+        //删除webview 缓存目录
+        if (webviewCacheDir.exists()) {
+            FileUtil.deleteFile(webviewCacheDir);
+        }
+        //删除webview 缓存 缓存目录
+        if (appCacheDir.exists()) {
+            FileUtil.deleteFile(appCacheDir);
+        }
+    }
+
     @OnClick(R.id.iv_back)
     void back() {
         if (webView.canGoBack()) {
@@ -143,7 +179,17 @@ public class WebActivity extends DBSBaseActivity {
     }
 
     private void initView() {
+        String cacheDirPath = getFilesDir().getAbsolutePath() + APP_CACHE_DIRNAME;
         progressBar.setProgress(0);
+//        webView.getSettings().setBlockNetworkImage(false);
+//        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setDatabasePath(cacheDirPath);
+        webView.getSettings().setAppCachePath(cacheDirPath);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+//            webView.getSettings().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+//        }
         webView.setDefaultHandler(new DefaultHandler());
         webView.setWebChromeClient(new WebChromeClient() {
 
@@ -161,6 +207,9 @@ public class WebActivity extends DBSBaseActivity {
                 nextPor(newProgress);
             }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         webView.loadUrl(url);
         registerHandler();
         sendToken();
