@@ -31,13 +31,15 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/viola_order_more"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="18dp"
             android:drawableRight="@mipmap/ic_arrow_home"
             android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="18dp"
             android:text="详情"
             android:textColor="#030303"
             android:textSize="14sp" />
@@ -66,7 +68,6 @@
                 android:id="@+id/viola_order_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2019-03-25至2019-03-26"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -76,7 +77,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
-                android:text="川A QU203"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -84,7 +84,6 @@
                 android:id="@+id/viola_order_fromto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="菁蓉汇地下停车场-广都停车场"
                 android:textColor="#666666"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -114,13 +113,13 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/viola_penalty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="18dp"
             android:gravity="center_vertical"
-            android:text="罚款："
             android:textColor="#030303"
             android:textSize="14sp" />
 
@@ -151,7 +150,6 @@
                 android:id="@+id/viola_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="时间：2019-03-25 10:18:06"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -163,7 +161,6 @@
                 android:layout_marginBottom="6dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="地点：古柏路与金芙蓉大道交叉口"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -173,7 +170,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="行为：机动车违反禁止标线指示的"
                 android:textColor="#666666"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -192,7 +188,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="11dp"
-                android:text="乌鲁木齐"
                 android:textColor="#2F6BC9"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -233,6 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/bg_bottom_radius"
+            android:enabled="false"
             android:text="去处理"
             android:textColor="@color/white"
             android:textSize="16sp" />

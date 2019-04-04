@@ -14,6 +14,7 @@ public class ViolationDetailObj implements Serializable {
     private String remark;
     private String processSheetPhoto;
     private long breakTime;
+    private String cityName;
     private OrderInfo order;
 
     public int getId() {
@@ -96,6 +97,14 @@ public class ViolationDetailObj implements Serializable {
         this.breakTime = breakTime;
     }
 
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
     public OrderInfo getOrder() {
         return order;
     }
@@ -125,6 +134,7 @@ public class ViolationDetailObj implements Serializable {
         private String endPark;
         private String pn;
         private String brand;
+        private int state;
 
         public String getNumber() {
             return number;
@@ -188,6 +198,14 @@ public class ViolationDetailObj implements Serializable {
 
         public void setBrand(String brand) {
             this.brand = brand;
+        }
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
         }
     }
 }

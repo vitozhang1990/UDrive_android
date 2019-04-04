@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,10 +18,13 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
+import cn.com.i_zj.udrive_az.lz.ui.payment.ActOrderPayment;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import cn.com.i_zj.udrive_az.utils.Constants;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -43,8 +48,16 @@ public class ViolationDetailActivity extends DBSBaseActivity {
     TextView address;
     @BindView(R.id.viola_action)
     TextView action;
+    @BindView(R.id.viola_penalty)
+    TextView penalty;
+    @BindView(R.id.viola_city)
+    TextView city;
+    @BindView(R.id.btn_commit)
+    Button commitBtn;
 
     private int id;
+    private ViolationDetailObj violationDetail;
+    private ViolationDetailObj.OrderInfo orderInfo;
     private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -71,7 +84,7 @@ public class ViolationDetailActivity extends DBSBaseActivity {
         getDetail();
     }
 
-    @OnClick({R.id.header_left, R.id.header_right, R.id.btn_commit})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.viola_order_more, R.id.btn_commit})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -83,13 +96,32 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                 intent.setData(data);
                 startActivity(intent);
                 break;
+            case R.id.viola_order_more:
+                if (orderInfo == null) {
+                    showToast("尚未获取到订单信息");
+                    return;
+                }
+                if (orderInfo.getState() == Constants.ORDER_WAIT_PAY) {// 待付款
+                    Intent intent1 = new Intent(this, ActConfirmOrder.class);
+                    intent1.putExtra(ActConfirmOrder.ORDER_NUMBER, orderInfo.getNumber());
+                    intent1.putExtra(ActConfirmOrder.ORDER_ID, orderInfo.getOrderId());
+                    startActivity(intent1);
+                } else if (orderInfo.getState() == Constants.ORDER_FINISH) {// 已完成
+                    Intent intent2 = new Intent(this, ActOrderPayment.class);
+                    intent2.putExtra(ActOrderPayment.ORDER_NUMBER, orderInfo.getNumber());
+                    intent2.putExtra(ActOrderPayment.ORDER_ID, orderInfo.getOrderId());
+                    startActivity(intent2);
+                }
+                break;
             case R.id.btn_commit:
+                if (violationDetail == null
+                        || violationDetail.getState() == 2
+                        || violationDetail.getState() == 4) {
+                    return;
+                }
                 Intent deal = new Intent();
                 deal.setClass(this, ViolationDealActivity.class);
-                ViolationDetailObj obj = new ViolationDetailObj();
-                obj.setState(4);
-                obj.setProcessSheetPhoto("receiptPhotob7ce6e988f0865b083b9dcc010baaeb2_20190325161508.png");
-                deal.putExtra("data", obj);
+                deal.putExtra("data", violationDetail);
                 startActivity(deal);
                 break;
         }
@@ -112,21 +144,52 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                             if (violationObjBaseRetObj.getDate() == null) {
                                 return;
                             }
-                            if (violationObjBaseRetObj.getDate().getOrder() != null) {
+                            violationDetail = violationObjBaseRetObj.getDate();
+                            if (violationDetail.getOrder() != null) {
+                                orderInfo = violationDetail.getOrder();
                                 orderTime.setText(String.format(Locale.getDefault(), "%s至%s",
-                                        sdf1.format(new Date(violationObjBaseRetObj.getDate().getOrder().getStartTime())),
-                                        sdf1.format(new Date(violationObjBaseRetObj.getDate().getOrder().getEndTime()))));
-                                orderPn.setText(violationObjBaseRetObj.getDate().getOrder().getPn());
+                                        sdf1.format(new Date(orderInfo.getStartTime())),
+                                        sdf1.format(new Date(orderInfo.getEndTime()))));
+                                orderPn.setText(orderInfo.getPn());
                                 orderFromTo.setText(String.format(Locale.getDefault(), "%s-%s",
-                                        violationObjBaseRetObj.getDate().getOrder().getStartPark(),
-                                        violationObjBaseRetObj.getDate().getOrder().getEndPark()));
+                                        orderInfo.getStartPark(),
+                                        orderInfo.getEndPark()));
                             }
+                            if (violationDetail.getFen() > 0 && violationDetail.getMoney() > 0) {
+                                penalty.setText(Html.fromHtml("罚款: <font color='#FF7C56'>"
+                                        + violationDetail.getMoney() / 100 + "</font> 元 扣分: <font color='#FF7C56'>"
+                                        + violationDetail.getFen() + " 分"));
+                            } else if (violationDetail.getFen() > 0) {
+                                penalty.setText(Html.fromHtml("扣分: <font color='#FF7C56'>" + violationDetail.getFen() + "</font> 分"));
+                            } else if (violationDetail.getMoney() > 0) {
+                                penalty.setText(Html.fromHtml("罚款: <font color='#FF7C56'>" + violationDetail.getMoney() / 100 + "</font> 元"));
+                            } else {
+                                penalty.setVisibility(View.GONE);
+                            }
+
                             time.setText(String.format(Locale.getDefault(), "时间：%s",
-                                    sdf2.format(new Date(violationObjBaseRetObj.getDate().getBreakTime()))));
+                                    sdf2.format(new Date(violationDetail.getBreakTime()))));
                             address.setText(String.format(Locale.getDefault(), "地点：%s",
-                                    violationObjBaseRetObj.getDate().getAddress()));
+                                    violationDetail.getAddress()));
                             action.setText(String.format(Locale.getDefault(), "行为：%s",
-                                    violationObjBaseRetObj.getDate().getDescription()));
+                                    violationDetail.getDescription()));
+                            city.setText(violationDetail.getCityName());
+
+                            commitBtn.setEnabled(violationDetail.getState() == 1 || violationDetail.getState() == 3);
+                            switch (violationDetail.getState()) {
+                                case 1:
+                                    commitBtn.setText("去处理");
+                                    break;
+                                case 2:
+                                    commitBtn.setText("处理中");
+                                    break;
+                                case 3:
+                                    commitBtn.setText("重新上传");
+                                    break;
+                                case 4:
+                                    commitBtn.setText("已处理");
+                                    break;
+                            }
                         }
                     }
 
