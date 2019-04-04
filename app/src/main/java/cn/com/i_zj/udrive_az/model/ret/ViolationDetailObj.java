@@ -2,8 +2,6 @@ package cn.com.i_zj.udrive_az.model.ret;
 
 import java.io.Serializable;
 
-import cn.com.i_zj.udrive_az.model.OrderResult;
-
 public class ViolationDetailObj implements Serializable {
 
     private int id;
@@ -15,7 +13,8 @@ public class ViolationDetailObj implements Serializable {
     private int state;
     private String remark;
     private String processSheetPhoto;
-    private OrderResult.OrderItem order;
+    private long breakTime;
+    private OrderInfo order;
 
     public int getId() {
         return id;
@@ -89,11 +88,106 @@ public class ViolationDetailObj implements Serializable {
         this.processSheetPhoto = processSheetPhoto;
     }
 
-    public OrderResult.OrderItem getOrder() {
+    public long getBreakTime() {
+        return breakTime;
+    }
+
+    public void setBreakTime(long breakTime) {
+        this.breakTime = breakTime;
+    }
+
+    public OrderInfo getOrder() {
         return order;
     }
 
-    public void setOrder(OrderResult.OrderItem order) {
+    public void setOrder(OrderInfo order) {
         this.order = order;
+    }
+
+    public class OrderInfo {
+
+        /**
+         * number : 537073954103847418000
+         * orderId : 374
+         * startTime : 1553222327000
+         * endTime : 1553222362000
+         * startPark : 菁蓉国际停车场1211222
+         * endPark : 菁蓉国际停车场1211222
+         * pn :
+         * brand : 大众宝来
+         */
+
+        private String number;
+        private int orderId;
+        private long startTime;
+        private long endTime;
+        private String startPark;
+        private String endPark;
+        private String pn;
+        private String brand;
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+        }
+
+        public int getOrderId() {
+            return orderId;
+        }
+
+        public void setOrderId(int orderId) {
+            this.orderId = orderId;
+        }
+
+        public long getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
+        }
+
+        public String getStartPark() {
+            return startPark;
+        }
+
+        public void setStartPark(String startPark) {
+            this.startPark = startPark;
+        }
+
+        public String getEndPark() {
+            return endPark;
+        }
+
+        public void setEndPark(String endPark) {
+            this.endPark = endPark;
+        }
+
+        public String getPn() {
+            return pn;
+        }
+
+        public void setPn(String pn) {
+            this.pn = pn;
+        }
+
+        public String getBrand() {
+            return brand;
+        }
+
+        public void setBrand(String brand) {
+            this.brand = brand;
+        }
     }
 }

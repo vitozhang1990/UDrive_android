@@ -8,7 +8,7 @@ public class ViolationObj implements Serializable {
     private int pageNum;
     private int pageSize;
     private int size;
-    private List<String> list;
+    private List<Violation> list;
 
     public int getTotal() {
         return total;
@@ -42,11 +42,11 @@ public class ViolationObj implements Serializable {
         this.size = size;
     }
 
-    public List<String> getList() {
+    public List<Violation> getList() {
         return list;
     }
 
-    public void setList(List<String> list) {
+    public void setList(List<Violation> list) {
         this.list = list;
     }
 }

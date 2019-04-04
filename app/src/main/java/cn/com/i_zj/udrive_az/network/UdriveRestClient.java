@@ -90,8 +90,7 @@ public class UdriveRestClient {
                     .writeTimeout(60, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(logging)
-                    .addInterceptor(new ResponseInterceptor())
-                    .addInterceptor(new MockInterceptor()).build();
+                    .addInterceptor(new ResponseInterceptor()).build();
             Gson buildGson = new GsonBuilder()
                     .setDateFormat("yyyy-MM-dd HH:mm:ss")
 //                    .registerTypeAdapter(String.class, new StringDefaultNullAdapter())

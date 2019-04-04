@@ -8,6 +8,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
@@ -41,6 +45,8 @@ public class ViolationDetailActivity extends DBSBaseActivity {
     TextView action;
 
     private int id;
+    private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     protected int getLayoutResource() {
@@ -55,6 +61,7 @@ public class ViolationDetailActivity extends DBSBaseActivity {
         id = getIntent().getIntExtra("id", -1);
         if (id == -1) {
             showToast("获取到错误Id");
+            finish();
             return;
         }
 
@@ -102,6 +109,24 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                     public void onNext(BaseRetObj<ViolationDetailObj> violationObjBaseRetObj) {
                         dissmisProgressDialog();
                         if (violationObjBaseRetObj == null || violationObjBaseRetObj.getCode() == 1) {
+                            if (violationObjBaseRetObj.getDate() == null) {
+                                return;
+                            }
+                            if (violationObjBaseRetObj.getDate().getOrder() != null) {
+                                orderTime.setText(String.format(Locale.getDefault(), "%s至%s",
+                                        sdf1.format(new Date(violationObjBaseRetObj.getDate().getOrder().getStartTime())),
+                                        sdf1.format(new Date(violationObjBaseRetObj.getDate().getOrder().getEndTime()))));
+                                orderPn.setText(violationObjBaseRetObj.getDate().getOrder().getPn());
+                                orderFromTo.setText(String.format(Locale.getDefault(), "%s-%s",
+                                        violationObjBaseRetObj.getDate().getOrder().getStartPark(),
+                                        violationObjBaseRetObj.getDate().getOrder().getEndPark()));
+                            }
+                            time.setText(String.format(Locale.getDefault(), "时间：%s",
+                                    sdf2.format(new Date(violationObjBaseRetObj.getDate().getBreakTime()))));
+                            address.setText(String.format(Locale.getDefault(), "地点：%s",
+                                    violationObjBaseRetObj.getDate().getAddress()));
+                            action.setText(String.format(Locale.getDefault(), "行为：%s",
+                                    violationObjBaseRetObj.getDate().getDescription()));
                         }
                     }
 

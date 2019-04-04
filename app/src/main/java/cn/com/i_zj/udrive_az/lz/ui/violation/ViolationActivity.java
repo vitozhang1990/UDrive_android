@@ -1,5 +1,6 @@
 package cn.com.i_zj.udrive_az.lz.ui.violation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
+import cn.com.i_zj.udrive_az.model.ret.Violation;
 import cn.com.i_zj.udrive_az.model.ret.ViolationObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import io.reactivex.Observer;
@@ -40,7 +42,7 @@ public class ViolationActivity extends DBSBaseActivity
     @BindView(R.id.recycler)
     RecyclerView recyclerView;
 
-    private List<String> list = new ArrayList<>();
+    private List<Violation> list = new ArrayList<>();
     private ViolationAdapter mAdapter;
 
     private int size = 10;
@@ -123,7 +125,13 @@ public class ViolationActivity extends DBSBaseActivity
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-        startActivity(ViolationDetailActivity.class);
+        if (adapter.getItem(position) != null && adapter.getItem(position) instanceof Violation) {
+            Violation violation = (Violation) adapter.getItem(position);
+            Intent intent = new Intent();
+            intent.setClass(this, ViolationDetailActivity.class);
+            intent.putExtra("id", violation.getId());
+            startActivity(intent);
+        }
     }
 
     @Override
