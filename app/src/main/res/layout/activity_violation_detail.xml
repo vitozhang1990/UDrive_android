@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="#F1F1F1"
     android:fitsSystemWindows="true"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <include layout="@layout/layout_header" />
@@ -62,6 +63,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/viola_order_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2019-03-25至2019-03-26"
@@ -69,6 +71,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:id="@+id/viola_order_pn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -78,6 +81,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:id="@+id/viola_order_fromto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="菁蓉汇地下停车场-广都停车场"
@@ -132,38 +136,91 @@
         android:layout_height="110dp"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingLeft="18dp"
-        android:paddingRight="18dp">
+        android:paddingRight="33dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="时间：2019-03-25 10:18:06"
-            android:textColor="#666666"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            android:text="地点：古柏路与金芙蓉大道交叉口"
-            android:textColor="#666666"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/viola_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="时间：2019-03-25 10:18:06"
+                android:textColor="#666666"
+                android:textSize="14sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="行为：机动车违反禁止标线指示的"
-            android:textColor="#666666"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/viola_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="地点：古柏路与金芙蓉大道交叉口"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/viola_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="行为：机动车违反禁止标线指示的"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/pic_gps">
+
+            <TextView
+                android:id="@+id/viola_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="11dp"
+                android:text="乌鲁木齐"
+                android:textColor="#2F6BC9"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
     </LinearLayout>
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_guide" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/violation_guide"
+            android:textColor="#7A7A7A"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

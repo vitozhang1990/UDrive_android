@@ -13,7 +13,13 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
+import cn.com.i_zj.udrive_az.network.UdriveRestClient;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ViolationDetailActivity extends DBSBaseActivity {
 
@@ -21,6 +27,20 @@ public class ViolationDetailActivity extends DBSBaseActivity {
     TextView header_title;
     @BindView(R.id.header_image)
     ImageView header_image;
+    @BindView(R.id.viola_order_time)
+    TextView orderTime;
+    @BindView(R.id.viola_order_pn)
+    TextView orderPn;
+    @BindView(R.id.viola_order_fromto)
+    TextView orderFromTo;
+    @BindView(R.id.viola_time)
+    TextView time;
+    @BindView(R.id.viola_address)
+    TextView address;
+    @BindView(R.id.viola_action)
+    TextView action;
+
+    private int id;
 
     @Override
     protected int getLayoutResource() {
@@ -32,8 +52,16 @@ public class ViolationDetailActivity extends DBSBaseActivity {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
 
+        id = getIntent().getIntExtra("id", -1);
+        if (id == -1) {
+            showToast("获取到错误Id");
+            return;
+        }
+
         header_title.setText("违章信息");
         header_image.setImageResource(R.mipmap.ic_service);
+
+        getDetail();
     }
 
     @OnClick({R.id.header_left, R.id.header_right, R.id.btn_commit})
@@ -58,5 +86,35 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                 startActivity(deal);
                 break;
         }
+    }
+
+    private void getDetail() {
+        showProgressDialog();
+        UdriveRestClient.getClentInstance().getIllegal(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<ViolationDetailObj>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<ViolationDetailObj> violationObjBaseRetObj) {
+                        dissmisProgressDialog();
+                        if (violationObjBaseRetObj == null || violationObjBaseRetObj.getCode() == 1) {
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dissmisProgressDialog();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dissmisProgressDialog();
+                    }
+                });
     }
 }
