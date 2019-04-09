@@ -395,6 +395,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
                         @Override
                         public void onNext(DoorBean bean) {
+                            if (tv_address == null) {
+                                return;
+                            }
                             dissmisProgressDialog();
                             if (bean != null) {
                                 if (bean.getCode() == 1) {
