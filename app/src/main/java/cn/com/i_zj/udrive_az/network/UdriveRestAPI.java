@@ -358,6 +358,6 @@ public interface UdriveRestAPI {
     @GET("/mobile/illegal/{id}")
     Observable<BaseRetObj<ViolationDetailObj>> getIllegal(@Path("id") int id);
 
-    @PUT("/mobile/illegal/{id}")
+    @POST("/mobile/illegal/{id}")
     Observable<BaseRetObj<ViolationObj>> updateIllegal(@Path("id") int id, @Body Map<String, Object> body);
 }

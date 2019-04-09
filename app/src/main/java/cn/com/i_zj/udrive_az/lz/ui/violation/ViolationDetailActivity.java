@@ -25,6 +25,7 @@ import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -70,6 +71,7 @@ public class ViolationDetailActivity extends DBSBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
+        ScreenManager.getScreenManager().pushActivity(this);
 
         id = getIntent().getIntExtra("id", -1);
         if (id == -1) {
@@ -204,5 +206,11 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                         dissmisProgressDialog();
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ScreenManager.getScreenManager().popActivity(this);
     }
 }

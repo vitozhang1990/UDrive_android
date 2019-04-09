@@ -48,6 +48,7 @@ import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.lz.bean.CouponPayEvent;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDetailActivity;
 import cn.com.i_zj.udrive_az.lz.util.SpannableStringUtil;
 import cn.com.i_zj.udrive_az.lz.view.PaymentView;
 import cn.com.i_zj.udrive_az.map.MapUtils;
@@ -153,8 +154,8 @@ public class ActConfirmOrder extends DBSBaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
-                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class)
-                        || ScreenManager.getScreenManager().isHaveActivity(TravelingActivity.class)) {
+                if (!ScreenManager.getScreenManager().isHaveActivity(OrderActivity.class) //栈中没有orderActivity且没有ViolationDetailActivity
+                        && !ScreenManager.getScreenManager().isHaveActivity(ViolationDetailActivity.class)) {
                     startActivity(MainActivity.class);
                 }
                 finish();

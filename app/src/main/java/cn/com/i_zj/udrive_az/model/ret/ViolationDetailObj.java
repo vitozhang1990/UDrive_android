@@ -113,7 +113,7 @@ public class ViolationDetailObj implements Serializable {
         this.order = order;
     }
 
-    public class OrderInfo {
+    public class OrderInfo implements Serializable {
 
         /**
          * number : 537073954103847418000
