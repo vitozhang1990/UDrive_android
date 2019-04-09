@@ -338,6 +338,9 @@ public class DrawerLeftFragment extends DBSBaseFragment {
 
                     @Override
                     public void onNext(UnFinishOrderResult value) {
+                        if (mDiMyType == null) {
+                            return;
+                        }
                         if (value == null || value.getCode() != 1
                                 || value.getData() == null) {
                             return;

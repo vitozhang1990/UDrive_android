@@ -176,6 +176,9 @@ public class TravelingActivity extends DBSBaseActivity implements AMapLocationLi
 
                     @Override
                     public void onNext(UnFinishOrderResult result) {
+                        if (tv_address == null) {
+                            return;
+                        }
                         dissmisProgressDialog();
                         if (result == null || result.getCode() != 1) {
                             ToastUtils.showShort("行程信息获取失败");
