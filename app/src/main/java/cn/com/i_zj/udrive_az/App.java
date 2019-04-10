@@ -1,7 +1,7 @@
 package cn.com.i_zj.udrive_az;
 
+import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDexApplication;
 
 import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
@@ -26,7 +26,7 @@ import me.yokeyword.fragmentation.Fragmentation;
  * Created by wli on 2018/8/11.
  */
 
-public class App extends MultiDexApplication {
+public class App extends Application {
 
     public static Context appContext;
 
