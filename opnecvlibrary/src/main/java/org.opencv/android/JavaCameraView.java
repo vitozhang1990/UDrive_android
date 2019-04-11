@@ -136,6 +136,10 @@ public class JavaCameraView extends CameraBridgeViewBase implements PreviewCallb
                     } else {
                         Log.d(TAG, "Trying to open camera with new open(" + Integer.valueOf(localCameraIndex) + ")");
                         try {
+                            if (mCamera != null) {
+                                mCamera.release();
+                                mCamera = null;
+                            }
                             mCamera = Camera.open(localCameraIndex);
                         } catch (RuntimeException e) {
                             Log.e(TAG, "Camera #" + localCameraIndex + "failed to open: " + e.getLocalizedMessage());

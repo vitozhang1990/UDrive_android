@@ -90,10 +90,10 @@ public class ViolationDealActivity extends DBSBaseActivity {
         }
 
         picture = new CarPartPicture("processSheetPhoto", 1001,
-                detailObj.getState() == 4 && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())
+                detailObj.getState() == 3 && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())
                         ? BuildConfig.IMAGE_DOMAIN + detailObj.getProcessSheetPhoto()
                         : null);
-        if (detailObj.getState() == 4 && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())) {
+        if (detailObj.getState() == 3 && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())) {
             Glide.with(this).load(BuildConfig.IMAGE_DOMAIN + detailObj.getProcessSheetPhoto()).into(iv_empty);
             if (error_empty != null) error_empty.setVisibility(View.VISIBLE);
         }
@@ -120,7 +120,7 @@ public class ViolationDealActivity extends DBSBaseActivity {
                 startActivityForResult(pictureIntent, REQUEST_CODE);
                 break;
             case R.id.btn_commit:
-                if (detailObj.getState() == 4
+                if (detailObj.getState() == 3
                         && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())
                         && !picture.hasPhoto()) {
                     showToast("请修改红框里的图片");
