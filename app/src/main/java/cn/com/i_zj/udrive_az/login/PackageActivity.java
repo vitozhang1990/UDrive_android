@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.AccountInfoActivity;
 import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDetailActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
@@ -34,6 +36,7 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkOutAmount;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
+import cn.com.i_zj.udrive_az.model.ret.Violation1;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
@@ -317,26 +320,43 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 showDriverFailure();
                                 break;
                             case 1032:
-                                if (reserVationBean.getData().getDeposit().getState() != 2) {
+                                ReserVationBean.DataBean dataBean = new Gson().fromJson(reserVationBean.getData(), ReserVationBean.DataBean.class);
+                                if (dataBean.getDeposit().getState() != 2) {
                                     showToast("请先完成认证");
                                     Intent intent = new Intent(this, StepActivity.class);
-                                    intent.putExtra("data", reserVationBean.getData().getAuthResult());
+                                    intent.putExtra("data", dataBean.getAuthResult());
                                     startActivity(intent);
-                                } else if (reserVationBean.getData().getIdcard().getState() == 1
-                                        && reserVationBean.getData().getDriver().getState() == 1) {
+                                } else if (dataBean.getIdcard().getState() == 1
+                                        && dataBean.getDriver().getState() == 1) {
                                     ToastUtil.show(this, "认证正在审核中");
-                                } else if (reserVationBean.getData().getIdcard().getState() == 1
-                                        && reserVationBean.getData().getDriver().getState() == 2) {
+                                } else if (dataBean.getIdcard().getState() == 1
+                                        && dataBean.getDriver().getState() == 2) {
                                     ToastUtil.show(this, "实名认证正在审核中");
-                                } else if (reserVationBean.getData().getIdcard().getState() == 2
-                                        && reserVationBean.getData().getDriver().getState() == 1) {
+                                } else if (dataBean.getIdcard().getState() == 2
+                                        && dataBean.getDriver().getState() == 1) {
                                     ToastUtil.show(this, "驾驶证正在审核中");
                                 } else {
                                     showToast("请先完成认证");
                                     Intent intent = new Intent(this, StepActivity.class);
-                                    intent.putExtra("data", reserVationBean.getData().getAuthResult());
+                                    intent.putExtra("data", dataBean.getAuthResult());
                                     startActivity(intent);
                                 }
+                                break;
+                            case 2005:
+                                CommonAlertDialog.builder(this)
+                                        .setMsg("存在违章记录")
+                                        .setMsgCenter(true)
+                                        .setNegativeButton("取消", null)
+                                        .setPositiveButton("去处理", v -> {
+                                            Violation1 violation = new Gson().fromJson(reserVationBean.getData(), Violation1.class);
+                                            Intent intent = new Intent();
+                                            intent.setClass(this, ViolationDetailActivity.class);
+                                            intent.putExtra("id", violation.getId());
+                                            startActivity(intent);
+                                            finish();
+                                        })
+                                        .build()
+                                        .show();
                                 break;
                             default:
                                 ToastUtils.showShort(reserVationBean.getMessage());

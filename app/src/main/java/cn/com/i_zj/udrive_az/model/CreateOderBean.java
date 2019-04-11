@@ -1,6 +1,11 @@
 package cn.com.i_zj.udrive_az.model;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.io.Serializable;
+
+import cn.com.i_zj.udrive_az.JsonDeserializeTest;
 
 /**
  * Created by liuwei on 2018/8/20.
@@ -17,7 +22,8 @@ public class CreateOderBean implements Serializable {
 
     private int code;
     private String message;
-    private DataBean data;
+    @JsonAdapter(value = JsonDeserializeTest.class)
+    private JsonObject data;
 
     public int getCode() {
         return code;
@@ -35,11 +41,11 @@ public class CreateOderBean implements Serializable {
         this.message = message;
     }
 
-    public DataBean getData() {
+    public JsonObject getData() {
         return data;
     }
 
-    public void setData(DataBean data) {
+    public void setData(JsonObject data) {
         this.data = data;
     }
 

@@ -1,15 +1,38 @@
 package cn.com.i_zj.udrive_az.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.JsonAdapter;
+
+import cn.com.i_zj.udrive_az.JsonDeserializeTest;
 
 public class RefundDepositResult {
 
-    @SerializedName("code")
-    public int code;
+    private int code;
+    private String message;
+    @JsonAdapter(value = JsonDeserializeTest.class)
+    private JsonObject data;
 
-    @SerializedName("message")
-    public String message;
+    public int getCode() {
+        return code;
+    }
 
-    @SerializedName("data")
-    public String data;
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public JsonObject getData() {
+        return data;
+    }
+
+    public void setData(JsonObject data) {
+        this.data = data;
+    }
 }

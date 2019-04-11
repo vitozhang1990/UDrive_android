@@ -1,5 +1,6 @@
 package cn.com.i_zj.udrive_az.lz.ui.deposit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.blankj.utilcode.util.ToastUtils;
+import com.google.gson.Gson;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -31,6 +33,7 @@ import cn.com.i_zj.udrive_az.event.EventPaySuccessEvent;
 import cn.com.i_zj.udrive_az.login.AccountInfoManager;
 import cn.com.i_zj.udrive_az.lz.bean.AliYajinEvent;
 import cn.com.i_zj.udrive_az.lz.bean.WechatYajinEvent;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDetailActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.AccountInfoResult;
 import cn.com.i_zj.udrive_az.model.AliPayOrder;
@@ -40,6 +43,7 @@ import cn.com.i_zj.udrive_az.model.DepositAmountResult;
 import cn.com.i_zj.udrive_az.model.RefundDepositResult;
 import cn.com.i_zj.udrive_az.model.UserDepositResult;
 import cn.com.i_zj.udrive_az.model.WeichatPayOrder;
+import cn.com.i_zj.udrive_az.model.ret.Violation1;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
@@ -173,16 +177,32 @@ public class DepositActivity extends DBSBaseActivity {
                             ToastUtils.showShort("退还押金失败");
                             return;
                         }
-                        if (value.code == 1) {
+                        if (value.getCode() == 1) {
                             ToastUtils.showShort("操作成功");
                             getUserDeposit();
+                        } else if (value.getCode() == 2005){
+                            CommonAlertDialog.builder(DepositActivity.this)
+                                    .setMsg("存在违章记录")
+                                    .setMsgCenter(true)
+                                    .setNegativeButton("取消", null)
+                                    .setPositiveButton("去处理", v -> {
+                                        Violation1 violation = new Gson().fromJson(value.getData(), Violation1.class);
+                                        Intent intent = new Intent();
+                                        intent.setClass(DepositActivity.this, ViolationDetailActivity.class);
+                                        intent.putExtra("id", violation.getId());
+                                        startActivity(intent);
+                                        finish();
+                                    })
+                                    .build()
+                                    .show();
                         } else {
-                            ToastUtils.showShort(value.message);
+                            ToastUtils.showShort(value.getMessage());
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         dissmisProgressDialog();
                         ToastUtils.showShort("退还押金失败");
                     }
