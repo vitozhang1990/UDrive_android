@@ -25,7 +25,7 @@ import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.accountinfo.AccountInfoActivity;
 import cn.com.i_zj.udrive_az.lz.ui.deposit.DepositActivity;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
-import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDetailActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
@@ -36,7 +36,6 @@ import cn.com.i_zj.udrive_az.model.ParkDetailResult.DataBean.CarVosBean;
 import cn.com.i_zj.udrive_az.model.ParkOutAmount;
 import cn.com.i_zj.udrive_az.model.ParksResult;
 import cn.com.i_zj.udrive_az.model.ReserVationBean;
-import cn.com.i_zj.udrive_az.model.ret.Violation1;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.step.StepActivity;
 import cn.com.i_zj.udrive_az.utils.ToastUtil;
@@ -344,19 +343,26 @@ public class PackageActivity extends DBSBaseActivity implements ViewPager.OnPage
                                 break;
                             case 2005:
                                 CommonAlertDialog.builder(this)
-                                        .setMsg("存在违章记录")
-                                        .setMsgCenter(true)
+                                        .setTitle("违章处理")
+                                        .setMsg("尊敬的用户您好，您有待处理的违章，请及时处理。")
                                         .setNegativeButton("取消", null)
-                                        .setPositiveButton("去处理", v -> {
-                                            Violation1 violation = new Gson().fromJson(reserVationBean.getData(), Violation1.class);
-                                            Intent intent = new Intent();
-                                            intent.setClass(this, ViolationDetailActivity.class);
-                                            intent.putExtra("id", violation.getId());
-                                            startActivity(intent);
-                                            finish();
-                                        })
+                                        .setPositiveButton("去处理", v -> startActivity(ViolationActivity.class))
                                         .build()
                                         .show();
+//                                CommonAlertDialog.builder(this)
+//                                        .setMsg("存在违章记录")
+//                                        .setMsgCenter(true)
+//                                        .setNegativeButton("取消", null)
+//                                        .setPositiveButton("去处理", v -> {
+//                                            Violation1 violation = new Gson().fromJson(reserVationBean.getData(), Violation1.class);
+//                                            Intent intent = new Intent();
+//                                            intent.setClass(this, ViolationDetailActivity.class);
+//                                            intent.putExtra("id", violation.getId());
+//                                            startActivity(intent);
+//                                            finish();
+//                                        })
+//                                        .build()
+//                                        .show();
                                 break;
                             default:
                                 ToastUtils.showShort(reserVationBean.getMessage());

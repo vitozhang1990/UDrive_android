@@ -112,6 +112,9 @@ public class OrderDetailResult implements Serializable{
         @SerializedName("refuel")
         public boolean refuel;
 
+        @SerializedName("illegal")
+        public boolean illegal;
+
         private  CarInfoEntity car;
 
         public CarInfoEntity getCar() {

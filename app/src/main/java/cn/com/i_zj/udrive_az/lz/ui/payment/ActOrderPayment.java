@@ -2,6 +2,7 @@ package cn.com.i_zj.udrive_az.lz.ui.payment;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,6 +46,7 @@ import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.bean.OriginContrail;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.model.CarInfoEntity;
 import cn.com.i_zj.udrive_az.model.OrderDetailResult;
@@ -103,6 +105,8 @@ public class ActOrderPayment extends DBSBaseActivity {
     MapView mMapView;
     @BindView(R.id.tv_oil_detail)
     TextView mOilDetail;
+    @BindView(R.id.tv_illegal_detail)
+    TextView mIllegalDetail;
 
     private AMap mAmap;
     private Context mContext;
@@ -297,10 +301,11 @@ public class ActOrderPayment extends DBSBaseActivity {
                 Glide.with(ActOrderPayment.this).load(CarTypeImageUtils.getCarImageByBrand(carInfoEntity.getBrand(), carInfoEntity.getCarColor())).into(ivCar);
             }
             mOilDetail.setVisibility(value.data.refuel ? View.VISIBLE : View.GONE);
+            mIllegalDetail.setVisibility(value.data.illegal ? View.VISIBLE : View.GONE);
         }
     }
 
-    @OnClick({R.id.header_left, R.id.header_right, R.id.tv_detail, R.id.tv_oil_detail})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.tv_detail, R.id.tv_oil_detail, R.id.tv_illegal_detail})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -325,6 +330,12 @@ public class ActOrderPayment extends DBSBaseActivity {
                 break;
             case R.id.tv_oil_detail:
                 RefuelHistoryActivity.startActivity(this, orderNumber);
+                break;
+            case R.id.tv_illegal_detail:
+                Intent intent = new Intent();
+                intent.setClass(this, ViolationActivity.class);
+                intent.putExtra("number", orderNumber);
+                startActivity(intent);
                 break;
         }
     }

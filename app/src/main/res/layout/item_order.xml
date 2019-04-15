@@ -2,136 +2,108 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@color/white"
     android:orientation="vertical">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@color/gray" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="40dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_centerVertical="true"
+            android:paddingLeft="18dp"
+            android:text="2019-04-15 10:45"
+            android:textColor="#AFAFAF"
+            android:textSize="14sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
-
-                <TextView
-                    android:id="@+id/tv_part_name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:maxLines="2"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:text=""
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <View style="@style/line_horizontal" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
-
-                <TextView
-                    android:id="@+id/tv_car_number"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:maxLines="1"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:text=""
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_money"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/tv_car_number"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
-
-                <TextView
-                    android:id="@+id/tv_car_color"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/shape_lz_order_car_type"
-                    android:paddingLeft="3dp"
-                    android:paddingTop="1dp"
-                    android:paddingRight="3dp"
-                    android:paddingBottom="1dp"
-                    android:text=""
-                    android:textColor="@color/white" />
-
-                <TextView
-                    android:id="@+id/tv_car_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:text="" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:paddingLeft="10dp"
-                android:text="" />
-
-
-            <View
-                style="@style/line_horizontal"
-                android:layout_marginTop="5dp" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/iv_oil"
+        <TextView
+            android:id="@+id/tv_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:text="已完成"
+            android:textColor="#AFAFAF"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:layout_alignParentBottom="true"
-            android:src="@mipmap/pic_sign_fuel"
-            android:visibility="gone" />
+            android:background="#F1F1F1" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_start_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="起：成都大酒店地面停车场"
+                android:textColor="#030303"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_end_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="终：暂未选择终点"
+                android:textColor="#030303"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_car_number"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="97.00元"
+            android:textColor="#030303"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/ll_desc"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F1F1F1" />
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:text="* 此订单有加油记录与违章记录"
+            android:textColor="#FD4C0E"
+            android:textSize="12sp" />
     </RelativeLayout>
 </LinearLayout>

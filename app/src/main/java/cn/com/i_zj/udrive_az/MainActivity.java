@@ -33,6 +33,7 @@ import cn.com.i_zj.udrive_az.login.LoginDialogFragment;
 import cn.com.i_zj.udrive_az.login.SessionManager;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.map.WaitingActivity;
@@ -41,7 +42,9 @@ import cn.com.i_zj.udrive_az.model.AppversionEntity;
 import cn.com.i_zj.udrive_az.model.GetReservation;
 import cn.com.i_zj.udrive_az.model.HomeActivityEntity;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
+import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
+import cn.com.i_zj.udrive_az.model.ret.ViolationCheck;
 import cn.com.i_zj.udrive_az.network.UObserver;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.service.BackService;
@@ -94,6 +97,7 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
 
         if (SessionManager.getInstance().getAuthorization() != null) {
             getUnfinishedOrder();
+            illegalCheck();
         }
         startService(new Intent(this, BackService.class));
     }
@@ -244,6 +248,46 @@ public class MainActivity extends DBSBaseActivity implements EasyPermissions.Per
                             tvMsg.setText("您有一个订单正在进行中，点击进入");
                         } else {
                             rlNote.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void illegalCheck() {
+        UdriveRestClient.getClentInstance().illegalCheck()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseRetObj<ViolationCheck>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseRetObj<ViolationCheck> violationCheckBaseRetObj) {
+                        if (violationCheckBaseRetObj == null || violationCheckBaseRetObj.getCode() != 1
+                                || violationCheckBaseRetObj.getDate() == null) {
+                            return;
+                        }
+                        ViolationCheck violationCheck = violationCheckBaseRetObj.getDate();
+                        if (violationCheck.isExist()) {
+                            CommonAlertDialog.builder(MainActivity.this)
+                                    .setTitle("违章处理")
+                                    .setMsg("尊敬的用户您好，您有待处理的违章，请及时处理。")
+                                    .setNegativeButton("取消", null)
+                                    .setPositiveButton("去处理", v -> startActivity(ViolationActivity.class))
+                                    .build()
+                                    .show();
                         }
                     }
 

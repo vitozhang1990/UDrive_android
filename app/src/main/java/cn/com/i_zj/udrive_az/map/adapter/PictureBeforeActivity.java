@@ -13,7 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.google.gson.Gson;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -30,19 +29,16 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
-import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.event.OrderFinishEvent;
-import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationDetailActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.TravelingActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.model.CreateOderBean;
 import cn.com.i_zj.udrive_az.model.PhotoBean;
 import cn.com.i_zj.udrive_az.model.UnFinishOrderResult;
-import cn.com.i_zj.udrive_az.model.ret.Violation1;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import cn.com.i_zj.udrive_az.utils.ToolsUtils;
 import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
 import cn.com.i_zj.udrive_az.widget.CommonAlertDialog;
@@ -235,19 +231,26 @@ public class PictureBeforeActivity extends DBSBaseActivity implements CompoundBu
                     if (result.getCode() != 1) {
                         if (result.getCode() == 2005) {
                             CommonAlertDialog.builder(this)
-                                    .setMsg("存在违章记录")
-                                    .setMsgCenter(true)
+                                    .setTitle("违章处理")
+                                    .setMsg("尊敬的用户您好，您有待处理的违章，请及时处理。")
                                     .setNegativeButton("取消", null)
-                                    .setPositiveButton("去处理", v -> {
-                                        Violation1 violation = new Gson().fromJson(result.getData(), Violation1.class);
-                                        Intent intent = new Intent();
-                                        intent.setClass(this, ViolationDetailActivity.class);
-                                        intent.putExtra("id", violation.getId());
-                                        startActivity(intent);
-                                        finish();
-                                    })
+                                    .setPositiveButton("去处理", v -> startActivity(ViolationActivity.class))
                                     .build()
                                     .show();
+//                            CommonAlertDialog.builder(this)
+//                                    .setMsg("存在违章记录")
+//                                    .setMsgCenter(true)
+//                                    .setNegativeButton("取消", null)
+//                                    .setPositiveButton("去处理", v -> {
+//                                        Violation1 violation = new Gson().fromJson(result.getData(), Violation1.class);
+//                                        Intent intent = new Intent();
+//                                        intent.setClass(this, ViolationDetailActivity.class);
+//                                        intent.putExtra("id", violation.getId());
+//                                        startActivity(intent);
+//                                        finish();
+//                                    })
+//                                    .build()
+//                                    .show();
                         } else if (!TextUtils.isEmpty(result.getMessage())) {
                             ToastUtils.showShort(result.getMessage());
                         }

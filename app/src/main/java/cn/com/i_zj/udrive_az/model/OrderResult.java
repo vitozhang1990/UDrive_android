@@ -101,5 +101,8 @@ public class OrderResult {
 
         @SerializedName("refuel")
         public boolean refuel;
+
+        @SerializedName("illegal")
+        public boolean illegal;
     }
 }

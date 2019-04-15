@@ -60,7 +60,7 @@ public class OrderActivity extends DBSBaseActivity
 
         smartRefreshLayout.setOnRefreshListener(this);
 
-        orderAdapter = new OrderAdapter(R.layout.item_order, list);
+        orderAdapter = new OrderAdapter(list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(orderAdapter);
 

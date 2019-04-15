@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,7 +15,9 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -45,6 +48,7 @@ public class ViolationActivity extends DBSBaseActivity
 
     private List<Violation> list = new ArrayList<>();
     private ViolationAdapter mAdapter;
+    private String orderNumber;
 
     private int size = 10;
     private int page = 1;
@@ -58,6 +62,7 @@ public class ViolationActivity extends DBSBaseActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapUtils.statusBarColor(this);
+        orderNumber = getIntent().getStringExtra("number");
 
         smartRefreshLayout.setOnRefreshLoadmoreListener(this);
         mAdapter = new ViolationAdapter(list);
@@ -90,7 +95,13 @@ public class ViolationActivity extends DBSBaseActivity
             page += 1;
         }
         showProgressDialog();
-        UdriveRestClient.getClentInstance().illegalList(size, page)
+        Map<String, Object> map = new HashMap<>();
+        map.put("pageSize", size);
+        map.put("pageNumber", page);
+        if (!TextUtils.isEmpty(orderNumber)) {
+            map.put("number", orderNumber);
+        }
+        UdriveRestClient.getClentInstance().illegalList(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BaseRetObj<ViolationObj>>() {

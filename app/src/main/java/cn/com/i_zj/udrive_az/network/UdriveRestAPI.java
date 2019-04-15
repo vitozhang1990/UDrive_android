@@ -50,6 +50,7 @@ import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.RetAppversionObj;
 import cn.com.i_zj.udrive_az.model.ret.RetEventObj;
 import cn.com.i_zj.udrive_az.model.ret.RetParkObj;
+import cn.com.i_zj.udrive_az.model.ret.ViolationCheck;
 import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationObj;
 import io.reactivex.Observable;
@@ -67,6 +68,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 
 /**
@@ -352,8 +354,13 @@ public interface UdriveRestAPI {
     @GET("/mobile/tripOrder/refuel/check")
     Observable<BaseRetObj<RefuelObj>> refuelStatus(@Query("number") String number);
 
+
+    //违章相关
+    @GET("/mobile/illegal/nodealByUser")
+    Observable<BaseRetObj<ViolationCheck>> illegalCheck();
+
     @GET("/mobile/illegal/list")
-    Observable<BaseRetObj<ViolationObj>> illegalList(@Query("pageSize") int pageSize, @Query("pageNumber") int pageNumber);
+    Observable<BaseRetObj<ViolationObj>> illegalList(@QueryMap Map<String, Object> map);
 
     @GET("/mobile/illegal/{id}")
     Observable<BaseRetObj<ViolationDetailObj>> getIllegal(@Path("id") int id);
