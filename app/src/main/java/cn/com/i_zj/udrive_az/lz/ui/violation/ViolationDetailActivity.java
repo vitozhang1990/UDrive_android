@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.i_zj.udrive_az.BuildConfig;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.lz.ui.payment.ActConfirmOrder;
@@ -26,6 +27,7 @@ import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
 import cn.com.i_zj.udrive_az.utils.Constants;
 import cn.com.i_zj.udrive_az.utils.ScreenManager;
+import cn.com.i_zj.udrive_az.web.WebActivity;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -86,7 +88,7 @@ public class ViolationDetailActivity extends DBSBaseActivity {
         getDetail();
     }
 
-    @OnClick({R.id.header_left, R.id.header_right, R.id.viola_order_more, R.id.btn_commit})
+    @OnClick({R.id.header_left, R.id.header_right, R.id.viola_order_more, R.id.viola_peccancy, R.id.btn_commit})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.header_left:
@@ -114,6 +116,9 @@ public class ViolationDetailActivity extends DBSBaseActivity {
                     intent2.putExtra(ActOrderPayment.ORDER_ID, orderInfo.getOrderId());
                     startActivity(intent2);
                 }
+                break;
+            case R.id.viola_peccancy:
+                WebActivity.startWebActivity(this, BuildConfig.DOMAIN + "/peccancy");
                 break;
             case R.id.btn_commit:
                 if (violationDetail == null

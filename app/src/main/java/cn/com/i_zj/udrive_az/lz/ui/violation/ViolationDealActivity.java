@@ -6,25 +6,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UploadManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -35,18 +25,17 @@ import cn.com.i_zj.udrive_az.map.MapUtils;
 import cn.com.i_zj.udrive_az.map.adapter.CameraActivity;
 import cn.com.i_zj.udrive_az.model.CarPartPicture;
 import cn.com.i_zj.udrive_az.model.ret.BaseRetObj;
-import cn.com.i_zj.udrive_az.model.ret.RefuelObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationDetailObj;
 import cn.com.i_zj.udrive_az.model.ret.ViolationObj;
 import cn.com.i_zj.udrive_az.network.UdriveRestClient;
-import cn.com.i_zj.udrive_az.refuel.RefuelActivity;
-import cn.com.i_zj.udrive_az.refuel.RefuelStatusActivity;
-import cn.com.i_zj.udrive_az.utils.ToolsUtils;
-import cn.com.i_zj.udrive_az.utils.qiniu.Auth;
+import cn.com.i_zj.udrive_az.utils.ScreenManager;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class ViolationDealActivity extends DBSBaseActivity {
 
@@ -55,6 +44,8 @@ public class ViolationDealActivity extends DBSBaseActivity {
     @BindView(R.id.header_image)
     ImageView header_image;
 
+    @BindView(R.id.tv_tips)
+    TextView tv_tips;
     @BindView(R.id.iv_empty)
     ImageView iv_empty;
     @BindView(R.id.error_empty)
@@ -97,6 +88,11 @@ public class ViolationDealActivity extends DBSBaseActivity {
             Glide.with(this).load(BuildConfig.IMAGE_DOMAIN + detailObj.getProcessSheetPhoto()).into(iv_empty);
             if (error_empty != null) error_empty.setVisibility(View.VISIBLE);
         }
+        if (detailObj.getState() == 3) {
+            tv_tips.setText("您上传的小票未通过审核，请重新上传");
+        } else {
+            tv_tips.setText("如果您已处理该违章，请上传违章小票");
+        }
         resetButtonStatus();
     }
 
@@ -127,7 +123,7 @@ public class ViolationDealActivity extends DBSBaseActivity {
                     return;
                 }
                 showProgressDialog();
-                uploadImg2QiNiu("processSheetPhoto", picture.getPhotoPath());
+                commit(picture.getPhotoPath());
                 break;
         }
     }
@@ -159,19 +155,23 @@ public class ViolationDealActivity extends DBSBaseActivity {
         }
     }
 
-    private void setImageUrl(String path, ImageView imageView, ImageView imageView1) {
-        Glide.with(this).load(BuildConfig.IMAGE_DOMAIN + path).into(imageView);
-        if (imageView1 != null) imageView1.setVisibility(View.VISIBLE);
-    }
-
     private void resetButtonStatus() {
+        if (detailObj.getState() == 3
+                && !TextUtils.isEmpty(detailObj.getProcessSheetPhoto())
+                && !picture.hasPhoto()) {
+            btnSubmit.setEnabled(false);
+            return;
+        }
         btnSubmit.setEnabled(!TextUtils.isEmpty(picture.getPhotoPath()));
     }
 
-    private void commit(String key) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("filename", key);
-        UdriveRestClient.getClentInstance().updateIllegal(detailObj.getId(), map)
+    private void commit(String path) {
+        final File file = new File(path);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("filename", file.getName(), requestFile);
+        UdriveRestClient.getClentInstance().updateIllegal(detailObj.getId(), body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BaseRetObj<ViolationObj>>() {
@@ -184,6 +184,8 @@ public class ViolationDealActivity extends DBSBaseActivity {
                     public void onNext(BaseRetObj<ViolationObj> refuelObjBaseRetObj) {
                         if (refuelObjBaseRetObj != null && refuelObjBaseRetObj.getCode() == 1) {
                             showToast("提交成功");
+                            ScreenManager.getScreenManager().popActivity(ViolationDetailActivity.class);
+                            startActivity(ViolationActivity.class);
                             finish();
                         } else if (refuelObjBaseRetObj != null
                                 && !TextUtils.isEmpty(refuelObjBaseRetObj.getMessage())) {
@@ -204,31 +206,5 @@ public class ViolationDealActivity extends DBSBaseActivity {
                         dissmisProgressDialog();
                     }
                 });
-    }
-
-    private void uploadImg2QiNiu(final String type, final String path) {
-        new Thread() {
-            public void run() {
-                UploadManager uploadManager = new UploadManager();
-                // 设置图片名字
-                String key = type + ToolsUtils.getUniqueId(mContext) + "_" + sdf.format(new Date()) + ".png";
-                uploadManager.put(path, key, Auth.create(BuildConfig.AccessKey, BuildConfig.SecretKey).uploadToken("izjimage"), new UpCompletionHandler() {
-                    @Override
-                    public void complete(String key, ResponseInfo info, JSONObject res) {
-                        Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + res);
-                        if (info.isOK()) {
-                            try {
-                                commit(res.getString("key"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            dissmisProgressDialog();
-                            ToastUtils.showShort("图片上传失败，请重试");
-                        }
-                    }
-                }, null);
-            }
-        }.start();
     }
 }

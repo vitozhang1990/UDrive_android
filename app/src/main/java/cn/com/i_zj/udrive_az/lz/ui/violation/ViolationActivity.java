@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.i_zj.udrive_az.DBSBaseActivity;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.map.MapUtils;
@@ -69,6 +70,11 @@ public class ViolationActivity extends DBSBaseActivity
         mAdapter.setEmptyView(R.layout.item_violation_empty);
 
         header_title.setText("交通违章");
+    }
+
+    @OnClick({R.id.header_left})
+    void onClick(View view) {
+        finish();
     }
 
     @Override

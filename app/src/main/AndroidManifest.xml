@@ -97,6 +97,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".lz.ui.violation.ViolationActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".lz.ui.violation.ViolationDetailActivity"

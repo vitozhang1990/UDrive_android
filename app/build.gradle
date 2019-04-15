@@ -18,8 +18,8 @@ android {
         minSdkVersion 18
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 24
-        versionName "1.20.2"
+        versionCode 25
+        versionName "1.21.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
@@ -63,12 +63,12 @@ android {
             shrinkResources false // 移除无用的resource文件,必须和minifyEnabled 一起使用
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', 'API_BASE_URL', '"http://dev.zaijianchuxing.com:8088/"'
-            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://dev.zaijianchuxing.com:8888?orderNum="'
-            buildConfigField 'String', 'SHARE_URL', '"http://dev.zaijianchuxing.com?ref?referral="'
-            buildConfigField 'String', 'SHARE_AMOUNT', '"http://dev.zaijianchuxing.com/costdetail"'
-            buildConfigField 'String', 'DOMAIN', '"http://zaijianchuxing.com"'
-            buildConfigField 'String', 'WEB_URL', '"http://dev.zaijianchuxing.com:9999"'
+            buildConfigField 'String', 'API_BASE_URL', '"http://test.zaijianchuxing.com:8088/"'
+            buildConfigField 'String', 'ORDER_DETAIL_URL', '"http://test.zaijianchuxing.com:8888?orderNum="'
+            buildConfigField 'String', 'SHARE_URL', '"http://test.zaijianchuxing.com?ref?referral="'
+            buildConfigField 'String', 'SHARE_AMOUNT', '"http://test.zaijianchuxing.com/costdetail"'
+            buildConfigField 'String', 'DOMAIN', '"http://test.zaijianchuxing.com"'
+            buildConfigField 'String', 'WEB_URL', '"http://test.zaijianchuxing.com:9999"'
         }
     }
     signingConfigs {
