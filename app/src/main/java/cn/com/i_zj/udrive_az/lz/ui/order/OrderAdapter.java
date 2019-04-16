@@ -12,6 +12,7 @@ import java.util.Locale;
 import cn.com.i_zj.udrive_az.R;
 import cn.com.i_zj.udrive_az.model.OrderResult;
 import cn.com.i_zj.udrive_az.utils.Constants;
+import cn.com.i_zj.udrive_az.utils.TimeUtils;
 
 public class OrderAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseViewHolder> {
     public OrderAdapter(@Nullable List<OrderResult.OrderItem> data) {
@@ -20,17 +21,32 @@ public class OrderAdapter extends BaseQuickAdapter<OrderResult.OrderItem, BaseVi
 
     @Override
     protected void convert(BaseViewHolder helper, OrderResult.OrderItem item) {
-        helper.setText(R.id.tv_time, String.format(Locale.getDefault(), "%tY-%<tm-%<td %<tR", item.startTime))
-                .setText(R.id.tv_type, getStatus(item.status))
-                .setTextColor(R.id.tv_type, item.status == 0 || item.status == 1 ? Color.parseColor("#FD4C0E") : Color.parseColor("#AFAFAF"))
-                .setText(R.id.tv_start_address, String.format(Locale.getDefault(), "起：%s", item.startParkName))
-                .setText(R.id.tv_end_address, String.format(Locale.getDefault(), "终：%s", item.destinationParkName));
+        if (item.status == Constants.ORDER_MOVE) { //行程中只显示
+            helper.setText(R.id.tv_time, TimeUtils.timeStamp2String(item.startTime, TimeUtils.FORMAT_WITH_TIME_19));
+        } else {
+            helper.setText(R.id.tv_time, String.format(Locale.getDefault(), "%s — %s",
+                    TimeUtils.timeStamp2String(item.startTime, TimeUtils.isThisYear(item.startTime) ? TimeUtils.FORMAT_WITH_TIME_19 : TimeUtils.FORMAT_WITH_TIME_20),
+                    TimeUtils.timeStamp2String(item.endTime, TimeUtils.isThisYear(item.endTime) ? TimeUtils.FORMAT_WITH_TIME_19 : TimeUtils.FORMAT_WITH_TIME_20)
+                    )
+            );
+        }
+
+        helper.setText(R.id.tv_type, getStatus(item.status));
+        helper.setTextColor(R.id.tv_type, item.status == Constants.ORDER_MOVE || item.status == Constants.ORDER_WAIT_PAY
+                ? Color.parseColor("#FD4C0E")
+                : Color.parseColor("#AFAFAF"));
+
+        helper.setText(R.id.tv_start_address, String.format(Locale.getDefault(), "起：%s", item.startParkName));
+        if (item.status != Constants.ORDER_MOVE) { //非行程中
+            helper.setText(R.id.tv_end_address, String.format(Locale.getDefault(), "终：%s", item.destinationParkName));
+        }
         if (item.status == Constants.ORDER_MOVE) {
             helper.setVisible(R.id.tv_money, false);
         } else {
             helper.setVisible(R.id.tv_money, true);
             helper.setText(R.id.tv_money, String.format(Locale.getDefault(), "%.2f 元", item.realPayAmount / 100f));
         }
+
         helper.setGone(R.id.ll_desc, item.refuel || item.illegal);
         if (item.refuel && item.illegal) {
             helper.setText(R.id.tv_desc, "* 此订单有加油记录与违章记录");

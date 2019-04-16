@@ -185,7 +185,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:drawableRight="@mipmap/ic_arrow_s"
-                android:text="加油查询" />
+                android:text="加油查询"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_illegal_detail"
@@ -193,7 +194,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:drawableRight="@mipmap/ic_arrow_s"
-                android:text="违章查询" />
+                android:text="违章查询"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
