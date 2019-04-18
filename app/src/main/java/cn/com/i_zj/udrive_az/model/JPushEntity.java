@@ -8,16 +8,17 @@ import java.io.Serializable;
  * @Describe
  */
 public class JPushEntity implements Serializable {
-    public static final int NOT_REDIRECT=0;
-    public static final int URL_REDIRECT=1;
-    public static final int APP_REDIRECT=2;
+    public static final int NOT_REDIRECT = 0;
+    public static final int URL_REDIRECT = 1;
+    public static final int APP_REDIRECT = 2;
 
-    public static final String INDEX="1000";
-    public static final String ORDER="1010";
-    public static final String  EVENT="1020";
+    public static final String INDEX = "1000";
+    public static final String ORDER = "1010";
+    public static final String EVENT = "1020";
+    public static final String VIOLA = "1070";
 
-    private  String redirect;
-    private  int redirectType;
+    private String redirect;
+    private int redirectType;
 
     public String getRedirect() {
         return redirect;

@@ -18,6 +18,7 @@ import java.util.Iterator;
 import cn.com.i_zj.udrive_az.MainActivity;
 import cn.com.i_zj.udrive_az.lz.ui.msg.ActMsg;
 import cn.com.i_zj.udrive_az.lz.ui.order.OrderActivity;
+import cn.com.i_zj.udrive_az.lz.ui.violation.ViolationActivity;
 import cn.com.i_zj.udrive_az.model.JPushEntity;
 import cn.com.i_zj.udrive_az.utils.PushUtil;
 import cn.com.i_zj.udrive_az.web.WebActivity;
@@ -88,29 +89,31 @@ public class JPushReceiver extends BroadcastReceiver {
         if (jPushEntity == null) {
             return;
         }
-        Intent intent= null;
+        Intent intent = null;
         switch (jPushEntity.getRedirectType()) {
             case JPushEntity.NOT_REDIRECT:
-                intent= new Intent(context, MainActivity.class);
+                intent = new Intent(context, MainActivity.class);
                 break;
             case JPushEntity.URL_REDIRECT:
-                intent= new Intent(context, WebActivity.class);
-                intent.putExtra("url",jPushEntity.getRedirect());
-                intent.putExtra("title","");
+                intent = new Intent(context, WebActivity.class);
+                intent.putExtra("url", jPushEntity.getRedirect());
+                intent.putExtra("title", "");
                 break;
             case JPushEntity.APP_REDIRECT:// APP内部
-                if(JPushEntity.INDEX.equals(jPushEntity.getRedirect())){
-                    intent= new Intent(context, MainActivity.class);
-                }else if(JPushEntity.ORDER.equals(jPushEntity.getRedirect())){
-                    intent= new Intent(context, OrderActivity.class);
-                }else if(JPushEntity.EVENT.equals(jPushEntity.getRedirect())){
-                    intent= new Intent(context, ActMsg.class);
-                }else {
-                    intent= new Intent(context, MainActivity.class);
+                if (JPushEntity.INDEX.equals(jPushEntity.getRedirect())) {
+                    intent = new Intent(context, MainActivity.class);
+                } else if (JPushEntity.ORDER.equals(jPushEntity.getRedirect())) {
+                    intent = new Intent(context, OrderActivity.class);
+                } else if (JPushEntity.EVENT.equals(jPushEntity.getRedirect())) {
+                    intent = new Intent(context, ActMsg.class);
+                } else if (JPushEntity.VIOLA.equals(jPushEntity.getRedirect())) {
+                    intent = new Intent(context, ViolationActivity.class);
+                } else {
+                    intent = new Intent(context, MainActivity.class);
                 }
                 break;
             default:
-                intent= new Intent(context, MainActivity.class);
+                intent = new Intent(context, MainActivity.class);
                 break;
         }
 
