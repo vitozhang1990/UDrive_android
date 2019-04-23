@@ -89,7 +89,9 @@ public class ViolationDealActivity extends DBSBaseActivity {
             if (error_empty != null) error_empty.setVisibility(View.VISIBLE);
         }
         if (detailObj.getState() == 3) {
-            tv_tips.setText("您上传的小票未通过审核，请重新上传");
+            tv_tips.setText(TextUtils.isEmpty(detailObj.getRemark())
+                    ? "您上传的小票未通过审核，请重新上传"
+                    : detailObj.getRemark());
         } else {
             tv_tips.setText("如果您已处理该违章，请上传违章小票");
         }

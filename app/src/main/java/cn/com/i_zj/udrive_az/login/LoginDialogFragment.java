@@ -97,6 +97,7 @@ public class LoginDialogFragment extends BottomSheetDialogFragment {
         setShowSoftInputOnFocus(phoneView);
         setShowSoftInputOnFocus(codeView);
 
+        setCancelable(false);
         return bottomSheetView;
     }
 
