@@ -115,25 +115,13 @@ public class CameraActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        cameraView.start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
         cameraView.stop();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        cameraView.start();
     }
 
     private void initParams() {
